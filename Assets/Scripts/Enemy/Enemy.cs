@@ -50,8 +50,6 @@ public class Enemy : MonoBehaviour
 
     protected void Start()
     {
-        MenuManager.MG.MatchEnded += DestroyGameObject;
-
         oldPosition = currentPosition;
         target = GameTypeBase.instance.Player.transform;
     }
@@ -63,7 +61,7 @@ public class Enemy : MonoBehaviour
 
     void OnDestroy()
     {
-        MenuManager.MG.MatchEnded -= DestroyGameObject;
+        GameType.instance.MatchEnded -= DestroyGameObject;
     }
 
 

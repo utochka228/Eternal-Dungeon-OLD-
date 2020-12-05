@@ -28,11 +28,25 @@ public class CameraMultiTarget : MonoBehaviour
         _targets = new GameObject[0];
 	}
 	
+    private Vector3 menuCameraEulerAngles;
+    private Vector3 menuCameraPos;
+	public void SetOldDataToCamera()
+    {
+        transform.eulerAngles = menuCameraEulerAngles;
+        transform.position = menuCameraPos;
+    }
+	
 	private void Awake()
 	{
         instance = this;
 		_camera = gameObject.GetComponent<Camera>();
 		_debugProjection = DebugProjection.ROTATED;
+	}
+
+	void Start(){
+		 //Saving camera menu data
+        menuCameraEulerAngles = transform.eulerAngles;
+        menuCameraPos = transform.position;
 	}
 
 	private void LateUpdate() {

@@ -21,6 +21,27 @@ public class PlayerStats : Stats
             }
         }
     }
+    public int myEnergy;
+    
+    public int Energy { 
+        get{
+            return myEnergy;
+        }
+        set {
+            if(value >= 0)
+                myEnergy = value;
+        } 
+    }
+    public int relocationEnergy;
+    public int RelocationEnergy { 
+        get{
+            return relocationEnergy;
+        }
+        set {
+            if(value >= 0)
+                relocationEnergy = value;
+        } 
+    }
     void Start()
     {
         //Variables init

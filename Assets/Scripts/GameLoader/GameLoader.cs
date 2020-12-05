@@ -24,7 +24,7 @@ public class GameLoader : MonoBehaviour
 
     void Start()
     {
-        loader = GameTypeManager.GM.GetGameTypeLoader();
+        loader = GameType.instance.GetGameTypeLoader();
         SetBackGroundColor(loader.backColor);
         SetGameIcon(loader.gameLoaderSprite);
         SetTipText(loader.gameLoaderTipText);
@@ -50,9 +50,9 @@ public class GameLoader : MonoBehaviour
 
     void OnDestroy()
     {
-        MenuManager.MG.gameCanvas.SetActive(true);
+        MenuPresenter.instance.gameCanvas.SetActive(true);
         Time.timeScale = 0f;
         //LAUNCH COUNTDOWN
-        MenuManager.MG.SpawnCountDown();
+        MenuPresenter.instance.SpawnCountDown();
     }
 }

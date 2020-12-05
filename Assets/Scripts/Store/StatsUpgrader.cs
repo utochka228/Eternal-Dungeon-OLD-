@@ -24,29 +24,11 @@ public class StatsUpgrader : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        MenuManager.MG.OnSaving += SaveProgress;
-
-        if (PlayerPrefs.HasKey("Saves"))
-        {
-            LoadProgress();
-        }
         
         costToBuyText.text = costToBuy.ToString();
         statProgress.text = progressSlider.value + "/" + progressSlider.maxValue;
     }
-    void SaveProgress()
-    {
-        MenuManager.MG.savingData.sliderProgress[indexInSave] = (int)progressSlider.value;
-        MenuManager.MG.savingData.moneyCost[indexInSave] = costToBuy;
-    }
-    void LoadProgress()
-    {
-        SavingData data = MenuManager.MG.savingData;
-        progressSlider.value = data.sliderProgress[indexInSave];
-        statProgress.text = progressSlider.value + "/" + progressSlider.maxValue;
-        costToBuy = data.moneyCost[indexInSave];
-        costToBuyText.text = costToBuy.ToString();
-    }
+   
     // Update is called once per frame
     void Update()
     {

@@ -27,8 +27,8 @@ public class PlayerInfo : MonoBehaviour
             if (value >= 0)
             {
                 lvl = value;
-                MenuManager.MG.congratulations.SetActive(true);
-                MenuManager.MG.lvlText.text = lvl.ToString();
+                MenuPresenter.instance.congratulations.SetActive(true);
+                PlayerUI.instance.lvlText.text = lvl.ToString();
             }
         }
     }
@@ -46,19 +46,19 @@ public class PlayerInfo : MonoBehaviour
             if (value >= 0)
             {
                 playerExp = value;
-                if(playerExp >= MenuManager.MG.expSlider.maxValue)
+                if(playerExp >= PlayerUI.instance.expSlider.maxValue)
                 {
                     Level++;
 
-                    float remainder = MenuManager.MG.expSlider.maxValue - playerExp;
-                    float oldMaxValue = MenuManager.MG.expSlider.maxValue;
+                    float remainder = PlayerUI.instance.expSlider.maxValue - playerExp;
+                    float oldMaxValue = PlayerUI.instance.expSlider.maxValue;
 
-                    MenuManager.MG.expSlider.maxValue += maxExpValueChanger;
+                    PlayerUI.instance.expSlider.maxValue += maxExpValueChanger;
 
                     Expirience = remainder;
                 }
                 else
-                    MenuManager.MG.expSlider.value = playerExp;
+                    PlayerUI.instance.expSlider.value = playerExp;
             }
         }
     }
@@ -76,8 +76,8 @@ public class PlayerInfo : MonoBehaviour
             if (value >= 0)
             {
                 money = value;
-                MenuManager.MG.menuMoneyText.text = money.ToString();
-                MenuManager.MG.storeMoneyText.text = money.ToString();
+                PlayerUI.instance.menuMoneyText.text = money.ToString();
+                PlayerUI.instance.storeMoneyText.text = money.ToString();
             }
         }
     }

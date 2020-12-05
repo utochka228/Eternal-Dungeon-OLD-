@@ -49,17 +49,11 @@ public abstract class GameTypeBase : MonoBehaviour, IResultMatch
         EnemyWasKilled += AddEnemyDeath;
         SpawnPlayer();
     }
-
-    protected virtual void GenerateGameMap(Vector2 mapSize)
-    {
-        GameMap.GM.MapSize = mapSize;
-        GameMap.GM.GenerateGameField();
-    }
-
+    
     protected virtual void PlayerLostMatch()
     {
         PlayerDied -= PlayerLostMatch;
-        MenuManager.MG.EndMatch();
+        GameType.instance.EndMatch();
     }
 
     public void ResultMatch()

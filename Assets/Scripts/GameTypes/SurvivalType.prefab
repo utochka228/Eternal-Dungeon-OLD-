@@ -51,7 +51,6 @@ MonoBehaviour:
   mapSize: {x: 50, y: 50}
   playerPrefab: {fileID: 4144941501956043217, guid: 82f9a664606d4bc47afd3ce007d1f97e,
     type: 3}
-  timeToSurvive: 300
   spawningItemsDelay: 3
   enemyPrefab: {fileID: 6387018173200218859, guid: d84c5bfd10659434b933bc8adcb4359c,
     type: 3}
@@ -62,3 +61,6 @@ MonoBehaviour:
   - {fileID: 9147689546752560134, guid: b32f559c0184364418276edcc456f5f8, type: 3}
   exitForPlayer: {fileID: 6605058374157888832, guid: 366ec0d5a0f9a544fac02c7654038b67,
     type: 3}
+  lastCheckPoint: -1
+  CurrentDungeonLevel: -1
+  checkPointDistance: 5
