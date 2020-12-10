@@ -16,6 +16,7 @@ public class GameMap : MonoBehaviour
     public GameObject Walls { get; private set; }
     public GameObject Floor { get; private set; }
     public GameObject Props { get; private set; }
+    public GameObject Blocks { get; private set; }
     public Dictionary<Vector2, Cell> gameField = new Dictionary<Vector2, Cell>();
     public Grid grid;
     public Vector2 MapSize { private get; set; }
@@ -185,11 +186,16 @@ public class GameMap : MonoBehaviour
         }
     }
     [SerializeField] GameObject coord;
+    [SerializeField] Prop tunnelProp;
+    [SerializeField] Prop checkpointProp;
+    [SerializeField] GameObject propHolder;
+
+    [SerializeField] bool GenerateGameCoords;
     //Генерация игрового поля 
     public string GenerateGameField(Vector2 mapSize, string seed = " ")
     {
         GameMap.GM.MapSize = mapSize;
-
+        #region Create_Field_Parents
         GameFieldParent = new GameObject("GameField");
         Corridors = new GameObject("Corridors");
         Corridors.transform.SetParent(GameFieldParent.transform);
@@ -199,44 +205,87 @@ public class GameMap : MonoBehaviour
         Walls.transform.SetParent(GameFieldParent.transform);
         Props = new GameObject("Props");
         Props.transform.SetParent(GameFieldParent.transform);
+        Blocks = new GameObject("Blocks");
+        Blocks.transform.SetParent(GameFieldParent.transform);
+        #endregion
+        bool[,] map = new bool[0, 0];
+        GameObject gameCoords = null;
+        if(GenerateGameCoords){
+            map = new bool[xMapSize, yMapSize];
+            gameCoords = new GameObject("GameCoords");
+            gameCoords.SetActive(false);
+        }
 
         bool useRandomSeed = seed.Equals(" ") ? true : false;
         GenerateMap(useRandomSeed, seed);
+        float[,] perlinMap = PerlinNoise.noise.GeneratePerlin();
+
         for (int x = 0; x < xMapSize; x++)
         {
             for (int y = 0; y  <yMapSize; y++)
             {
-                if(map[x, y] <= 0)
+                if(mapMask[x, y] <= 0)
                 {
-                    Vector2 position = new Vector2(x, y);
-                    GameObject instance = Instantiate(floorTile, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
-                    GameMap.GM.gameField.Add(position, new Cell(instance, position));
-                    instance.transform.SetParent(Floor.transform);
+                    GenerateFloorCell(x, y);
+                    Debug.Log($"perlinMap[{x}, {y}] = {perlinMap[x, y]}");
+                    if(perlinMap[x, y] == 0)
+                        continue;
+
+                    SpawnBlocks(in perlinMap, x, y);
+
+                    if(GenerateGameCoords)
+                        map[x, y] = GenerateAdditionalCoords(x, y, gameCoords.transform);
                 }
             }
         }
+        //DEELTE THIS
+        PropHolder pHolder = Instantiate(propHolder, Vector3.zero, Quaternion.identity, GameFieldParent.transform).GetComponent<PropHolder>();
+        pHolder.SetMyProp(Instantiate(tunnelProp));
+        ///////////
+            
         GenerateWalls();
-
-        //bool[,] map = new bool[xMapSize, yMapSize];
-        //GameObject gameCoords = new GameObject("GameCoords");
-        //gameCoords.SetActive(false);
-        //for (int x = 0; x < xMapSize; x++)
-        //{
-        //    for (int y = 0; y < yMapSize; y++)
-        //    {
-        //        Vector2 pos = new Vector2(x, y);
-        //        map[x, y] = CellisAvialble(pos);
-        //        Transform coordinate = Instantiate(coord).transform;
-        //        coordinate.name = x + "/" + y;
-        //        coordinate.position = new Vector3(x, y, -0.1f);
-        //        coordinate.GetComponent<TextMeshPro>().text = x + "/" + y;
-        //        coordinate.SetParent(gameCoords.transform);
-        //    }
-        //}
 
         //grid.CreateGrid(map, MapSize);
 
         return this.seed;
+    }
+
+    void SpawnProps(){
+
+    }
+
+    [SerializeField] float spawnBlockValue = 0.3f;
+    void SpawnBlocks(in float[,] perlinMap, int x, int y){
+        float perlinValue = perlinMap[x, y];
+        Debug.Log("PerlinValue" + perlinValue);
+        if(perlinValue > spawnBlockValue){
+             GameObject block = Instantiate(blockBase, new Vector3(x, y, 0f), Quaternion.identity, Blocks.transform);
+             Block _block = block.GetComponent<Block>();
+             int index = Random.Range(0, blocks.Length);
+             _block.SetBlock(blocks[index]);
+        }
+    }
+
+    bool GenerateAdditionalCoords(int x, int y, Transform gameCoords){
+        Vector2 pos = new Vector2(x, y);
+        Transform coordinate = Instantiate(coord).transform;
+        coordinate.name = x + "/" + y;
+        coordinate.position = new Vector3(x, y, -0.1f);
+        coordinate.GetComponent<TextMeshPro>().text = x + "/" + y;
+        coordinate.SetParent(gameCoords);
+        return CellisAvialble(pos);
+    }
+
+    void GenerateFloorCell(int x, int y){
+        Vector2 position = new Vector2(x, y);
+        GameObject instance = Instantiate(floorTile, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
+        GameMap.GM.gameField.Add(position, new Cell(instance, position));
+        instance.transform.SetParent(Floor.transform);
+    }
+
+    public void SpawnCheckPointProp(){
+        PropHolder _pHolder = Instantiate(propHolder, Vector3.one, Quaternion.identity, GameFieldParent.transform).GetComponent<PropHolder>();
+        _pHolder.SetMyProp(Instantiate(checkpointProp));
     }
     [SerializeField] GameObject wall;
     void GenerateWalls()
@@ -272,14 +321,14 @@ public class GameMap : MonoBehaviour
     [Range(0, 100)]
     public int randomFillPercent;
 
-    public int[,] map;
+    public int[,] mapMask;
 
 
     void GenerateMap(bool randomSeed, string _seed = "")
     {
         useRandomSeed = randomSeed;
         if(!useRandomSeed) seed = _seed;
-        map = new int[xMapSize, yMapSize];
+        mapMask = new int[xMapSize, yMapSize];
         RandomFillMap();
 
         for (int i = 0; i < 5; i++)
@@ -303,11 +352,11 @@ public class GameMap : MonoBehaviour
             {
                 if (x == 0 || x == xMapSize - 1 || y == 0 || y == yMapSize - 1)
                 {
-                    map[x, y] = 1;
+                    mapMask[x, y] = 1;
                 }
                 else
                 {
-                    map[x, y] = (pseudoRandom.Next(0, 100) < randomFillPercent) ? 1 : 0;
+                    mapMask[x, y] = (pseudoRandom.Next(0, 100) < randomFillPercent) ? 1 : 0;
                 }
             }
         }
@@ -322,9 +371,9 @@ public class GameMap : MonoBehaviour
                 int neighbourWallTiles = GetSurroundingWallCount(x, y);
 
                 if (neighbourWallTiles > 4)
-                    map[x, y] = 1;
+                    mapMask[x, y] = 1;
                 else if (neighbourWallTiles < 4)
-                    map[x, y] = 0;
+                    mapMask[x, y] = 0;
 
             }
         }
@@ -341,7 +390,7 @@ public class GameMap : MonoBehaviour
                 {
                     if (neighbourX != gridX || neighbourY != gridY)
                     {
-                        wallCount += map[neighbourX, neighbourY];
+                        wallCount += mapMask[neighbourX, neighbourY];
                     }
                 }
                 else

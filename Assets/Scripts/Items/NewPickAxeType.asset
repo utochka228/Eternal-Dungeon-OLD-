@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 327896ac765706e499125e046d444396, type: 3}
+  m_Name: NewPickAxeType
+  m_EditorClassIdentifier: 
+  name: safasf
+  itemEffect: {fileID: 0}
+  spawnChance: 0
+  sprite: {fileID: 21300000, guid: ff79c85c192930546ad9c284c0f65fe6, type: 3}
+  spawnOffset: {x: 0, y: 0, z: 0}
+  spawnRotation: 0
+  actions:
+    isUsable: 0
+    isEquipable: 1

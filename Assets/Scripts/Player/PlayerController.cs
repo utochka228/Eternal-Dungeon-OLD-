@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour
         fov = _fov.GetComponent<FieldOfView>();
 
         joystick = PlayerUI.instance.joystick;
-        PlayerUI.instance.attackButton.onClick.AddListener(Attack);
+        PlayerUI.instance.interactButton.onClick.AddListener(OnInteractButton);
 
         UpdatePlayerSkin();
     }
@@ -130,10 +130,54 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    Queue<IInteractable> interactItems = new Queue<IInteractable>();
+    private IInteractable InteractItem {
+        get{
 
-    void OnTriggerEnter(Collider other)
-    {
-        IItem item = other.GetComponent<IItem>();
-        item?.Use(transform);
+            IInteractable item = null;
+            try {
+                item = interactItems.Dequeue();
+                return item;
+
+            } 
+            catch{
+                Debug.Log("InteractItems is empty.");
+                return null;
+            }
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D other) {
+        IInteractable item = other.GetComponent<IInteractable>();
+        if(item != null){
+            interactItems.Enqueue(item);
+        }
+        if(interactItems.Count > 0 && Inventory.instance.itHasFreeSpace())
+            PlayerUI.instance.interactButton.interactable = true;
+
+    }
+    private void OnTriggerExit2D(Collider2D other) {
+        IInteractable item = other.GetComponent<IInteractable>();
+        if(item != null){
+            IInteractable[] items = interactItems.ToArray();
+            interactItems.Clear();
+            foreach (var it in items)
+            {
+                if(it != item)
+                    interactItems.Enqueue(it);
+            }
+            if(interactItems.Count <= 0)
+                PlayerUI.instance.interactButton.interactable = false;
+        }
+    }
+    //Method for interact Button
+    public void OnInteractButton(){
+        IInteractable item = InteractItem;
+        if(item != null && Inventory.instance.itHasFreeSpace()){
+            item.Interact();
+            if(interactItems.Count <= 0 || !Inventory.instance.itHasFreeSpace())
+                PlayerUI.instance.interactButton.interactable = false;
+        }
+        else
+            PlayerUI.instance.interactButton.interactable = false;
     }
 }

@@ -143,9 +143,9 @@ public abstract class GameTypeBase : MonoBehaviour, IResultMatch
     {
         Vector2 position = GameMap.GM.RandomizePosionOnMap();
 
-        GameObject go = Instantiate(spawingItemsList[ChooseItemInListOfItems(spawingItemsList)]);
-        go.transform.position = new Vector3(position.x, position.y, -go.GetComponent<Item>().spawningOffsetY);
-        go.transform.SetParent(transform);
+        // GameObject go = Instantiate(spawingItemsList[ChooseItemInListOfItems(spawingItemsList)]);
+        // go.transform.position = new Vector3(position.x, position.y, -go.GetComponent<Item>().spawningOffsetY);
+        // go.transform.SetParent(transform);
     }
 
     int ChooseItemInListOfItems(GameObject[] items)

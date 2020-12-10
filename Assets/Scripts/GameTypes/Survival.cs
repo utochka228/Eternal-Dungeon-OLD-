@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 interface IRelocation{
+    void SetRelocationPanel();
     void RelocateToCheckPoint(int indexPoint, int energyForReloc);
+    void ChangeLevel();
 }
 public class Survival : GameTypeBase, IRelocation
 {
@@ -20,7 +23,7 @@ public class Survival : GameTypeBase, IRelocation
 
     [SerializeField] GameObject exitForPlayer;
 
-    public int LastDungeonLevel {get; private set;}
+    public int LastDungeonLevel = -1;
     public int lastCheckPoint = -1;
     public int CurrentDungeonLevel = -1;
 
@@ -33,7 +36,7 @@ public class Survival : GameTypeBase, IRelocation
     new void Start()
     {
         base.Start();
-        CreateLevel();
+        ChangeLevel();
     }
 
     //void AddMoneyToPlayer(GameObject murderer)
@@ -62,14 +65,13 @@ public class Survival : GameTypeBase, IRelocation
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
-            CreateLevel();
-        if(Input.GetKeyDown(KeyCode.R))
-            SetRelocationPanel();
+        if(Input.GetKeyDown(KeyCode.E))
+            Player.GetComponent<PlayerStats>().RelocationEnergy += 10;
     }
 
-    void SetRelocationPanel(){
+    public void SetRelocationPanel(){
         Transform relocationPanel = PlayerUI.instance.relocationPanel.transform;
+        //Activate panel
         relocationPanel.gameObject.SetActive(true);
 
         //Spawn buttons for checkpoints
@@ -95,6 +97,7 @@ public class Survival : GameTypeBase, IRelocation
             TextMeshProUGUI neccessertEnergyText = button.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
             if(pointLevel == CurrentDungeonLevel){
                 neccessertEnergyText.text = "You here";
+                button.interactable = false;
                 continue;
             }
             neccessertEnergyText.text = energyForRelocation.ToString();
@@ -107,45 +110,71 @@ public class Survival : GameTypeBase, IRelocation
     }
 
     struct CheckPoint{
-        int level;
+        public int level {get; private set;}
 
         public CheckPoint(int currentLevel, ref int lastCheckPoint, in List<CheckPoint> checkPoints)
         {
-            Debug.Log("check level =" + currentLevel);
             level = currentLevel;
             lastCheckPoint = currentLevel;
             checkPoints.Add(this);
-        }        
-        
+            GameMap.GM.SpawnCheckPointProp();
+        }
 
         public int GetCheckPointLevel() {return level;}
     }
     //Called after creating new level
-    void CreateLevel(){
+    public void ChangeLevel(){
         
+        //if is new level then create else relocate
+        if(CurrentDungeonLevel >= LastDungeonLevel){
+            CreateLevel();
+        }
+        else{
+            RelocateToNext();
+        }
+        
+    }
+    void CreateLevel(){
         CurrentDungeonLevel++;
         LastDungeonLevel++;
         GameMap.GM.DestroyGameField();
         string seed = GameMap.GM.GenerateGameField(mapSize);
-        Debug.Log($"Level : {CurrentDungeonLevel}");
-
         if(CurrentDungeonLevel == 0 || CurrentDungeonLevel == lastCheckPoint + checkPointDistance){
             CheckPoint checkPoint = new CheckPoint(CurrentDungeonLevel, ref lastCheckPoint, checkPoints);
         }
 
         levelSeeds.Add(CurrentDungeonLevel, seed);
     }
+    void RelocateToNext(){
+        CurrentDungeonLevel++;
+        GameMap.GM.DestroyGameField();
+        string seed = levelSeeds[CurrentDungeonLevel];
+        GameMap.GM.GenerateGameField(mapSize, seed);
+        try{
+            CheckPoint point = checkPoints.Single(x => x.level == CurrentDungeonLevel);
+            GameMap.GM.SpawnCheckPointProp();
+        }catch{
+            //Do nothing
+        }
+    }
 
     public void RelocateToCheckPoint(int indexPoint, int energyForReloc){
-        Debug.Log($"indexPoint {indexPoint}");
         int neccesseryLevel = checkPoints[indexPoint].GetCheckPointLevel();
         
         GameMap.GM.DestroyGameField();
         string seed = levelSeeds[neccesseryLevel];
-        Debug.Log(seed+ " -  SEED!!In level " + neccesseryLevel );
         GameMap.GM.GenerateGameField(mapSize, seed);
         Player.GetComponent<PlayerStats>().RelocationEnergy -= energyForReloc;
         CurrentDungeonLevel = neccesseryLevel;
+
+        Transform relocationPanel = PlayerUI.instance.relocationPanel.transform;
+        int childCount = relocationPanel.childCount;
+        //Clear panel
+        for (int i = 0; i < childCount; i++)
+        {
+            Destroy(relocationPanel.GetChild(i).gameObject);
+        }
+       relocationPanel.gameObject.SetActive(false);
     } 
 
     public override void SpawnEnemy(GameObject enemy)

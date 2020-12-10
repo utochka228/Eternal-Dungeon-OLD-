@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Block : MonoBehaviour, IDamageble
 {
-    public BlockBase blockBase;
+    [SerializeField] BlockBase blockBase;
     BlockBase myBlock;
     [SerializeField] SpriteRenderer spriteRend;
     public void Die(GameObject murderer)
@@ -30,12 +30,13 @@ public class Block : MonoBehaviour, IDamageble
 
     void Start()
     {
-        SetBlock();
+
     }
 
-    void SetBlock()
+    public void SetBlock(BlockBase blockBase)
     {
-        myBlock = Instantiate(blockBase);
+        this.blockBase = blockBase;
+        myBlock = Instantiate(this.blockBase);
         spriteRend.sprite = myBlock.blockSprite;
     }
 }

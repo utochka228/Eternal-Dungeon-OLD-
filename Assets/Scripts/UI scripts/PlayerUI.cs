@@ -12,7 +12,7 @@ public class PlayerUI : MonoBehaviour
     public TextMeshProUGUI playerHealth;
 
     public FixedJoystick joystick;
-    public Button attackButton;
+    public Button interactButton;
 
     public TextMeshProUGUI menuMoneyText;
     public TextMeshProUGUI storeMoneyText;
@@ -21,6 +21,8 @@ public class PlayerUI : MonoBehaviour
 
     public GameObject relocationPanel;
     public GameObject relocationButton;
+
+    public Transform inventoryPanel;
     void Awake()
     {
         instance = this;
