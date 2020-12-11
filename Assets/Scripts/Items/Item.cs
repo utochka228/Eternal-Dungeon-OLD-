@@ -42,12 +42,8 @@ public abstract class Item : ScriptableObject, IItem
 }
 
 [System.Serializable]
-public class ItemActions : IComparable{
+public class ItemActions {
     public bool isUsable;
     public bool isEquipable;
 
-    public int CompareTo(object obj)
-    {
-        throw new NotImplementedException();
-    }
 }

@@ -11,8 +11,6 @@ public class PlayerController : MonoBehaviour
 
     public new string name;
 
-    [SerializeField]
-    AnimationCurve movingSpeedCurve;
     public float speed = 10f; //Скорость передвижения игрока
 
     public int bombCount = 0;
@@ -29,7 +27,6 @@ public class PlayerController : MonoBehaviour
     public Vector2 currentPosition;
     public Vector2 oldPosition;
 
-    public FieldOfView fov;
     #endregion
 
     #region PrivateVariables
@@ -70,12 +67,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        totalTime = movingSpeedCurve[movingSpeedCurve.keys.Length - 1].time;
-
         stopPoint = new Vector2(transform.position.x, transform.position.y);
         oldPosition = currentPosition;
-        GameObject _fov = GameObject.FindGameObjectWithTag("FOV");
-        fov = _fov.GetComponent<FieldOfView>();
 
         joystick = PlayerUI.instance.joystick;
         PlayerUI.instance.interactButton.onClick.AddListener(OnInteractButton);
@@ -95,10 +88,6 @@ public class PlayerController : MonoBehaviour
             
             oldPosition = currentPosition;
         }
-        fov.SetOrigin(transform.position);
-        fov.SetViewDistance(viewOfDistance);
-        fov.SetAimDirection(Vector3.right);
-        fov.SetFoV(360);
     }
     [SerializeField] float viewOfDistance = 2f;
     public void SetStopPoint(Vector2 position)
@@ -111,22 +100,14 @@ public class PlayerController : MonoBehaviour
     }
     
     [SerializeField] Rigidbody2D rb;
-    private bool canCountDown;
-    float currentTime, totalTime;
     void MovePlayer()
     {
         //speed = movingSpeedCurve.Evaluate(currentTime);
-        Vector2 movement = new Vector2(speed * joystick.Direction.normalized.x, speed * joystick.Direction.normalized.y);
+        Vector2 movement = new Vector2(speed * joystick.Direction.x, speed * joystick.Direction.y);
         movement *= Time.deltaTime;
 
         rb.MovePosition(rb.position + movement);
-
-        if (canCountDown)
-        {
-            currentTime += Time.deltaTime;
-            if (currentTime >= totalTime)
-                canCountDown = false;
-        }
+        
     }
 
 

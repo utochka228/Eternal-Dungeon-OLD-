@@ -7,9 +7,12 @@ public class Block : MonoBehaviour, IDamageble
     [SerializeField] BlockBase blockBase;
     BlockBase myBlock;
     [SerializeField] SpriteRenderer spriteRend;
+    public bool spawnExit;
     public void Die(GameObject murderer)
     {
         DropLoot();
+        if(spawnExit)
+            GameMap.GM.SpawnExit(transform.position);
         Destroy(gameObject);
     }
 

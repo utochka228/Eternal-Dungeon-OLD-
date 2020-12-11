@@ -107,6 +107,8 @@ public class Slot : MonoBehaviour
     //For equip button
     public void EquipItem(){
         Debug.Log("Item equiped!");
+        //Spawn item near of player
+        //Select slot in the inventory
     }
 
     public Item TryGetStackItem(){
