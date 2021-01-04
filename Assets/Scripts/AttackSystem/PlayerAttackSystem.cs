@@ -4,14 +4,20 @@ using UnityEngine;
 
 public class PlayerAttackSystem : AttackSystem
 {
-    [SerializeField] GameObject fireBall;
-    [SerializeField] float power;
-    [SerializeField] Vector2 direction;
-    public override void Attack()
+    public Transform attackPoint;
+    [SerializeField] float radius = 3f;
+    public override void Attack(float damage)
     {
-        Transform fBall = Instantiate(fireBall).transform;
-        fBall.position = transform.position;
-        fBall.GetComponent<Rigidbody2D>().AddForce(direction*power*Time.deltaTime);
+        int maskPlayer = ~LayerMask.GetMask("Player");
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(attackPoint.position, radius, maskPlayer);
+        foreach (var collider in colliders)
+        {
+            
+            IDamageble hit = collider.GetComponent<IDamageble>();
+            if(hit != null){
+                hit.TakeDamage(gameObject, damage);
+            }
+        }
     }
 
     public override void Block()
@@ -30,4 +36,5 @@ public class PlayerAttackSystem : AttackSystem
     {
         
     }
+
 }

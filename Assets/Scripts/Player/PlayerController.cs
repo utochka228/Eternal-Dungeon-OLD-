@@ -22,24 +22,23 @@ public class PlayerController : MonoBehaviour
     public event Action OnChangedPlayerPosition;
     public event Action OnStartOfMoving;
 
-    public MeshRenderer meshRenderer;
-
     public Vector2 currentPosition;
     public Vector2 oldPosition;
+    public Block targetBlock;
 
     #endregion
 
     #region PrivateVariables
 
-    [Header("Player Attack System")]
-    [SerializeField] PlayerAttackSystem attackSystem;
-
     [Header("My Player Stats(source)")]
     [SerializeField]
     PlayerStats myPlayerStats;
 
-    private Vector2 stopPoint; //Позиция к которой стремится игрок
+    [Header("My Player AttackSystem")]
+    [SerializeField]
+    PlayerAttackSystem attackSystem;
 
+    [SerializeField] SpriteRenderer playerSpriteRend;
     [Header("Player Skins")]
     [SerializeField]
     private GameObject[] skins;
@@ -60,14 +59,8 @@ public class PlayerController : MonoBehaviour
             OnChangedPlayerPosition();
     }
 
-    public void Attack()
-    {
-        attackSystem.Attack();
-    }
-
     void Start()
     {
-        stopPoint = new Vector2(transform.position.x, transform.position.y);
         oldPosition = currentPosition;
 
         joystick = PlayerUI.instance.joystick;
@@ -88,12 +81,16 @@ public class PlayerController : MonoBehaviour
             
             oldPosition = currentPosition;
         }
+
+        if(targetBlock != null){
+            float distance = Vector3.Distance(transform.position, targetBlock.transform.position);
+            if(distance >= 1.5f){
+                TargetSelector.instance.NullTargetPosition();
+                targetBlock = null;
+            }
+        }
     }
     [SerializeField] float viewOfDistance = 2f;
-    public void SetStopPoint(Vector2 position)
-    {
-        stopPoint = position;
-    }
     void FixedUpdate()
     {
         MovePlayer();
@@ -102,14 +99,34 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Rigidbody2D rb;
     void MovePlayer()
     {
-        //speed = movingSpeedCurve.Evaluate(currentTime);
+        float xDir = joystick.Direction.normalized.x;
         Vector2 movement = new Vector2(speed * joystick.Direction.x, speed * joystick.Direction.y);
         movement *= Time.deltaTime;
-
         rb.MovePosition(rb.position + movement);
+        FlipCharacter();
         
     }
 
+    void FlipCharacter(){
+        if(joystick.Direction.normalized.x == 0)
+            return;
+
+        bool oldFlip = playerSpriteRend.flipX;
+        bool flipCharacterX = joystick.Direction.normalized.x > 0;
+
+            playerSpriteRend.flipX = flipCharacterX;
+
+        if(oldFlip != flipCharacterX && !Inventory.instance.HandsEmpty())
+            FlipHandItem();
+    }
+    void FlipHandItem(){
+        //Flip item
+        //Flip attackPoint
+        Transform attackPoint = attackSystem.attackPoint;
+        attackPoint.localPosition = new Vector3(-attackPoint.localPosition.x, attackPoint.localPosition.y, attackPoint.localPosition.z);
+        Transform item = attackPoint.parent;
+        item.localPosition = new Vector3(-item.localPosition.x, item.localPosition.y, item.localPosition.z);
+    }
 
     Queue<IInteractable> interactItems = new Queue<IInteractable>();
     private IInteractable InteractItem {

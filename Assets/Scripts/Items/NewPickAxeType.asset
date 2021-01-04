@@ -16,8 +16,9 @@ MonoBehaviour:
   itemEffect: {fileID: 0}
   spawnChance: 0
   sprite: {fileID: 21300000, guid: ff79c85c192930546ad9c284c0f65fe6, type: 3}
-  spawnOffset: {x: 0, y: 0, z: 0}
-  spawnRotation: 0
+  spawnOffset: {x: 0.352, y: -0.099, z: 0}
+  spawnRotation: 82.366
+  isStackable: 0
   actions:
     isUsable: 0
     isEquipable: 1

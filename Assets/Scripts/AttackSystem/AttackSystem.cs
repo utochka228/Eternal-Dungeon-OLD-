@@ -4,6 +4,6 @@ using UnityEngine;
 
 public abstract class AttackSystem : MonoBehaviour
 {
-    public abstract void Attack();
+    public abstract void Attack(float damage);
     public abstract void Block();
 }

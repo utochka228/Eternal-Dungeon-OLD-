@@ -18,6 +18,7 @@ public class Block : MonoBehaviour, IDamageble
 
     public void TakeDamage(GameObject hitter, float damage)
     {
+        Debug.Log("Damaged");
         myBlock.Health -= damage;
         if (myBlock.Health <= 0)
             Die(hitter);

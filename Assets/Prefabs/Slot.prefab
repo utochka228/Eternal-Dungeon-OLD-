@@ -144,6 +144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stackCountText: {fileID: 6304290582127242568}
+  image: {fileID: 5295727687446193371}
 --- !u!1 &5526445731195246734
 GameObject:
   m_ObjectHideFlags: 0

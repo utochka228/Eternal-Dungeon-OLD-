@@ -45,5 +45,5 @@ public abstract class Item : ScriptableObject, IItem
 public class ItemActions {
     public bool isUsable;
     public bool isEquipable;
-
+    
 }

@@ -9,14 +9,13 @@ public class Slot : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI stackCountText;
     Stack<Item> itemStack = new Stack<Item>();
-    Image image;
+    [SerializeField] Image image;
     public bool IsEmpty() {return itemStack.Count == 0 ? true: false;}
         
     public Dictionary<string, UnityAction> itemActions = new Dictionary<string, UnityAction>();
     // Start is called before the first frame update
     void Start()
     {
-        image = GetComponent<Image>();
         stackCountText.gameObject.SetActive(false);
     }
 
@@ -108,6 +107,8 @@ public class Slot : MonoBehaviour
     public void EquipItem(){
         Debug.Log("Item equiped!");
         //Spawn item near of player
+        Item item = itemStack.Peek();
+        Inventory.instance.EquipItem(item);
         //Select slot in the inventory
     }
 

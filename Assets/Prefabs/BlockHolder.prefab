@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 966673773862146001}
   - component: {fileID: 718202968}
   - component: {fileID: 6761193938566046937}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: BlockHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockBase: {fileID: 11400000, guid: 45bfed62f0a107549bd3b5cec629c285, type: 2}
   spriteRend: {fileID: 6761193938566046937}
+  spawnExit: 0
 --- !u!61 &718202968
 BoxCollider2D:
   m_ObjectHideFlags: 0

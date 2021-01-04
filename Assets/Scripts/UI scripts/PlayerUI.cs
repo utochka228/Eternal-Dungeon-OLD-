@@ -13,6 +13,7 @@ public class PlayerUI : MonoBehaviour
 
     public FixedJoystick joystick;
     public Button interactButton;
+    public Button attackButton;
 
     public TextMeshProUGUI menuMoneyText;
     public TextMeshProUGUI storeMoneyText;

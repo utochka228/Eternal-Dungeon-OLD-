@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -56,10 +57,11 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         handle.pivot = center;
         handle.anchoredPosition = Vector2.zero;
     }
-
+    public Action OnPointerDownAction;
     public virtual void OnPointerDown(PointerEventData eventData)
     {
         OnDrag(eventData);
+        OnPointerDownAction?.Invoke();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -128,11 +130,12 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         }
         return 0;
     }
-
+    public Action OnPointerUpAction;
     public virtual void OnPointerUp(PointerEventData eventData)
     {
         input = Vector2.zero;
         handle.anchoredPosition = Vector2.zero;
+        OnPointerUpAction?.Invoke();
     }
 
     protected Vector2 ScreenPointToAnchoredPosition(Vector2 screenPosition)

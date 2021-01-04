@@ -15,6 +15,9 @@ public class Inventory : MonoBehaviour
         }
     }
     List<Slot> inventory = new List<Slot>();
+
+    Item playerHandItem;
+    [SerializeField] SpriteRenderer handSpriteHolder;
     private void Awake() {
         instance = this;
     }
@@ -26,6 +29,26 @@ public class Inventory : MonoBehaviour
         {
             AddSlot();
         }
+        PlayerUI.instance.attackButton.onClick.AddListener(UseHandItem);
+    }
+
+    //On click button
+    public void UseHandItem(){
+        if(playerHandItem != null){
+            playerHandItem.UseItem(transform);
+            Debug.Log("Invenotory -> UseHandItem()");
+        }
+    }
+
+    public void EquipItem(Item it){
+        playerHandItem = it;
+        handSpriteHolder.sprite = it.sprite;
+        handSpriteHolder.transform.localPosition = it.spawnOffset;
+        handSpriteHolder.transform.localRotation = Quaternion.Euler(0, 0, it.spawnRotation);
+    }
+
+    public bool HandsEmpty(){
+        return playerHandItem == null;
     }
 
     public bool itHasFreeSpace(){
