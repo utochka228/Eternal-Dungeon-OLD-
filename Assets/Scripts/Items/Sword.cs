@@ -5,9 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewSwordType", menuName = "CreateItem/Sword")]
 public class Sword : Item
 {
-    float damage = 2f;
-    float swordLength = 1f;
-    float speed = 0.1f;
+    [SerializeField] float damage = 2f;
+    [SerializeField] float swordLength = 1f;
+    [SerializeField] float speed = 0.1f;
 
     [HideInInspector] public bool isJabWeapon;
     [HideInInspector] public AnimationClip JabAnimation;
@@ -21,7 +21,7 @@ public class Sword : Item
 
         //Attack (AttackSystem)
         PlayerAttackSystem attackSystem = user.GetComponent<PlayerAttackSystem>();
-        attackSystem?.Attack(damage);
+        attackSystem?.Attack(damage, swordLength, "Sword");
     }
     
 }

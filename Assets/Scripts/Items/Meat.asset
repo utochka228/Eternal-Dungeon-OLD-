@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2a81e8b043fdcb4690e5045bf042126, type: 3}
   m_Name: Meat
   m_EditorClassIdentifier: 
+  atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
   name: Meat
   itemEffect: {fileID: 0}
   spawnChance: 0
-  sprite: {fileID: 21300000, guid: a49649fae78c7c1439222ab4a190acc0, type: 3}
+  itemWorldScale: 1
+  spriteName: 
   spawnOffset: {x: 0, y: 0, z: 0}
   spawnRotation: 0
   isStackable: 1

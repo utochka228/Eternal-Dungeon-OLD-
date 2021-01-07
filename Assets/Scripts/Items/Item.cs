@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.U2D;
 interface IItem
 {
     void Use(Transform user);
@@ -10,10 +10,15 @@ interface IItem
 
 public abstract class Item : ScriptableObject, IItem
 {
+    [SerializeField] SpriteAtlas atlas;
     public new string name;
     public GameObject itemEffect;
     public float spawnChance;
-    public Sprite sprite;
+    public float itemWorldScale = 1f;
+    [SerializeField] string spriteName;
+    public Sprite sprite {
+        get { return atlas.GetSprite(spriteName);}
+    }
     public Vector3 spawnOffset;
     public float spawnRotation = 0f;
     public bool isStackable;

@@ -10,6 +10,7 @@ public class InteractionWindow : MonoBehaviour
 
     [SerializeField] RectTransform windowRect;
     [SerializeField] Transform holder;
+    [SerializeField] Transform actions;
     [SerializeField] GameObject interactButtonPrefab;
     private void Awake() {
         instance = this;
@@ -20,7 +21,7 @@ public class InteractionWindow : MonoBehaviour
         foreach (var action in slot.itemActions)
         {
             string buttonName = action.Key;
-            GameObject button = Instantiate(interactButtonPrefab, holder);
+            GameObject button = Instantiate(interactButtonPrefab, actions);
             button.transform.name = buttonName + "Button";
             Button interactButton = button.GetComponent<Button>();
             interactButton.onClick.AddListener(action.Value);
@@ -39,9 +40,9 @@ public class InteractionWindow : MonoBehaviour
     }
 
     void ClearWindow(){
-        for (int i = 0; i < holder.childCount; i++)
+        for (int i = 0; i < actions.childCount; i++)
         {
-            Destroy(holder.GetChild(i).gameObject);
+            Destroy(actions.GetChild(i).gameObject);
         }
     }
 }

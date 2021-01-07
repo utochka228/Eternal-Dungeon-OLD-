@@ -46,8 +46,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockBase: {fileID: 11400000, guid: 45bfed62f0a107549bd3b5cec629c285, type: 2}
+  dropHolder: {fileID: 5384940029380194974, guid: a15b077fc05a4ed4f8df22d800186050,
+    type: 3}
   spriteRend: {fileID: 6761193938566046937}
   spawnExit: 0
+  minPickaxePower: 5
 --- !u!61 &718202968
 BoxCollider2D:
   m_ObjectHideFlags: 0

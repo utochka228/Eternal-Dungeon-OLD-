@@ -1,10 +1,34 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
+[System.Serializable]
+public struct MapStyle{
+	[SerializeField] Vector2Int[] ranges;
+	[SerializeField] string[] styles;
+	public string GetCurrentMapStyle(int level){
+		if(level > ranges[ranges.Length-1].y){
+			for (int i = 0; i < ranges.Length; i++)
+			{
+				ranges[i] =  new Vector2Int(ranges[i].x + ranges[ranges.Length-1].y, ranges[i].y + ranges[ranges.Length-1].y);
+			}
+		}
+		for (int i = 0; i < ranges.Length; i++)
+		{
+			int a = ranges[i].x;
+			int b = ranges[i].y;
 
+			if(level >= a && level <= b){
+				Debug.Log(styles[i]);
+				return styles[i];
+			}
+		}
+		return "ERROR";
+	}
+}
 public class GameMap : MonoBehaviour
 {
     public static GameMap GM;
@@ -37,15 +61,7 @@ public class GameMap : MonoBehaviour
     }
 
     public int minRoomSize, maxRoomSize;
-    public GameObject floorTile;
-    public GameObject corridorTile;
 
-    [Header("Enemies")]
-    public GameObject[] enemies;
-    [Header("Mechanisms")]
-    public GameObject[] mechs;
-    [Header("Props, traps, etc..")]
-    public GameObject[] props;
     #endregion
 
     #region PrivateVariables
@@ -55,12 +71,9 @@ public class GameMap : MonoBehaviour
 
     [SerializeField] float timeToRestoreCell = 5f;
 
-    [SerializeField]
-    GameObject fieldCell;
+	[SerializeField] MapStyle mapStyles;
 
-    [Header("Blocks")]
-    [SerializeField] GameObject blockBase;
-    [SerializeField] BlockBase[] blocks;
+	GameMapStyle myMapStyle;
     #endregion
 
     // Start is called before the first frame update
@@ -194,6 +207,7 @@ public class GameMap : MonoBehaviour
     //Генерация игрового поля 
     public string GenerateGameField(Vector2 mapSize, string seed = " ")
     {
+		myMapStyle = Resources.Load<GameMapStyle>(Path.Combine("MapStyles", mapStyles.GetCurrentMapStyle(GameTypeBase.instance.CurrentDungeonLevel)));
         GameMap.GM.MapSize = mapSize;
         #region Create_Field_Parents
         GameFieldParent = new GameObject("GameField");
@@ -225,7 +239,7 @@ public class GameMap : MonoBehaviour
             {
                 if(mapMask[x, y] == 0)
                 {
-                    GenerateFloorCell(x, y);
+                    SpawnGround(x, y);
 
 
                     if(GenerateGameCoords)
@@ -233,10 +247,6 @@ public class GameMap : MonoBehaviour
                 }
             }
         }
-        //DEELTE THIS
-        
-        ///////////
-            
         GenerateWalls();
         SpawnBlocks();
 
@@ -246,13 +256,14 @@ public class GameMap : MonoBehaviour
     }
 
     void SpawnProps(){
-
+		
     }
 
     public void SpawnExit(Vector3 position){
 
         PropHolder pHolder = Instantiate(propHolder, position, Quaternion.identity, GameFieldParent.transform).GetComponent<PropHolder>();
         pHolder.SetMyProp(Instantiate(tunnelProp));
+		Debug.Log("EXIT");
     }
 
     [SerializeField] float maxPercentageRoomBlocks = 0.6f;
@@ -271,14 +282,14 @@ public class GameMap : MonoBehaviour
             Coord tile = region[i];
             bool canSpawn = Random.Range(0, 2) == 1? true: false;
             if(canSpawn){
-                GameObject block = Instantiate(blockBase, new Vector3(tile.tileX, tile.tileY, 0f), Quaternion.identity, Blocks.transform);
+                GameObject block = Instantiate(myMapStyle.blockHolder, new Vector3(tile.tileX, tile.tileY, 0f), Quaternion.identity, Blocks.transform);
                 Block _block = block.GetComponent<Block>();
                 if(i == exitIndex){
                     _block.spawnExit = true;
                     Debug.Log($"Block coord:{tile.tileX} | {tile.tileY} has exit");
                 }
-                int index = Random.Range(0, blocks.Length);
-                _block.SetBlock(blocks[index]);
+                int index = Random.Range(0, myMapStyle.blocks.Length);
+                _block.SetBlock(myMapStyle.blocks[index]);
             }
         }
         
@@ -295,10 +306,12 @@ public class GameMap : MonoBehaviour
         return CellisAvialble(pos);
     }
 
-    void GenerateFloorCell(int x, int y){
+    void SpawnGround(int x, int y){
         Vector2 position = new Vector2(x, y);
-        GameObject instance = Instantiate(floorTile, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
-        GameMap.GM.gameField.Add(position, new Cell(instance, position));
+        GameObject instance = Instantiate(myMapStyle.groundPrefab, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
+        SpriteRenderer ground = instance.GetComponent<SpriteRenderer>();
+		ground.sprite = myMapStyle.GetGroundSprite(0);
+		GameMap.GM.gameField.Add(position, new Cell(instance, position));
         instance.transform.SetParent(Floor.transform);
     }
 
@@ -306,7 +319,6 @@ public class GameMap : MonoBehaviour
         PropHolder _pHolder = Instantiate(propHolder, Vector3.one, Quaternion.identity, GameFieldParent.transform).GetComponent<PropHolder>();
         _pHolder.SetMyProp(Instantiate(checkpointProp));
     }
-    [SerializeField] GameObject wall;
     void GenerateWalls()
     {
         List<Vector2> walls = new List<Vector2>();
@@ -322,7 +334,9 @@ public class GameMap : MonoBehaviour
 
                     if (!CellisAvialble(wpos))
                     {
-                        Transform _wall = Instantiate(wall).transform;
+                        Transform _wall = Instantiate(myMapStyle.wallPrefab).transform;
+						SpriteRenderer wall = _wall.GetComponent<SpriteRenderer>();
+						wall.sprite = myMapStyle.GetWallSprite(0);
                         _wall.position = new Vector3(wpos.x, wpos.y, 0f);
                         _wall.SetParent(Walls.transform);
                         walls.Add(wpos);

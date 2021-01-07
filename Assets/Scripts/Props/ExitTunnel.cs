@@ -8,5 +8,6 @@ public class ExitTunnel : Prop
     public override void UseProp(){
         IRelocation relocation = GameTypeBase.instance.transform.GetComponent<IRelocation>();
         relocation.ChangeLevel();
+        Debug.Log("EXITUSED");
     }
 }

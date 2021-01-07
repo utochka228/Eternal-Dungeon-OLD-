@@ -17,7 +17,7 @@ public class PropHolder : MonoBehaviour, IDamageble, IInteractable
 
     public void Interact()
     {
-        //myProp.UseProp();
+        myProp.UseProp();
     }
 
     public void TakeDamage(GameObject hitter, float damage)

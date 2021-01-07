@@ -104,28 +104,33 @@ public class PlayerController : MonoBehaviour
         movement *= Time.deltaTime;
         rb.MovePosition(rb.position + movement);
         FlipCharacter();
-        
+        FlipHandItem();
     }
 
     void FlipCharacter(){
         if(joystick.Direction.normalized.x == 0)
             return;
-
         bool oldFlip = playerSpriteRend.flipX;
         bool flipCharacterX = joystick.Direction.normalized.x > 0;
 
-            playerSpriteRend.flipX = flipCharacterX;
-
+        playerSpriteRend.flipX = flipCharacterX;
         if(oldFlip != flipCharacterX && !Inventory.instance.HandsEmpty())
-            FlipHandItem();
+            Inventory.instance.FlipXHandItem();
     }
+    public Vector2 attackPointPos;
     void FlipHandItem(){
-        //Flip item
-        //Flip attackPoint
-        Transform attackPoint = attackSystem.attackPoint;
-        attackPoint.localPosition = new Vector3(-attackPoint.localPosition.x, attackPoint.localPosition.y, attackPoint.localPosition.z);
-        Transform item = attackPoint.parent;
-        item.localPosition = new Vector3(-item.localPosition.x, item.localPosition.y, item.localPosition.z);
+        if(Inventory.instance.HandsEmpty())
+            return;
+        float xDir = joystick.Direction.normalized.x;
+        float yDir = joystick.Direction.normalized.y;
+
+        if(xDir == 0 && yDir == 0)
+            return;
+
+        if(Mathf.Abs(xDir) > Mathf.Abs(yDir))
+            attackPointPos = new Vector2(xDir, 0f);
+        else
+            attackPointPos = new Vector2(0f, yDir);
     }
 
     Queue<IInteractable> interactItems = new Queue<IInteractable>();

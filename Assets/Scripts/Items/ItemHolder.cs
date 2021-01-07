@@ -7,6 +7,8 @@ public class ItemHolder : MonoBehaviour, IInteractable
     [SerializeField] Item testItem; //Delete this
     Item myItem;
 
+    [SerializeField] SpriteRenderer sprite;
+
     void Start()
     {
         if(testItem != null)
@@ -22,10 +24,11 @@ public class ItemHolder : MonoBehaviour, IInteractable
     public void SetItem(Item newItem, bool isGameWorldItem){
         if(isGameWorldItem){
             myItem = newItem;
-            return;
         }else{
             myItem = Instantiate(newItem);
         }
+        sprite.sprite = myItem.sprite;
+        transform.localScale = new Vector3(myItem.itemWorldScale, myItem.itemWorldScale, 1f);
     }
 
     public void Interact()

@@ -18,6 +18,7 @@ public class Inventory : MonoBehaviour
 
     Item playerHandItem;
     [SerializeField] SpriteRenderer handSpriteHolder;
+    [SerializeField] SpriteRenderer playerSkin;
     private void Awake() {
         instance = this;
     }
@@ -40,11 +41,19 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    public void FlipXHandItem(){
+        Transform handItem = handSpriteHolder.transform;
+        handItem.localPosition = new Vector3(-handItem.localPosition.x, handItem.localPosition.y, handItem.localPosition.z);
+        handItem.localEulerAngles = new Vector3(handItem.localEulerAngles.x, handItem.localEulerAngles.y, -handItem.localEulerAngles.z);
+    }
+
     public void EquipItem(Item it){
         playerHandItem = it;
         handSpriteHolder.sprite = it.sprite;
         handSpriteHolder.transform.localPosition = it.spawnOffset;
         handSpriteHolder.transform.localRotation = Quaternion.Euler(0, 0, it.spawnRotation);
+        if(playerSkin.flipX)
+            FlipXHandItem();
     }
 
     public bool HandsEmpty(){

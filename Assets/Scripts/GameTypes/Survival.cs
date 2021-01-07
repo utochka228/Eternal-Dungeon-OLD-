@@ -23,9 +23,6 @@ public class Survival : GameTypeBase, IRelocation
 
     [SerializeField] GameObject exitForPlayer;
 
-    public int LastDungeonLevel = -1;
-    public int lastCheckPoint = -1;
-    public int CurrentDungeonLevel = -1;
 
     [SerializeField] int checkPointDistance = 5; //Distance from one c.p to second
 

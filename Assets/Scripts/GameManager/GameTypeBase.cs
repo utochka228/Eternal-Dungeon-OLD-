@@ -16,6 +16,10 @@ public abstract class GameTypeBase : MonoBehaviour, IResultMatch
     public int moneyTrophy;
     public float expirience = 5f;
 
+    public int LastDungeonLevel = -1;
+    public int lastCheckPoint = -1;
+    public int CurrentDungeonLevel = -1;
+
     public delegate void GameKillerHandler(GameObject killer);
     public event GameKillerHandler EnemyWasKilled;
     Action PlayerDied;
