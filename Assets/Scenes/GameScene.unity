@@ -2657,6 +2657,49 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 133691658}
   m_CullTransparentMesh: 0
+--- !u!1 &148497420
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 148497422}
+  - component: {fileID: 148497421}
+  m_Layer: 0
+  m_Name: SaveSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &148497421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 148497420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bba8839a25eb71d4fa8b25f5f5005953, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &148497422
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 148497420}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 34.509342, y: 4.074525, z: -2.8691406}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 23
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &180685174
 GameObject:
   m_ObjectHideFlags: 0
@@ -12593,12 +12636,11 @@ MonoBehaviour:
   maxRoomSize: 10
   timeToRestoreCell: 5
   mapStyles:
-    ranges:
-    - {x: 0, y: 1}
-    - {x: 2, y: 3}
     styles:
-    - Grass
-    - Stone
+    - range: {x: 0, y: 2}
+      styleName: Grass
+    - range: {x: 3, y: 5}
+      styleName: Stone
   coord: {fileID: 258102487568746176, guid: b160807bc5a475845b48a504ab8937f0, type: 3}
   tunnelProp: {fileID: 11400000, guid: a4b4e3d147789ab47bcb23d3253f0b4c, type: 2}
   checkpointProp: {fileID: 11400000, guid: 02ffd93a9c4d9884ba95bf94bd2e0654, type: 2}
@@ -14651,7 +14693,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b05efd06dfe7de84ba4e75171e23506f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myProp: {fileID: 0}
+  propBase: {fileID: 0}
+  sprite: {fileID: 0}
 --- !u!61 &762540654
 BoxCollider2D:
   m_ObjectHideFlags: 0

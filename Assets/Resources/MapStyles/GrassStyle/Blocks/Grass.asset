@@ -16,9 +16,11 @@ MonoBehaviour:
   spawnChance: 80
   drop:
     dropList:
-    - {fileID: 11400000, guid: 0e2a56528df05af4a96503ef0b3705b3, type: 2}
-    maxCount: 03000000
+    - drop: {fileID: 11400000, guid: a3c6e448e9b12704abe92d5849365a58, type: 2}
+      count: {x: 0, y: 1}
+    - drop: {fileID: 11400000, guid: 6de99b8a5b5c19349a7f7de9dc3b93e1, type: 2}
+      count: {x: 0, y: 1}
   blockSprite: GrassBlock
-  Health: 3
-  blockName: Stone
+  health: 10
+  hitCount: 1
   minPickaxePower: 10

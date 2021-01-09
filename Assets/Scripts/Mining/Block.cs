@@ -23,8 +23,8 @@ public class Block : MonoBehaviour, IDamageble
             return;
 
         Debug.Log("Damaged");
-        myBlock.Health -= damage;
-        if (myBlock.Health <= 0)
+        myBlock.health -= damage;
+        if (myBlock.health <= 0)
             Die(hitter);
     }
 
@@ -37,7 +37,7 @@ public class Block : MonoBehaviour, IDamageble
         for (int i = 0; i < myDrop.Length; i++)
         {
             var drop = myDrop[i];
-            int countOfDrop = Random.Range(0, drop.Item2+1);
+            int countOfDrop = Random.Range(drop.Item2.x, drop.Item2.y+1);
             for (int y = 0; y < countOfDrop; y++)
             {
                 GameObject dHolder = Instantiate(dropHolder, transform.position, Quaternion.identity) as GameObject;

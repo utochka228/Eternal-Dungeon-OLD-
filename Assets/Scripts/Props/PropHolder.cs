@@ -8,11 +8,18 @@ interface IInteractable
 }
 public class PropHolder : MonoBehaviour, IDamageble, IInteractable
 {
-    [SerializeField] Prop myProp;
-    
+    [SerializeField] Prop propBase;
+    Prop myProp;
+    [SerializeField] SpriteRenderer sprite;
+
+    private void Start() {
+        if(propBase != null)
+            SetMyProp(propBase);
+    }
 
     public void SetMyProp(Prop prop){
-        myProp = prop;
+        myProp = Instantiate(prop);
+        sprite.sprite = myProp.sprite;
     }
 
     public void Interact()
@@ -22,6 +29,9 @@ public class PropHolder : MonoBehaviour, IDamageble, IInteractable
 
     public void TakeDamage(GameObject hitter, float damage)
     {
+        if(myProp.destroyable == false)
+            return;
+
         myProp.Health -= damage;
         if(myProp.Health <= 0)
             Die(hitter);
@@ -32,18 +42,5 @@ public class PropHolder : MonoBehaviour, IDamageble, IInteractable
         //Do something
 
         Destroy(gameObject);
-    }
-
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

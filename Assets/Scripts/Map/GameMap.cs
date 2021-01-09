@@ -1,29 +1,35 @@
 using System;
 using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 [System.Serializable]
+public struct Style{
+	public Vector2Int range;
+	public string styleName;
+	
+}
+[System.Serializable]
 public struct MapStyle{
-	[SerializeField] Vector2Int[] ranges;
-	[SerializeField] string[] styles;
+	[SerializeField] Style[] styles;
 	public string GetCurrentMapStyle(int level){
-		if(level > ranges[ranges.Length-1].y){
-			for (int i = 0; i < ranges.Length; i++)
+		if(level > styles[styles.Length-1].range.y){
+			for (int i = 0; i < styles.Length; i++)
 			{
-				ranges[i] =  new Vector2Int(ranges[i].x + ranges[ranges.Length-1].y, ranges[i].y + ranges[ranges.Length-1].y);
+				styles[i].range =  new Vector2Int(styles[i].range.x + styles[styles.Length-1].range.y, styles[i].range.y + styles[styles.Length-1].range.y);
 			}
 		}
-		for (int i = 0; i < ranges.Length; i++)
+		for (int i = 0; i < styles.Length; i++)
 		{
-			int a = ranges[i].x;
-			int b = ranges[i].y;
+			int a = styles[i].range.x;
+			int b = styles[i].range.y;
 
 			if(level >= a && level <= b){
-				Debug.Log(styles[i]);
-				return styles[i];
+				Debug.Log(styles[i].styleName);
+				return styles[i].styleName;
 			}
 		}
 		return "ERROR";
@@ -232,7 +238,8 @@ public class GameMap : MonoBehaviour
 
         bool useRandomSeed = seed.Equals(" ") ? true : false;
         GenerateMap(useRandomSeed, seed);
-
+		
+		List<Vector2> groundMask = new List<Vector2>();
         for (int x = 0; x < xMapSize; x++)
         {
             for (int y = 0; y  <yMapSize; y++)
@@ -240,7 +247,7 @@ public class GameMap : MonoBehaviour
                 if(mapMask[x, y] == 0)
                 {
                     SpawnGround(x, y);
-
+					groundMask.Add(new Vector2(x, y));
 
                     if(GenerateGameCoords)
                         map[x, y] = GenerateAdditionalCoords(x, y, gameCoords.transform);
@@ -249,6 +256,10 @@ public class GameMap : MonoBehaviour
         }
         GenerateWalls();
         SpawnBlocks();
+		
+		Vector2 playerSpawn = groundMask[Random.Range(0, groundMask.Count)];
+		GameTypeBase.instance.SpawnPlayer(new Vector3(playerSpawn.x, playerSpawn.y, 0f));
+
 
         //grid.CreateGrid(map, MapSize);
 
@@ -262,7 +273,7 @@ public class GameMap : MonoBehaviour
     public void SpawnExit(Vector3 position){
 
         PropHolder pHolder = Instantiate(propHolder, position, Quaternion.identity, GameFieldParent.transform).GetComponent<PropHolder>();
-        pHolder.SetMyProp(Instantiate(tunnelProp));
+        pHolder.SetMyProp(tunnelProp);
 		Debug.Log("EXIT");
     }
 

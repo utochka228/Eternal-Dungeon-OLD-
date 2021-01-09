@@ -33,17 +33,13 @@ public class Survival : GameTypeBase, IRelocation
     new void Start()
     {
         base.Start();
-        ChangeLevel();
-    }
 
-    //void AddMoneyToPlayer(GameObject murderer)
-    //{
-    //    PlayerController player = murderer.GetComponent<PlayerController>();
-    //    if(player == GameManager.GM.players[0])
-    //    {
-    //        MenuManager.MG.money += 6;
-    //    }
-    //}
+        if(!PlayerPrefs.HasKey("Save"))
+            ChangeLevel();
+        else{
+            
+        }
+    }
 
     public override void AddEnemyDeath(GameObject murderer)
     {
@@ -58,12 +54,6 @@ public class Survival : GameTypeBase, IRelocation
     {
         //SpawnExit
         GameObject exit = Instantiate(exitForPlayer);
-    }
-
-    void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.E))
-            Player.GetComponent<PlayerStats>().RelocationEnergy += 10;
     }
 
     public void SetRelocationPanel(){

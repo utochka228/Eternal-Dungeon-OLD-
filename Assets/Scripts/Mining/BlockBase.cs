@@ -10,7 +10,8 @@ public class BlockBase : ScriptableObject
     public float spawnChance;
     public Drop drop;
     [SerializeField] string blockSprite;
-    public float Health = 3;
+    [HideInInspector] public float health;
+    [SerializeField] int hitCount = 1;
     public string BlockName{
         get{ return this.name;}
     }
@@ -20,21 +21,29 @@ public class BlockBase : ScriptableObject
         get { return atlas.GetSprite(blockSprite);}
     }
 
+    private void OnEnable() {
+        health = minPickaxePower * hitCount;
+    }
+
 }
 [System.Serializable]
 public struct Drop{
-    [SerializeField] Item[] dropList;
-    [SerializeField] int[] maxCount;
-    public (Item, int) this[int index]
+    [SerializeField] DropElement[] dropList;
+    public (Item, Vector2Int) this[int index]
     {
         get { 
             if(index < 0 || index >= dropList.Length)
-                return (null, 0);
-            return (dropList[index], maxCount[index]);
+                return (null, Vector2Int.zero);
+            return (dropList[index].drop, dropList[index].count);
         }
     }
 
     public int Length {
         get { return dropList.Length;}
     }
+}
+[System.Serializable]
+public struct DropElement{
+    public Item drop;
+    public Vector2Int count;
 }

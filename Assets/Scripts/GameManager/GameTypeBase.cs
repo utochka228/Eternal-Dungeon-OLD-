@@ -51,7 +51,6 @@ public abstract class GameTypeBase : MonoBehaviour, IResultMatch
     {
         PlayerDied += PlayerLostMatch;
         EnemyWasKilled += AddEnemyDeath;
-        SpawnPlayer();
     }
     
     protected virtual void PlayerLostMatch()
@@ -65,15 +64,23 @@ public abstract class GameTypeBase : MonoBehaviour, IResultMatch
         Result();
     }
 
-    void SpawnPlayer()
+    public void SpawnPlayer(Vector3 position)
     {
+        if(Player != null){
+            Player.transform.position = position;
+            return;
+        }
+
         GameObject player = Instantiate(playerPrefab);
-        player.transform.position = new Vector3(3, 9, 0);
+        player.transform.position = position;
         Player = player.GetComponent<PlayerController>();
 
         GameObject[] playerTarget = new GameObject[1];
         playerTarget[0] = player;
         CameraMultiTarget.instance.SetTargets(playerTarget);
+    }
+    public void DestroyPlayer(){
+
     }
 
     public virtual void Result()

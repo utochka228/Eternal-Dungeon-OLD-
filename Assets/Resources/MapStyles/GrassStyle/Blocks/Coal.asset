@@ -16,8 +16,9 @@ MonoBehaviour:
   spawnChance: 10
   drop:
     dropList:
-    - {fileID: 11400000, guid: e848e115eecd168419fd51366b8be6e3, type: 2}
-    maxCount: 03000000
+    - drop: {fileID: 11400000, guid: e848e115eecd168419fd51366b8be6e3, type: 2}
+      count: {x: 1, y: 3}
   blockSprite: Coal
-  Health: 10
+  health: 50
+  hitCount: 5
   minPickaxePower: 10

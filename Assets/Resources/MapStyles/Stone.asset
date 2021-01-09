@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f74818ac45288e946aa7e8d7b077bf4d, type: 3}
   m_Name: Stone
   m_EditorClassIdentifier: 
-  atlas: {fileID: 0}
+  atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
   groundPrefab: {fileID: 2799625170418257773, guid: d1cb0bf03e57efe41a0a2cdd3b6dec08,
     type: 3}
   ground:
