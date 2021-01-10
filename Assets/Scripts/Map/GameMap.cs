@@ -6,6 +6,7 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
+
 [System.Serializable]
 public struct Style{
 	public Vector2Int range;
@@ -35,12 +36,24 @@ public struct MapStyle{
 		return "ERROR";
 	}
 }
+[System.Serializable]
+public struct MapSize{
+
+    public Vector2 Size;
+    public int xMapSize
+    {
+        get{return Mathf.RoundToInt(Size.x);}
+    }
+    public int yMapSize
+    {
+        get{return Mathf.RoundToInt(Size.y);}
+    }
+}
 public class GameMap : MonoBehaviour
 {
     public static GameMap GM;
 
-    #region PublicVariables
-
+	public Relocation relocation;
     public GameObject GameFieldParent { get; private set; }
     public GameObject Corridors { get; private set; }
     public GameObject Walls { get; private set; }
@@ -49,50 +62,17 @@ public class GameMap : MonoBehaviour
     public GameObject Blocks { get; private set; }
     public Dictionary<Vector2, Cell> gameField = new Dictionary<Vector2, Cell>();
     public Grid grid;
-    public Vector2 MapSize { private get; set; }
-
-    public int xMapSize
-    {
-        get
-        {
-            return Mathf.RoundToInt(MapSize.x);
-        }
-    }
-    public int yMapSize
-    {
-        get
-        {
-            return Mathf.RoundToInt(MapSize.y);
-        }
-    }
-
-    public int minRoomSize, maxRoomSize;
-
-    #endregion
-
-    #region PrivateVariables
-
-    Queue<Cell[]> destroyedCells = new Queue<Cell[]>();
-    Queue<Coroutine> coroutines = new Queue<Coroutine>();
-
-    [SerializeField] float timeToRestoreCell = 5f;
-
+	
+	public MapSize mapSize;
 	[SerializeField] MapStyle mapStyles;
 
 	GameMapStyle myMapStyle;
-    #endregion
 
-    // Start is called before the first frame update
     void Awake()
     {
         GM = this;
     }
 
-    /// <summary>
-    /// Check existing of cell at argument position
-    /// </summary>
-    /// <param name="cellPos"></param>
-    /// <returns></returns>
     public bool CellisAvialble(Vector2 cellPos)
     {
         Cell cell;
@@ -112,34 +92,6 @@ public class GameMap : MonoBehaviour
         gameField.Remove(cellPos);
     }
 
-    public void DestroyMapCells(Cell[] cells)
-    {
-        foreach (var cell in cells)
-        {
-            cell.isObstacle = true;
-            cell.cellObject.SetActive(false);
-        }
-        destroyedCells.Enqueue(cells);
-        Coroutine coroutine = StartCoroutine(WaitAndRestore());
-        coroutines.Enqueue(coroutine);
-    }
-
-    IEnumerator WaitAndRestore()
-    {
-        yield return new WaitForSeconds(timeToRestoreCell);
-        RestoreMapCells();
-    }
-
-    void RestoreMapCells()
-    {
-        foreach (var cell in destroyedCells.Dequeue())
-        {
-            cell.isObstacle = false;
-            cell.cellObject.SetActive(true);
-        }
-        StopCoroutine(coroutines.Dequeue());
-    }
-
     private Vector2 randomPos;
 
     public Vector2 RandomizePosionOnMap()
@@ -156,7 +108,7 @@ public class GameMap : MonoBehaviour
 
         while (positionNotFound)
         {
-            position = new Vector2(Random.Range(0, xMapSize), Random.Range(0, yMapSize));
+            position = new Vector2(Random.Range(0, mapSize.xMapSize), Random.Range(0, mapSize.yMapSize));
 
             if (GameMap.GM.CellisAvialble(position))
             {
@@ -174,9 +126,9 @@ public class GameMap : MonoBehaviour
         int length = 0;
 
         if (Mathf.Abs(dir.y) > 0)
-            length = yMapSize;
+            length = mapSize.yMapSize;
         else if (Mathf.Abs(dir.x) > 0)
-            length = xMapSize;
+            length = mapSize.xMapSize;
 
         Vector2 position = startPosition;
         Vector2 stopPoint;
@@ -211,10 +163,9 @@ public class GameMap : MonoBehaviour
 
     [SerializeField] bool GenerateGameCoords;
     //Генерация игрового поля 
-    public string GenerateGameField(Vector2 mapSize, string seed = " ")
+    public string GenerateGameField(string seed = " ")
     {
-		myMapStyle = Resources.Load<GameMapStyle>(Path.Combine("MapStyles", mapStyles.GetCurrentMapStyle(GameTypeBase.instance.CurrentDungeonLevel)));
-        GameMap.GM.MapSize = mapSize;
+		myMapStyle = Resources.Load<GameMapStyle>(Path.Combine("MapStyles", mapStyles.GetCurrentMapStyle(relocation.CurrentDungeonLevel)));
         #region Create_Field_Parents
         GameFieldParent = new GameObject("GameField");
         Corridors = new GameObject("Corridors");
@@ -231,7 +182,7 @@ public class GameMap : MonoBehaviour
         bool[,] map = new bool[0, 0];
         GameObject gameCoords = null;
         if(GenerateGameCoords){
-            map = new bool[xMapSize, yMapSize];
+            map = new bool[mapSize.xMapSize, mapSize.yMapSize];
             gameCoords = new GameObject("GameCoords");
             gameCoords.SetActive(false);
         }
@@ -240,9 +191,9 @@ public class GameMap : MonoBehaviour
         GenerateMap(useRandomSeed, seed);
 		
 		List<Vector2> groundMask = new List<Vector2>();
-        for (int x = 0; x < xMapSize; x++)
+        for (int x = 0; x < mapSize.xMapSize; x++)
         {
-            for (int y = 0; y  <yMapSize; y++)
+            for (int y = 0; y  <mapSize.yMapSize; y++)
             {
                 if(mapMask[x, y] == 0)
                 {
@@ -257,8 +208,11 @@ public class GameMap : MonoBehaviour
         GenerateWalls();
         SpawnBlocks();
 		
-		Vector2 playerSpawn = groundMask[Random.Range(0, groundMask.Count)];
-		GameTypeBase.instance.SpawnPlayer(new Vector3(playerSpawn.x, playerSpawn.y, 0f));
+		Debug.Log("groundMask.Count" + groundMask.Count);
+		int random = Random.Range(0, groundMask.Count);
+		Debug.Log("random" + random);
+		Vector2 playerSpawn = groundMask[random];
+		GameSession.instance.SpawnPlayer(new Vector3(playerSpawn.x, playerSpawn.y, 0f));
 
 
         //grid.CreateGrid(map, MapSize);

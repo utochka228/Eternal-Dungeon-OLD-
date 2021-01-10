@@ -7,6 +7,10 @@ using UnityEngine.UI;
 public class PlayerUI : MonoBehaviour
 {
     public static PlayerUI instance;
+    public GameObject menuCanvas;
+    public GameObject gameCanvas;
+    public GameObject pauseMenu;
+    public GameObject congratulations;
 
     [SerializeField]
     public TextMeshProUGUI playerHealth;

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -56,7 +56,6 @@ public class PlayerStats : Stats
     protected override void Dying(GameObject murderer)
     {
         Debug.Log(myController.transform.name + " was killed by " + murderer.name);
-        GameTypeBase.instance.CallPlayerDieEvent();
         Destroy(myController.gameObject);
     }
 

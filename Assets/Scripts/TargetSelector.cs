@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -65,7 +65,7 @@ public class TargetSelector : MonoBehaviour
 
                     ShowSelectedInfo(hit.transform);
                 } else{
-                    PlayerController player = GameTypeBase.instance.Player;
+                    PlayerController player = GameSession.instance.Player;
                     if(player.targetBlock != null)
                         player.targetBlock = null;
                         
@@ -120,7 +120,7 @@ public class TargetSelector : MonoBehaviour
         }
 
         Block block = selectedObject.GetComponent<Block>();
-        PlayerController player = GameTypeBase.instance.Player;
+        PlayerController player = GameSession.instance.Player;
         Vector2 playerPos = new Vector2(player.transform.position.x, 
         player.transform.position.y);
         Vector2 selectedPos = new Vector2(selectedObject.transform.position.x, 

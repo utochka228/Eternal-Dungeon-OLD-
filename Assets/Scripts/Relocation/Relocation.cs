@@ -10,52 +10,14 @@ interface IRelocation{
     void RelocateToCheckPoint(int indexPoint, int energyForReloc);
     void ChangeLevel();
 }
-public class Survival : GameTypeBase, IRelocation
+public class Relocation : MonoBehaviour, IRelocation
 {
-    [SerializeField]
-    private float spawningItemsDelay = 3f;
-
-    [SerializeField]
-    private GameObject enemyPrefab;
-
-    [SerializeField]
-    private GameObject[] itemsArray;
-
-    [SerializeField] GameObject exitForPlayer;
-
-
+    public int LastDungeonLevel = -1;
+    public int lastCheckPoint = -1;
+    public int CurrentDungeonLevel = -1;
     [SerializeField] int checkPointDistance = 5; //Distance from one c.p to second
-
     List<CheckPoint> checkPoints = new List<CheckPoint>();
-
     Dictionary<int, string> levelSeeds = new Dictionary<int, string>();
-
-    new void Start()
-    {
-        base.Start();
-
-        if(!PlayerPrefs.HasKey("Save"))
-            ChangeLevel();
-        else{
-            
-        }
-    }
-
-    public override void AddEnemyDeath(GameObject murderer)
-    {
-        base.AddEnemyDeath(murderer);
-        if(countOfKilledEnemies >= enemiesCount)
-        {
-            SpawnExitForPlayer();
-        }
-    }
-
-    void SpawnExitForPlayer()
-    {
-        //SpawnExit
-        GameObject exit = Instantiate(exitForPlayer);
-    }
-
     public void SetRelocationPanel(){
         Transform relocationPanel = PlayerUI.instance.relocationPanel.transform;
         //Activate panel
@@ -89,7 +51,7 @@ public class Survival : GameTypeBase, IRelocation
             }
             neccessertEnergyText.text = energyForRelocation.ToString();
             
-            PlayerStats stats = Player.GetComponent<PlayerStats>();
+            PlayerStats stats = GameSession.instance.Player.GetComponent<PlayerStats>();
             if(stats.RelocationEnergy < energyForRelocation){
                 button.interactable = false;
             }
@@ -125,7 +87,7 @@ public class Survival : GameTypeBase, IRelocation
         CurrentDungeonLevel++;
         LastDungeonLevel++;
         GameMap.GM.DestroyGameField();
-        string seed = GameMap.GM.GenerateGameField(mapSize);
+        string seed = GameMap.GM.GenerateGameField();
         if(CurrentDungeonLevel == 0 || CurrentDungeonLevel == lastCheckPoint + checkPointDistance){
             CheckPoint checkPoint = new CheckPoint(CurrentDungeonLevel, ref lastCheckPoint, checkPoints);
         }
@@ -136,7 +98,7 @@ public class Survival : GameTypeBase, IRelocation
         CurrentDungeonLevel++;
         GameMap.GM.DestroyGameField();
         string seed = levelSeeds[CurrentDungeonLevel];
-        GameMap.GM.GenerateGameField(mapSize, seed);
+        GameMap.GM.GenerateGameField(seed);
         try{
             CheckPoint point = checkPoints.Single(x => x.level == CurrentDungeonLevel);
             GameMap.GM.SpawnCheckPointProp();
@@ -150,8 +112,8 @@ public class Survival : GameTypeBase, IRelocation
         
         GameMap.GM.DestroyGameField();
         string seed = levelSeeds[neccesseryLevel];
-        GameMap.GM.GenerateGameField(mapSize, seed);
-        Player.GetComponent<PlayerStats>().RelocationEnergy -= energyForReloc;
+        GameMap.GM.GenerateGameField(seed);
+        GameSession.instance.Player.GetComponent<PlayerStats>().RelocationEnergy -= energyForReloc;
         CurrentDungeonLevel = neccesseryLevel;
 
         Transform relocationPanel = PlayerUI.instance.relocationPanel.transform;
@@ -163,30 +125,4 @@ public class Survival : GameTypeBase, IRelocation
         }
        relocationPanel.gameObject.SetActive(false);
     } 
-
-    public override void SpawnEnemy(GameObject enemy)
-    {
-        base.SpawnEnemy(enemy);
-        Transform enemyTransform = Instantiate(enemy).transform;
-        Vector2 randPos = GameMap.GM.RandomizePosionOnMap();
-        enemyTransform.position = new Vector3(randPos.x, randPos.y, 0f);
-    }
-    public override void SpawnEnemy(Vector2 position)
-    {
-        base.SpawnEnemy(position);
-        Transform enemyTransform = Instantiate(enemyPrefab).transform;
-        enemyTransform.position = new Vector3(position.x, position.y, 0f);
-    }
-    
-    public override void Result()
-    {
-        moneyTrophy += countOfKilledEnemies;
-
-        base.Result();
-    }
-
-    public override void OnMatchStarted()
-    {
-        Debug.Log("Match Started!");
-    }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +51,7 @@ public class Enemy : MonoBehaviour
     protected void Start()
     {
         oldPosition = currentPosition;
-        target = GameTypeBase.instance.Player.transform;
+        target = GameSession.instance.Player.transform;
     }
 
     void DestroyGameObject()
@@ -61,7 +61,7 @@ public class Enemy : MonoBehaviour
 
     void OnDestroy()
     {
-        GameType.instance.MatchEnded -= DestroyGameObject;
+        GameActions.instance.MatchEnded -= DestroyGameObject;
     }
 
 

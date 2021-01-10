@@ -18,16 +18,14 @@ public class PlayerInfo : MonoBehaviour
 
     public int Level
     {
-        get
-        {
-            return lvl;
-        }
+        get{return lvl;}
+            
         set
         {
             if (value >= 0)
             {
                 lvl = value;
-                MenuPresenter.instance.congratulations.SetActive(true);
+                PlayerUI.instance.congratulations.SetActive(true);
                 PlayerUI.instance.lvlText.text = lvl.ToString();
             }
         }

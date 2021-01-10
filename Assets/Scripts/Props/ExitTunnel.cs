@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +6,7 @@ using UnityEngine;
 public class ExitTunnel : Prop
 {
     public override void UseProp(){
-        IRelocation relocation = GameTypeBase.instance.transform.GetComponent<IRelocation>();
+        Relocation relocation = GameMap.GM.relocation;
         relocation.ChangeLevel();
         Debug.Log("EXITUSED");
     }

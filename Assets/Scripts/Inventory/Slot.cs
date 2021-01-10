@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -78,7 +78,7 @@ public class Slot : MonoBehaviour
         Item item = itemStack.Peek();
         item.Count = count;
         holder.SetItem(item, true);
-        Transform player = GameTypeBase.instance.Player.transform;
+        Transform player = GameSession.instance.Player.transform;
         itemHolder.transform.position = player.transform.position;
 
         Remove(count);
@@ -97,7 +97,7 @@ public class Slot : MonoBehaviour
     public void UseItem(){
         Debug.Log("Item used!");
         Item item = itemStack.Peek();
-        Transform player = GameTypeBase.instance.Player.transform;
+        Transform player = GameSession.instance.Player.transform;
         item.UseItem(player);
 
         Remove();

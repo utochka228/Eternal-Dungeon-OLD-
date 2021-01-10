@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,10 +7,8 @@ public class EnemyStats : Stats
     public Enemy myEnemy;
     public override float Health
     {
-        get
-        {
-            return health;
-        }
+        get{return health;}
+            
         set
         {
             if (value >= 0)
@@ -26,7 +24,6 @@ public class EnemyStats : Stats
 
     protected override void Dying(GameObject murderer)
     {
-        GameTypeBase.instance.CallEnemyKilledEvent(murderer);
         DropLoot();
         Destroy(myEnemy.gameObject);
     }

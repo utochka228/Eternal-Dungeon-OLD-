@@ -1,55 +1,22 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-
 public class MenuPresenter : MonoBehaviour
 {
     public static MenuPresenter instance;
 
-    #region PublicVariables
-    
-    #endregion
-
-    #region PrivateVariables
-
-    [SerializeField]
-    private int menuIndex;
-
-    [SerializeField]
-    private GameObject[] gamePanels;
-
-    [SerializeField]
-    private GameObject activePanel;
-    [SerializeField]
-    private GameObject menuCanvas;
-    public GameObject gameCanvas;
-    [SerializeField]
-    private ParticleSystem starsEffect;
-    
-    [SerializeField]
-    private GameObject pauseMenu;
-    
-    [SerializeField]
-    private GameObject countDownPrefab;
-
-    
-    public GameObject congratulations;
+    [SerializeField] int menuIndex;
+    [SerializeField] GameObject[] gamePanels;
+    [SerializeField] GameObject activePanel;
 
 
-    #endregion
-       void Awake()
+    void Awake()
     {
         instance = this;
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-            PlayerInfo.PI.Expirience += 5f;
     }
 
     public void ActivatePanel(int index)
@@ -61,12 +28,10 @@ public class MenuPresenter : MonoBehaviour
         if(index == menuIndex)
         {
             //Activate
-            starsEffect.Play();
         }
         else
         {
             //Deactivate
-            starsEffect.Stop();
         }
     }
 
@@ -80,49 +45,25 @@ public class MenuPresenter : MonoBehaviour
 
     public void HideOtherUI()
     {
-        if (menuCanvas.activeSelf)
+        PlayerUI UI = PlayerUI.instance;
+        if (UI.menuCanvas.activeSelf)
         {
-            menuCanvas.SetActive(false);
-
-            starsEffect.Stop();
-
-            if(GameLoader.GL != null)
-                Destroy(GameLoader.GL.gameObject, 4f);
+            UI.menuCanvas.SetActive(false);
+            UI.gameCanvas.SetActive(true);
 
             return;
         }
-        if (gameCanvas.activeSelf)
+        if (UI.gameCanvas.activeSelf)
         {
             Time.timeScale = 1f;
-            menuCanvas.SetActive(true);
+            UI.menuCanvas.SetActive(true);
 
-            if(pauseMenu.activeSelf)
-                pauseMenu.SetActive(false);
+            if(UI.pauseMenu.activeSelf)
+                UI.pauseMenu.SetActive(false);
 
-
-            starsEffect.Play();
-
-            gameCanvas.SetActive(false);
+            UI.gameCanvas.SetActive(false);
             return;
         }
-    }
-
-   
-
-   
-
-    public void SpawnCountDown()
-    {
-        GameObject obj = Instantiate(countDownPrefab, gameCanvas.transform);
-        StartCoroutine(WaitSecondsAfterGameLoader(obj));
-    }
-
-    IEnumerator WaitSecondsAfterGameLoader(GameObject countDownPrefab)
-    {
-        yield return new WaitForSecondsRealtime(4f);
-        Destroy(countDownPrefab);
-        SetTimeScaleToNormal();
-        GameTypeBase.instance.OnMatchStarted();
     }
 
     public void SetTimeScaleToNormal()
@@ -138,12 +79,11 @@ public class MenuPresenter : MonoBehaviour
     public void PauseGame()
     {
         Time.timeScale = 0f;
-        pauseMenu.SetActive(true);
-
+        PlayerUI.instance.pauseMenu.SetActive(true);
     }
     public void ResumeGame()
     {
         Time.timeScale = 1f;
-        pauseMenu.SetActive(false);
+        PlayerUI.instance.pauseMenu.SetActive(false);
     }
 }

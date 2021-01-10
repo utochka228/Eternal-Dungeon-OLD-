@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ public class PlayerAttackSystem : AttackSystem
 
     public override void Attack(float damage, float weaponLength, string weaponType)
     {
-        Vector2 attackPos = GameTypeBase.instance.Player.attackPointPos;
+        Vector2 attackPos = GameSession.instance.Player.attackPointPos;
         attackPos *= weaponLength;
         attackPos /= 2f;
         attackPoint.localPosition = new Vector3(attackPos.x, attackPos.y, attackPoint.localPosition.z);
