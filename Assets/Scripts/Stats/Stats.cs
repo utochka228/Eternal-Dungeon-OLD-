@@ -18,6 +18,11 @@ public abstract class Stats : MonoBehaviour, IDamageble
         Dying(murderer);
     }
 
+    private void Update() {
+        if(Input.GetKeyDown(KeyCode.L))
+            Dying(gameObject);
+    }
+
     public void TakeDamage(GameObject hitter, float damage)
     {
         TakingDamage(hitter);

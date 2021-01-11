@@ -10,6 +10,29 @@ interface IRelocation{
     void RelocateToCheckPoint(int indexPoint, int energyForReloc);
     void ChangeLevel();
 }
+[System.Serializable]
+public struct CheckPoint{
+        public int level {get; private set;}
+
+        public CheckPoint(int currentLevel, ref int lastCheckPoint, in List<CheckPoint> checkPoints)
+        {
+            level = currentLevel;
+            lastCheckPoint = currentLevel;
+            checkPoints.Add(this);
+        }
+
+        public int GetCheckPointLevel() {return level;}
+}
+[System.Serializable]
+public struct LevelSeed{
+    public int level;
+    public string seed;
+    public LevelSeed(int _level, string _seed)
+    {
+        level = _level;
+        seed = _seed;
+    }
+}
 public class Relocation : MonoBehaviour, IRelocation
 {
     public int LastDungeonLevel = -1;
@@ -17,8 +40,43 @@ public class Relocation : MonoBehaviour, IRelocation
     public int CurrentDungeonLevel = -1;
     [SerializeField] int checkPointDistance = 5; //Distance from one c.p to second
     List<CheckPoint> checkPoints = new List<CheckPoint>();
-    Dictionary<int, string> levelSeeds = new Dictionary<int, string>();
+    List<LevelSeed> levelSeeds = new List<LevelSeed>();
+
+    private void Start() {
+        SaveSystem.instance.OnSave += SaveData;
+
+        if(PlayerPrefs.HasKey("Save"))
+            LoadRelocationData();
+    }
+
+    void SaveData(){
+        MapSaves mapSaves = SaveSystem.instance.saves.mapSaves;
+        mapSaves.lastCheckPoint = lastCheckPoint;
+        mapSaves.LastDungeonLevel = LastDungeonLevel;
+        mapSaves.checkPoints = new List<CheckPoint>(checkPoints);
+        mapSaves.seeds = new List<LevelSeed>(levelSeeds);
+        for (int i = CurrentDungeonLevel; i >= 0; i--)
+        {
+            bool success = checkPoints.Any(x => x.level == i);
+            if(success){
+                mapSaves.CurrentDungeonLevel =  i;
+                Debug.Log("ClosesSaveZone ==" + i);
+                break;
+            }
+        }
+    }
+    [ContextMenu("LoadRelocationData")]
+    void LoadRelocationData(){
+        MapSaves mapSaves = SaveSystem.instance.saves.mapSaves;
+        CurrentDungeonLevel = mapSaves.CurrentDungeonLevel;
+        lastCheckPoint = mapSaves.lastCheckPoint;
+        LastDungeonLevel = mapSaves.LastDungeonLevel;
+        checkPoints = new List<CheckPoint>(mapSaves.checkPoints);
+        levelSeeds = new List<LevelSeed>(mapSaves.seeds);
+    }
+
     public void SetRelocationPanel(){
+        Transform relocationHolder = PlayerUI.instance.relocationHolder.transform;
         Transform relocationPanel = PlayerUI.instance.relocationPanel.transform;
         //Activate panel
         relocationPanel.gameObject.SetActive(true);
@@ -30,7 +88,7 @@ public class Relocation : MonoBehaviour, IRelocation
             int pointLevel = point.GetCheckPointLevel();
             GameObject buttonPrefab = PlayerUI.instance.relocationButton;
             GameObject _button = Instantiate(buttonPrefab, buttonPrefab.transform.position, 
-                                                    Quaternion.identity, relocationPanel);
+                                                    Quaternion.identity, relocationHolder);
             Button button = _button.GetComponent<Button>();
             int energyForRelocation = 0;
             if(CurrentDungeonLevel > pointLevel)
@@ -58,19 +116,7 @@ public class Relocation : MonoBehaviour, IRelocation
         }
     }
 
-    struct CheckPoint{
-        public int level {get; private set;}
-
-        public CheckPoint(int currentLevel, ref int lastCheckPoint, in List<CheckPoint> checkPoints)
-        {
-            level = currentLevel;
-            lastCheckPoint = currentLevel;
-            checkPoints.Add(this);
-            GameMap.GM.SpawnCheckPointProp();
-        }
-
-        public int GetCheckPointLevel() {return level;}
-    }
+    
     //Called after creating new level
     public void ChangeLevel(){
         
@@ -83,22 +129,33 @@ public class Relocation : MonoBehaviour, IRelocation
         }
         
     }
+    public void CreateSavedLevel(){
+        string seed = levelSeeds.Single(x => x.level == CurrentDungeonLevel).seed;
+        GameMap.GM.GenerateGameField(seed);
+        SpawnCheckPoint();
+        Debug.Log("CreatedSavedLevel!");
+    }
     void CreateLevel(){
         CurrentDungeonLevel++;
         LastDungeonLevel++;
         GameMap.GM.DestroyGameField();
         string seed = GameMap.GM.GenerateGameField();
+        levelSeeds.Add(new LevelSeed(CurrentDungeonLevel, seed));
         if(CurrentDungeonLevel == 0 || CurrentDungeonLevel == lastCheckPoint + checkPointDistance){
             CheckPoint checkPoint = new CheckPoint(CurrentDungeonLevel, ref lastCheckPoint, checkPoints);
         }
-
-        levelSeeds.Add(CurrentDungeonLevel, seed);
+        SpawnCheckPoint();
+        Debug.Log("Level Created!");
     }
     void RelocateToNext(){
         CurrentDungeonLevel++;
         GameMap.GM.DestroyGameField();
-        string seed = levelSeeds[CurrentDungeonLevel];
+        LevelSeed lSeed = levelSeeds.Single(x => x.level == CurrentDungeonLevel);
+        string seed = lSeed.seed;
         GameMap.GM.GenerateGameField(seed);
+        SpawnCheckPoint();
+    }
+    void SpawnCheckPoint(){
         try{
             CheckPoint point = checkPoints.Single(x => x.level == CurrentDungeonLevel);
             GameMap.GM.SpawnCheckPointProp();
@@ -106,23 +163,30 @@ public class Relocation : MonoBehaviour, IRelocation
             //Do nothing
         }
     }
-
     public void RelocateToCheckPoint(int indexPoint, int energyForReloc){
         int neccesseryLevel = checkPoints[indexPoint].GetCheckPointLevel();
         
         GameMap.GM.DestroyGameField();
-        string seed = levelSeeds[neccesseryLevel];
+        LevelSeed lSeed = levelSeeds.Single(x => x.level == neccesseryLevel);
+        string seed = lSeed.seed;
         GameMap.GM.GenerateGameField(seed);
         GameSession.instance.Player.GetComponent<PlayerStats>().RelocationEnergy -= energyForReloc;
         CurrentDungeonLevel = neccesseryLevel;
+        SpawnCheckPoint();
 
+        ClearRelocPanel();
         Transform relocationPanel = PlayerUI.instance.relocationPanel.transform;
-        int childCount = relocationPanel.childCount;
+        relocationPanel.gameObject.SetActive(false);
+
+    } 
+
+    public void ClearRelocPanel(){
+        Transform relocationHolder = PlayerUI.instance.relocationHolder.transform;
+        int childCount = relocationHolder.childCount;
         //Clear panel
         for (int i = 0; i < childCount; i++)
         {
-            Destroy(relocationPanel.GetChild(i).gameObject);
+            Destroy(relocationHolder.GetChild(i).gameObject);
         }
-       relocationPanel.gameObject.SetActive(false);
-    } 
+    }
 }

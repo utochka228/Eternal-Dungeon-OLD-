@@ -1,40 +1,47 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SaveSystem : MonoBehaviour
 {
     public static SaveSystem instance;
-    Saves sv = new Saves();
+    public Saves saves = new Saves();
+
+    public Action OnSave;
 
     private void Awake() {
         instance = this;
+        LoadSave();
+
     }
 
     void Start()
     {
-        LoadSave();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    [ContextMenu("DeletePrefs")]
+    void DeletePrefs(){
+        PlayerPrefs.DeleteKey("Save");
     }
-
+    [ContextMenu("Save")]
     public void Save(){
-        #if UNITY_ANDROID
- 
-        #endif
-        #if UNITY_EDITOR
-
-        #endif
+        OnSave?.Invoke();
+        PlayerPrefs.SetString("Save", JsonUtility.ToJson(saves));
+    }
+    [ContextMenu("CheckNull")]
+    void CheckNull(){
+        bool b = saves.mapSaves.checkPoints == null;
+        bool a = saves.mapSaves.seeds == null;
+        Debug.Log("Null " + b);
+        Debug.Log("Null seed" + a);
     }
     public void LoadSave(){
         if(!PlayerPrefs.HasKey("Save")){
-            //
+            Debug.Log("SAVE is deleted");
         } else{
-            sv = JsonUtility.FromJson<Saves>(PlayerPrefs.GetString("Save"));
+            Debug.Log("SAVE is here");
+            saves = JsonUtility.FromJson<Saves>(PlayerPrefs.GetString("Save"));
             //
         }
     }
@@ -50,16 +57,18 @@ public class Saves{
 }
 [System.Serializable]
 public class MapSaves{
-    //level seeds
     //levels body
-    //public int LastDungeonLevel
-    //public int lastCheckPoint
-    //public int CurrentDungeonLevel
+    public List<CheckPoint> checkPoints;
+    public List<LevelSeed> seeds;
+    public int LastDungeonLevel;
+    public int lastCheckPoint;
+    public int CurrentDungeonLevel;
+
+    
 }
 [System.Serializable]
 public class PlayerSaves{
     //inventory
-    //last closest save-zone where was player
     //player statistic
     //character stats
     //death point, death loot, death level

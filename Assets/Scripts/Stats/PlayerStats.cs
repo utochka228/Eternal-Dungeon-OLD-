@@ -52,10 +52,10 @@ public class PlayerStats : Stats
         myController = GetComponent<PlayerController>();
         playerUpdater = GetComponent<UIPlayerUpdater>();
     }
-
     protected override void Dying(GameObject murderer)
     {
         Debug.Log(myController.transform.name + " was killed by " + murderer.name);
+        GameSession.instance.PlayerDied?.Invoke();
         Destroy(myController.gameObject);
     }
 

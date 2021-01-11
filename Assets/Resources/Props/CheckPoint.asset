@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: CheckPoint
   m_EditorClassIdentifier: 
   propName: 
-  atlas: {fileID: 0}
-  spriteName: 
+  atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
+  spriteName: Wormhole
+  destroyable: 0

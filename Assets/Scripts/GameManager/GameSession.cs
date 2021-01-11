@@ -7,7 +7,7 @@ public class GameSession : MonoBehaviour
 {
     public static GameSession instance;
     
-    Action PlayerDied;
+    public Action PlayerDied;
 
     [SerializeField]
     private GameObject playerPrefab;
@@ -19,11 +19,11 @@ public class GameSession : MonoBehaviour
     }
 
     public void StartSession(){
-        if(!PlayerPrefs.HasKey("Save"))
+        if(PlayerPrefs.HasKey("Save")){
+            GameMap.GM.relocation.CreateSavedLevel();
+            return;
+        }else
             GameMap.GM.relocation.ChangeLevel();
-        else{
-            //Load saves
-        }
     }
 
     public void SpawnPlayer(Vector3 position)

@@ -8,7 +8,7 @@ public class RelocationButton : MonoBehaviour
     public int relocationEnergy;
     
     public void Relocate(){
-        IRelocation relocation = GameSession.instance.transform.GetComponent<IRelocation>();
+        Relocation relocation = GameMap.GM.relocation;
         relocation.RelocateToCheckPoint(indexPoint, relocationEnergy);
     }
 }

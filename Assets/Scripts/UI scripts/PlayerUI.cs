@@ -25,6 +25,7 @@ public class PlayerUI : MonoBehaviour
     public TextMeshProUGUI lvlText;
 
     public GameObject relocationPanel;
+    public GameObject relocationHolder;
     public GameObject relocationButton;
 
     public Transform inventoryPanel;
