@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 
 public class Inventory : MonoBehaviour
@@ -8,6 +10,7 @@ public class Inventory : MonoBehaviour
     public GameObject itemHolder;
     [SerializeField] GameObject slotPrefab;
     [SerializeField] int startSize = 9;
+    int currentSize;
     public int freeSlots;
     public int Size {
         get{
@@ -23,14 +26,45 @@ public class Inventory : MonoBehaviour
         instance = this;
     }
 
-    // Start is called before the first frame update
     void Start()
     {
+        if(PlayerPrefs.HasKey("Save")){
+            LoadInventoryData();
+        }
+
         for (int i = 0; i < startSize; i++)
         {
             AddSlot();
+            
+        }
+
+        if(PlayerPrefs.HasKey("Save")){
+            PlayerSaves saves = SaveSystem.instance.saves.playerSaves;
+            foreach (var slot in saves.inventory)
+            {
+                if(slot.itemName == "")
+                    continue;
+                string path = Path.Combine("Items/", slot.itemName);
+                Debug.Log(path);
+                Item it = Resources.Load<Item>(path);
+                Item myItem = Instantiate(it);
+                myItem.Count = slot.count;
+                AddItem(myItem);
+            }
         }
         PlayerUI.instance.attackButton.onClick.AddListener(UseHandItem);
+    }
+
+    void LoadInventoryData(){
+        PlayerSaves saves = SaveSystem.instance.saves.playerSaves;
+        freeSlots = saves.freeSlots;
+        startSize = saves.inventorySize;
+    }
+    public void SaveInventory(){
+        PlayerSaves saves = SaveSystem.instance.saves.playerSaves;
+        saves.freeSlots = freeSlots;
+        saves.inventorySize = currentSize;
+        saves.inventory = inventory.Select(x => x.slotDataSave).ToList();
     }
 
     //On click button
@@ -70,6 +104,7 @@ public class Inventory : MonoBehaviour
         Slot slot = _slotPrefab.GetComponent<Slot>();
         inventory.Add(slot);
         freeSlots++;
+        currentSize++;
     }
 
     // Update is called once per frame

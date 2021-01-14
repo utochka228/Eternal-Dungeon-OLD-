@@ -56,7 +56,6 @@ public class PlayerStats : Stats
     {
         Debug.Log(myController.transform.name + " was killed by " + murderer.name);
         GameSession.instance.PlayerDied?.Invoke();
-        Destroy(myController.gameObject);
     }
 
     protected override void TakingDamage(GameObject hitter)
@@ -64,6 +63,10 @@ public class PlayerStats : Stats
         health--;
             if (health == 0)
                 Die(hitter);
+    }
+
+    private void OnDestroy() {
+        Inventory.instance.SaveInventory();
     }
     
 }

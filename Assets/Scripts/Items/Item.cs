@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D;
+using UnityEditor;
+
 interface IItem
 {
     void Use(Transform user);
@@ -11,10 +13,10 @@ interface IItem
 public abstract class Item : ScriptableObject, IItem
 {
     [SerializeField] SpriteAtlas atlas;
-    public new string name;
     public GameObject itemEffect;
     public float spawnChance;
     public float itemWorldScale = 1f;
+    [HideInInspector] public string spritePath;
     [SerializeField] string spriteName;
     public Sprite sprite {
         get { return atlas.GetSprite(spriteName);}
@@ -38,14 +40,17 @@ public abstract class Item : ScriptableObject, IItem
         }
     }
     public ItemActions actions;
+    private void OnEnable() {
+        spritePath = AssetDatabase.GetAssetPath(sprite);
+    }
     public void Use(Transform user)
     {
         UseItem(user);
     }
 
     public abstract void UseItem(Transform user);
-}
 
+}
 [System.Serializable]
 public class ItemActions {
     public bool isUsable;

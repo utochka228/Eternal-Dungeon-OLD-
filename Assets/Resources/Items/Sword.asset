@@ -9,21 +9,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 327896ac765706e499125e046d444396, type: 3}
-  m_Name: PickAxe
+  m_Script: {fileID: 11500000, guid: c3ff03653f0bf934e9bd94055a43a5c5, type: 3}
+  m_Name: Sword
   m_EditorClassIdentifier: 
   atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
-  name: safasf
   itemEffect: {fileID: 0}
   spawnChance: 0
   itemWorldScale: 1
+  spritePath: 
   spriteName: 
-  spawnOffset: {x: 0.352, y: -0.099, z: 0}
-  spawnRotation: 82.366
+  spawnOffset: {x: -0.233, y: -0.008, z: 0}
+  spawnRotation: 22.661
   isStackable: 0
   actions:
     isUsable: 0
     isEquipable: 1
-  power: 10
-  speed: 1
-  distance: 1
+  damage: 2
+  swordLength: 2
+  speed: 0.1
+  isJabWeapon: 0
+  JabAnimation: {fileID: 0}
+  isSwingWeapon: 0
+  SwingAnimation: {fileID: 0}

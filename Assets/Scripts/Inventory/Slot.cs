@@ -2,13 +2,28 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
+
+[System.Serializable]
+public struct SlotDataSave{
+
+    public string itemName;
+    public int count;
+
+    public SlotDataSave(Item it, int _count){
+        
+        itemName = it.name.Replace("(Clone)", "");
+        count = _count;
+    }
+}
 public class Slot : MonoBehaviour
 {
+    public SlotDataSave slotDataSave;
     [SerializeField] TextMeshProUGUI stackCountText;
-    Stack<Item> itemStack = new Stack<Item>();
+    public Stack<Item> itemStack = new Stack<Item>();
     [SerializeField] Image image;
     public bool IsEmpty() {return itemStack.Count == 0 ? true: false;}
         
@@ -47,6 +62,8 @@ public class Slot : MonoBehaviour
         stackCountText.text = itemStack.Count.ToString();
         if(itemStack.Count > 1)
             stackCountText.gameObject.SetActive(true);
+
+        slotDataSave = new SlotDataSave(item, itemStack.Count);
     }
     
     //For remove button
@@ -55,6 +72,8 @@ public class Slot : MonoBehaviour
         {
             itemStack.Pop();
             if(itemStack.Count == 0){
+                slotDataSave.itemName = "";
+                slotDataSave.count = 0;
                 ClearSlot();
                 Inventory.instance.freeSlots++;
             }

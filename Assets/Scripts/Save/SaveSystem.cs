@@ -42,7 +42,6 @@ public class SaveSystem : MonoBehaviour
         } else{
             Debug.Log("SAVE is here");
             saves = JsonUtility.FromJson<Saves>(PlayerPrefs.GetString("Save"));
-            //
         }
     }
     private void OnApplicationQuit() {
@@ -69,6 +68,9 @@ public class MapSaves{
 [System.Serializable]
 public class PlayerSaves{
     //inventory
+    public int inventorySize;
+    public int freeSlots;
+    public List<SlotDataSave> inventory;
     //player statistic
     //character stats
     //death point, death loot, death level
