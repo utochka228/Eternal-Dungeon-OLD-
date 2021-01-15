@@ -17,7 +17,7 @@ public class Inventory : MonoBehaviour
             return inventory.Count;
         }
     }
-    List<Slot> inventory = new List<Slot>();
+    public List<Slot> inventory = new List<Slot>();
 
     Item playerHandItem;
     [SerializeField] SpriteRenderer handSpriteHolder;
@@ -31,11 +31,10 @@ public class Inventory : MonoBehaviour
         if(PlayerPrefs.HasKey("Save")){
             LoadInventoryData();
         }
-
+        Debug.Log("Startsize " + startSize);
         for (int i = 0; i < startSize; i++)
         {
             AddSlot();
-            
         }
 
         if(PlayerPrefs.HasKey("Save")){
@@ -57,14 +56,14 @@ public class Inventory : MonoBehaviour
 
     void LoadInventoryData(){
         PlayerSaves saves = SaveSystem.instance.saves.playerSaves;
-        freeSlots = saves.freeSlots;
         startSize = saves.inventorySize;
     }
     public void SaveInventory(){
         PlayerSaves saves = SaveSystem.instance.saves.playerSaves;
-        saves.freeSlots = freeSlots;
+        Debug.Log("save current size "+ currentSize);
         saves.inventorySize = currentSize;
         saves.inventory = inventory.Select(x => x.slotDataSave).ToList();
+        ClearInventory();
     }
 
     //On click button
@@ -105,6 +104,8 @@ public class Inventory : MonoBehaviour
         inventory.Add(slot);
         freeSlots++;
         currentSize++;
+        Debug.Log("%%%%");
+
     }
 
     // Update is called once per frame
@@ -133,6 +134,20 @@ public class Inventory : MonoBehaviour
                     }
                 }
             }
+        }
+    }
+
+    public void ClearInventory(){
+        foreach (var slot in inventory)
+        {
+            slot.ClearSlot();
+            
+        }
+        Transform inventoryPanel = PlayerUI.instance.inventoryPanel;
+        for (int i = 0; i < inventoryPanel.childCount; i++)
+        {
+            Transform child = inventoryPanel.GetChild(i);
+            Destroy(child.gameObject);
         }
     }
 }

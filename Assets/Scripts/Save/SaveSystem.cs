@@ -69,9 +69,9 @@ public class MapSaves{
 public class PlayerSaves{
     //inventory
     public int inventorySize;
-    public int freeSlots;
     public List<SlotDataSave> inventory;
     //player statistic
     //character stats
     //death point, death loot, death level
+    public DeathPointData deathPointData;
 }

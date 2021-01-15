@@ -16,11 +16,11 @@ MonoBehaviour:
   groundPrefab: {fileID: 2799625170418257773, guid: d1cb0bf03e57efe41a0a2cdd3b6dec08,
     type: 3}
   ground:
-  - 
+  - StoneWall
   wallPrefab: {fileID: 9098360042060389322, guid: f5f03171664b292458aab5d58baa3b68,
     type: 3}
   walls:
-  - 
+  - Ground
   blockHolder: {fileID: 966673773862146014, guid: 0659ddbfcd2f47b4192e23f323668a20,
     type: 3}
   blocks:

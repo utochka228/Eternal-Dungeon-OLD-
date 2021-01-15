@@ -13,7 +13,7 @@ public class Block : MonoBehaviour, IDamageble
     {
         DropLoot();
         if(spawnExit)
-            GameMap.GM.SpawnExit(transform.position);
+            GameMap.GM.SpawnWormhole((int)transform.position.x, (int)transform.position.y);
         Destroy(gameObject);
     }
 

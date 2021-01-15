@@ -48,7 +48,7 @@ public abstract class Item : ScriptableObject, IItem
         UseItem(user);
     }
 
-    public abstract void UseItem(Transform user);
+    public virtual void UseItem(Transform user){}
 
 }
 [System.Serializable]

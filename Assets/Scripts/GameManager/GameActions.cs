@@ -38,6 +38,7 @@ public class GameActions : MonoBehaviour
     public void EndMatch()
     {
         MatchEnded?.Invoke();
+        SaveSystem.instance.Save();
     }
     
 }

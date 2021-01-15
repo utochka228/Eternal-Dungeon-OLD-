@@ -28,7 +28,6 @@ public class Slot : MonoBehaviour
     public bool IsEmpty() {return itemStack.Count == 0 ? true: false;}
         
     public Dictionary<string, UnityAction> itemActions = new Dictionary<string, UnityAction>();
-    // Start is called before the first frame update
     void Start()
     {
         stackCountText.gameObject.SetActive(false);
@@ -45,9 +44,15 @@ public class Slot : MonoBehaviour
         itemActions.Add("Remove", new UnityAction(RemoveItem));
     }
 
-    void ClearSlot(){
+    public void ClearSlot(){
+        if(itemActions.Count == 0)
+            return;
+
         image.sprite = null;
         itemActions.Clear();
+        Inventory.instance.freeSlots++;
+        slotDataSave.itemName = "";
+        slotDataSave.count = 0;
     }
 
     public void AddItem(Item item){
@@ -72,10 +77,7 @@ public class Slot : MonoBehaviour
         {
             itemStack.Pop();
             if(itemStack.Count == 0){
-                slotDataSave.itemName = "";
-                slotDataSave.count = 0;
                 ClearSlot();
-                Inventory.instance.freeSlots++;
             }
         }
         stackCountText.text = itemStack.Count.ToString();

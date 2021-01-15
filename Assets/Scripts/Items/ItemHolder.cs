@@ -37,6 +37,19 @@ public class ItemHolder : MonoBehaviour, IInteractable
     }
 
     void PickUp(){
+        if(myItem.name.Replace("(Clone)", "") == "DeathPlayerLoot"){
+            DeathPlayerLoot playerLoot = (DeathPlayerLoot) myItem;
+            foreach (var item in playerLoot.loot)
+            {
+                Inventory.instance.AddItem(item);
+            }
+            PlayerSaves playerSaves = SaveSystem.instance.saves.playerSaves;
+            playerSaves.deathPointData.createDeathPoint = false;
+            Debug.Log("&&&&&&");
+            Destroy(gameObject);
+            return;
+        }
+
         Debug.Log("Item was picked!");
         Inventory.instance.AddItem(myItem);
         Destroy(gameObject);

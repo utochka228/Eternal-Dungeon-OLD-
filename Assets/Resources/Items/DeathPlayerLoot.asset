@@ -9,10 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbaba92db4282db4bbcbd17681a50d23, type: 3}
-  m_Name: CheckPoint
+  m_Script: {fileID: 11500000, guid: 56fc567e44ad1d945a3b2127e7580805, type: 3}
+  m_Name: DeathPlayerLoot
   m_EditorClassIdentifier: 
-  propName: 
   atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
-  spriteName: Wormhole
-  destroyable: 0
+  itemEffect: {fileID: 0}
+  spawnChance: 0
+  itemWorldScale: 1
+  spritePath: 
+  spriteName: TX Village Props Gravestone C
+  spawnOffset: {x: 0, y: 0, z: 0}
+  spawnRotation: 0
+  isStackable: 0
+  actions:
+    isUsable: 0
+    isEquipable: 0
+  loot: []

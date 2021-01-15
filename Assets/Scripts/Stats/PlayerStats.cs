@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerStats : Stats
@@ -55,6 +56,8 @@ public class PlayerStats : Stats
     protected override void Dying(GameObject murderer)
     {
         Debug.Log(myController.transform.name + " was killed by " + murderer.name);
+        SaveDeathPoint();
+        Inventory.instance.ClearInventory();
         GameSession.instance.PlayerDied?.Invoke();
     }
 
@@ -69,4 +72,24 @@ public class PlayerStats : Stats
         Inventory.instance.SaveInventory();
     }
     
+    void SaveDeathPoint(){
+        PlayerSaves playerSaves = SaveSystem.instance.saves.playerSaves;
+        Relocation relocation = GameMap.GM.relocation;
+        Vector2 deathPos = new Vector2(transform.position.x, transform.position.y);
+        playerSaves.deathPointData = new DeathPointData(relocation.CurrentDungeonLevel, deathPos);
+    }
+}
+[System.Serializable]
+public struct DeathPointData{
+    public bool createDeathPoint;
+    public int levelOfDeath;
+    public Vector2 position;
+    public List<SlotDataSave> loot;
+
+    public DeathPointData(int deathLevel, Vector2 pos){
+        levelOfDeath = deathLevel;
+        position = pos;
+        loot = Inventory.instance.inventory.Select(x => x.slotDataSave).ToList();
+        createDeathPoint = true;
+    }
 }

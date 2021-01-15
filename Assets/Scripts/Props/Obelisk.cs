@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Tunnel", menuName = "CreateProp/Tunnel")]
-public class ExitTunnel : Prop
+[CreateAssetMenu(fileName = "CheckPoint", menuName = "CreateProp/CheckPoint")]
+public class Obelisk : Prop
 {
     public override void UseProp(){
         Relocation relocation = GameMap.GM.relocation;
-        relocation.ChangeLevel();
-        Debug.Log("EXITUSED");
+        relocation.SetRelocationPanel();
     }
 }

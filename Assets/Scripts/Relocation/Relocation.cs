@@ -44,9 +44,7 @@ public class Relocation : MonoBehaviour, IRelocation
 
     private void Start() {
         SaveSystem.instance.OnSave += SaveData;
-
-        if(PlayerPrefs.HasKey("Save"))
-            LoadRelocationData();
+        GameActions.instance.MatchStarted += LoadRelocationData;
     }
 
     void SaveData(){
@@ -65,8 +63,20 @@ public class Relocation : MonoBehaviour, IRelocation
             }
         }
     }
+
+    bool IsCheckPointLevel(){
+        bool success = checkPoints.Any(x => x.level == CurrentDungeonLevel);
+        if(success){
+            return true;
+        }
+        return false;
+    }
+
     [ContextMenu("LoadRelocationData")]
     void LoadRelocationData(){
+        if(!PlayerPrefs.HasKey("Save"))
+            return;
+
         MapSaves mapSaves = SaveSystem.instance.saves.mapSaves;
         CurrentDungeonLevel = mapSaves.CurrentDungeonLevel;
         lastCheckPoint = mapSaves.lastCheckPoint;
@@ -131,20 +141,18 @@ public class Relocation : MonoBehaviour, IRelocation
     }
     public void CreateSavedLevel(){
         string seed = levelSeeds.Single(x => x.level == CurrentDungeonLevel).seed;
-        GameMap.GM.GenerateGameField(seed);
-        SpawnCheckPoint();
+        GameMap.GM.GenerateGameField(IsCheckPointLevel(), seed);
         Debug.Log("CreatedSavedLevel!");
     }
     void CreateLevel(){
         CurrentDungeonLevel++;
         LastDungeonLevel++;
         GameMap.GM.DestroyGameField();
-        string seed = GameMap.GM.GenerateGameField();
-        levelSeeds.Add(new LevelSeed(CurrentDungeonLevel, seed));
         if(CurrentDungeonLevel == 0 || CurrentDungeonLevel == lastCheckPoint + checkPointDistance){
             CheckPoint checkPoint = new CheckPoint(CurrentDungeonLevel, ref lastCheckPoint, checkPoints);
         }
-        SpawnCheckPoint();
+        string seed = GameMap.GM.GenerateGameField(IsCheckPointLevel());
+        levelSeeds.Add(new LevelSeed(CurrentDungeonLevel, seed));
         Debug.Log("Level Created!");
     }
     void RelocateToNext(){
@@ -152,27 +160,18 @@ public class Relocation : MonoBehaviour, IRelocation
         GameMap.GM.DestroyGameField();
         LevelSeed lSeed = levelSeeds.Single(x => x.level == CurrentDungeonLevel);
         string seed = lSeed.seed;
-        GameMap.GM.GenerateGameField(seed);
-        SpawnCheckPoint();
+        GameMap.GM.GenerateGameField(IsCheckPointLevel(), seed);
     }
-    void SpawnCheckPoint(){
-        try{
-            CheckPoint point = checkPoints.Single(x => x.level == CurrentDungeonLevel);
-            GameMap.GM.SpawnCheckPointProp();
-        }catch{
-            //Do nothing
-        }
-    }
+    
     public void RelocateToCheckPoint(int indexPoint, int energyForReloc){
         int neccesseryLevel = checkPoints[indexPoint].GetCheckPointLevel();
         
         GameMap.GM.DestroyGameField();
         LevelSeed lSeed = levelSeeds.Single(x => x.level == neccesseryLevel);
         string seed = lSeed.seed;
-        GameMap.GM.GenerateGameField(seed);
+        GameMap.GM.GenerateGameField(IsCheckPointLevel(), seed);
         GameSession.instance.Player.GetComponent<PlayerStats>().RelocationEnergy -= energyForReloc;
         CurrentDungeonLevel = neccesseryLevel;
-        SpawnCheckPoint();
 
         ClearRelocPanel();
         Transform relocationPanel = PlayerUI.instance.relocationPanel.transform;

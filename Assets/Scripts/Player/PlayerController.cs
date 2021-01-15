@@ -154,9 +154,9 @@ public class PlayerController : MonoBehaviour
         if(item != null){
             interactItems.Enqueue(item);
         }
+        Button interactButton = PlayerUI.instance.interactButton;
         if(interactItems.Count > 0 && Inventory.instance.itHasFreeSpace())
-            PlayerUI.instance.interactButton.interactable = true;
-
+            interactButton.interactable = true;
     }
     private void OnTriggerExit2D(Collider2D other) {
         IInteractable item = other.GetComponent<IInteractable>();
