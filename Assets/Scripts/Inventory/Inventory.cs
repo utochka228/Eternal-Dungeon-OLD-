@@ -99,13 +99,13 @@ public class Inventory : MonoBehaviour
 
     void AddSlot(){
         GameObject _slotPrefab = Instantiate(slotPrefab);
-        _slotPrefab.transform.SetParent(PlayerUI.instance.inventoryPanel, false);
-        Slot slot = _slotPrefab.GetComponent<Slot>();
+        _slotPrefab.transform.SetParent(PlayerUI.instance.inventorySlotHolder, false);
+        DropSlot dSlot = _slotPrefab.GetComponent<DropSlot>();
+        Slot slot = _slotPrefab.transform.GetChild(0).GetComponent<Slot>();
+        dSlot.MySlot = slot;
         inventory.Add(slot);
         freeSlots++;
         currentSize++;
-        Debug.Log("%%%%");
-
     }
 
     // Update is called once per frame
@@ -143,7 +143,7 @@ public class Inventory : MonoBehaviour
             slot.ClearSlot();
             
         }
-        Transform inventoryPanel = PlayerUI.instance.inventoryPanel;
+        Transform inventoryPanel = PlayerUI.instance.inventorySlotHolder;
         for (int i = 0; i < inventoryPanel.childCount; i++)
         {
             Transform child = inventoryPanel.GetChild(i);

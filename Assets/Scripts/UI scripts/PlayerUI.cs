@@ -28,6 +28,7 @@ public class PlayerUI : MonoBehaviour
     public GameObject relocationHolder;
     public GameObject relocationButton;
 
+    public Transform inventorySlotHolder;
     public Transform inventoryPanel;
     void Awake()
     {

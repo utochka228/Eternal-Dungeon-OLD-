@@ -31,6 +31,7 @@ public class Slot : MonoBehaviour
     void Start()
     {
         stackCountText.gameObject.SetActive(false);
+        image.enabled = false;
     }
 
     void ApplyItemActions(){
@@ -49,6 +50,9 @@ public class Slot : MonoBehaviour
             return;
 
         image.sprite = null;
+        image.enabled = false;
+        DropSlot dropSlot = GetComponent<DragDrop>().oldSlot;
+        dropSlot.MySlot = null;
         itemActions.Clear();
         Inventory.instance.freeSlots++;
         slotDataSave.itemName = "";
@@ -65,6 +69,10 @@ public class Slot : MonoBehaviour
             }
         }
         stackCountText.text = itemStack.Count.ToString();
+        if(image.enabled == false)
+            image.enabled = true;
+        DropSlot dropSlot = GetComponent<DragDrop>().oldSlot;
+        dropSlot.MySlot = this;
         if(itemStack.Count > 1)
             stackCountText.gameObject.SetActive(true);
 

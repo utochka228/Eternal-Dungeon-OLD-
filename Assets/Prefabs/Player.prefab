@@ -333,8 +333,9 @@ MonoBehaviour:
     type: 3}
   slotPrefab: {fileID: 5295727687446193375, guid: ec71b703449b50846b58315c23e7e50c,
     type: 3}
-  startSize: 9
+  startSize: 12
   freeSlots: 0
+  inventory: []
   handSpriteHolder: {fileID: 7901333243936332652}
   playerSkin: {fileID: 5359528519651142455}
 --- !u!114 &2049115816070286129

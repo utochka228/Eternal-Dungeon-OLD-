@@ -16,7 +16,7 @@ public abstract class Item : ScriptableObject, IItem
     public GameObject itemEffect;
     public float spawnChance;
     public float itemWorldScale = 1f;
-    [HideInInspector] public string spritePath;
+    //[HideInInspector] public string spritePath;
     [SerializeField] string spriteName;
     public Sprite sprite {
         get { return atlas.GetSprite(spriteName);}
@@ -41,7 +41,7 @@ public abstract class Item : ScriptableObject, IItem
     }
     public ItemActions actions;
     private void OnEnable() {
-        spritePath = AssetDatabase.GetAssetPath(sprite);
+        //spritePath = AssetDatabase.GetAssetPath(sprite);
     }
     public void Use(Transform user)
     {
