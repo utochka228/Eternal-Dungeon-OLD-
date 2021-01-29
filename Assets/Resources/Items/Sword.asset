@@ -15,8 +15,8 @@ MonoBehaviour:
   atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
   itemEffect: {fileID: 0}
   spawnChance: 0
+  itemMinPrice: 0
   itemWorldScale: 1
-  spritePath: 
   spriteName: 
   spawnOffset: {x: -0.233, y: -0.008, z: 0}
   spawnRotation: 22.661

@@ -30,6 +30,8 @@ public class PlayerUI : MonoBehaviour
 
     public Transform inventorySlotHolder;
     public Transform inventoryPanel;
+
+    public GameObject shopPanel;
     void Awake()
     {
         instance = this;

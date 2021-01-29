@@ -15,6 +15,7 @@ public abstract class Item : ScriptableObject, IItem
     [SerializeField] SpriteAtlas atlas;
     public GameObject itemEffect;
     public float spawnChance;
+    public int itemMinPrice;
     public float itemWorldScale = 1f;
     //[HideInInspector] public string spritePath;
     [SerializeField] string spriteName;
