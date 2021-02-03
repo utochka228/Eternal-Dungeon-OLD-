@@ -9,7 +9,6 @@ using TMPro;
 
 [System.Serializable]
 public struct SlotDataSave{
-
     public string itemName;
     public int count;
 
@@ -69,39 +68,48 @@ public class Slot : MonoBehaviour
             }
         }
         stackCountText.text = itemStack.Count.ToString();
-        if(image.enabled == false)
+        if(image.IsActive() == false)
+        {
             image.enabled = true;
+        }
         DropSlot dropSlot = GetComponent<DragDrop>().oldSlot;
         dropSlot.MySlot = this;
         if(itemStack.Count > 1)
             stackCountText.gameObject.SetActive(true);
 
         slotDataSave = new SlotDataSave(item, itemStack.Count);
+        Inventory.instance.inventoryUpdated?.Invoke();
     }
-    
-    //For remove button
+    //Main Remove item method 
     public void Remove(int count = 1){
+        if(count == 0)
+            return;
         for (int i = 0; i < count; i++)
         {
             itemStack.Pop();
             if(itemStack.Count == 0){
                 ClearSlot();
+                break;
             }
         }
         stackCountText.text = itemStack.Count.ToString();
         if(itemStack.Count <= 1)
             stackCountText.gameObject.SetActive(false);
+        Inventory.instance.inventoryUpdated?.Invoke();
     }
-
+    //Drop button
     public void DropItem(){
         InteractionSlider.instance.ShowSlider(Drop, itemStack.Count);
     }
+    //Remove button
     public void RemoveItem(){
         InteractionSlider.instance.ShowSlider(Remove, itemStack.Count);
     }
 
-    //For drop button
+    //Main drop item method
     void Drop(int count){
+        if(count == 0)
+            return;
         GameObject itemHolder = Instantiate(Inventory.instance.itemHolder);
         ItemHolder holder = itemHolder.GetComponent<ItemHolder>();
         Item item = itemStack.Peek();

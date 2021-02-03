@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,39 +11,28 @@ public class PlayerController : MonoBehaviour
     #region PublicVariables
 
     public new string name;
-
     public float speed = 10f; //Скорость передвижения игрока
-
     public int bombCount = 0;
-
     public Text deathTimerText;
-
     public PlayerController enemy;
-
     public event Action OnChangedPlayerPosition;
     public event Action OnStartOfMoving;
-
     public Vector2 currentPosition;
     public Vector2 oldPosition;
     public Block targetBlock;
-
     #endregion
 
     #region PrivateVariables
-
     [Header("My Player Stats(source)")]
     [SerializeField]
     PlayerStats myPlayerStats;
-
     [Header("My Player AttackSystem")]
     [SerializeField]
     PlayerAttackSystem attackSystem;
-
     [SerializeField] SpriteRenderer playerSpriteRend;
     [Header("Player Skins")]
     [SerializeField]
     private GameObject[] skins;
-
     FixedJoystick joystick;
     #endregion
 
@@ -52,17 +42,10 @@ public class PlayerController : MonoBehaviour
         skin.SetActive(true);
     }
 
-
-    void PlayerPositionHasChanged()
-    {
-        if (OnChangedPlayerPosition != null)
-            OnChangedPlayerPosition();
-    }
-
     void Start()
     {
         oldPosition = currentPosition;
-
+        interactText = PlayerUI.instance.interactName;
         joystick = PlayerUI.instance.joystick;
         PlayerUI.instance.interactButton.onClick.AddListener(OnInteractButton);
 
@@ -77,17 +60,9 @@ public class PlayerController : MonoBehaviour
 
         if (currentPosition != oldPosition)
         {
-            PlayerPositionHasChanged();
+            OnChangedPlayerPosition?.Invoke();
             
             oldPosition = currentPosition;
-        }
-
-        if(targetBlock != null){
-            float distance = Vector3.Distance(transform.position, targetBlock.transform.position);
-            if(distance >= 1.5f){
-                TargetSelector.instance.NullTargetPosition();
-                targetBlock = null;
-            }
         }
     }
     [SerializeField] float viewOfDistance = 2f;
@@ -136,7 +111,6 @@ public class PlayerController : MonoBehaviour
     Queue<IInteractable> interactItems = new Queue<IInteractable>();
     private IInteractable InteractItem {
         get{
-
             IInteractable item = null;
             try {
                 item = interactItems.Dequeue();
@@ -149,14 +123,18 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+    TextMeshProUGUI interactText;
     private void OnTriggerEnter2D(Collider2D other) {
         IInteractable item = other.GetComponent<IInteractable>();
         if(item != null){
             interactItems.Enqueue(item);
+            interactText.text = item.GetInteractName();
+            interactText.gameObject.SetActive(true);
         }
         Button interactButton = PlayerUI.instance.interactButton;
         if(interactItems.Count > 0 && Inventory.instance.itHasFreeSpace())
             interactButton.interactable = true;
+        
     }
     private void OnTriggerExit2D(Collider2D other) {
         IInteractable item = other.GetComponent<IInteractable>();
@@ -168,8 +146,11 @@ public class PlayerController : MonoBehaviour
                 if(it != item)
                     interactItems.Enqueue(it);
             }
-            if(interactItems.Count <= 0)
+            if(interactItems.Count <= 0){
                 PlayerUI.instance.interactButton.interactable = false;
+                interactText.gameObject.SetActive(false);
+            }else
+                interactText.text = interactItems.Peek().GetInteractName();
         }
     }
     //Method for interact Button

@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class ItemHolder : MonoBehaviour, IInteractable
 {
     [SerializeField] Item testItem; //Delete this
     Item myItem;
-
     [SerializeField] SpriteRenderer sprite;
 
     void Start()
@@ -53,5 +53,10 @@ public class ItemHolder : MonoBehaviour, IInteractable
         Debug.Log("Item was picked!");
         Inventory.instance.AddItem(myItem);
         Destroy(gameObject);
+    }
+
+    public string GetInteractName()
+    {
+        return myItem.itemName;
     }
 }

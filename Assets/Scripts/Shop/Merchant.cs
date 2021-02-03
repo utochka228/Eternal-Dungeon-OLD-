@@ -22,5 +22,8 @@ public class Merchant : MonoBehaviour, IInteractable
         shop.UpdatePlayerInventory();
     }
 
-
+    public string GetInteractName()
+    {
+        return "Merchant";
+    }
 }

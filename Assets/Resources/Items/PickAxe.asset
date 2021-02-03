@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: PickAxe
   m_EditorClassIdentifier: 
   atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
+  itemName: PickAxe
   itemEffect: {fileID: 0}
   spawnChance: 0
+  itemMinPrice: 12
   itemWorldScale: 1
-  spritePath: 
   spriteName: Ore
   spawnOffset: {x: 0.352, y: -0.099, z: 0}
   spawnRotation: 82.366

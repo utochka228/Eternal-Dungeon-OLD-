@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: DeathPlayerLoot
   m_EditorClassIdentifier: 
   atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
+  itemName: PlayerLoot
   itemEffect: {fileID: 0}
   spawnChance: 0
+  itemMinPrice: 0
   itemWorldScale: 1
-  spritePath: 
   spriteName: TX Village Props Gravestone C
   spawnOffset: {x: 0, y: 0, z: 0}
   spawnRotation: 0

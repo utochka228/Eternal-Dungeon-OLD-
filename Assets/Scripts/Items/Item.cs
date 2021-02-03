@@ -13,6 +13,7 @@ interface IItem
 public abstract class Item : ScriptableObject, IItem
 {
     [SerializeField] SpriteAtlas atlas;
+    public string itemName;
     public GameObject itemEffect;
     public float spawnChance;
     public int itemMinPrice;

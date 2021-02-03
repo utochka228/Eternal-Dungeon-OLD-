@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,23 +8,31 @@ using UnityEngine;
 public class Inventory : MonoBehaviour
 {
     public static Inventory instance;
-    public GameObject itemHolder;
+    [HideInInspector] public GameObject itemHolder;
     [SerializeField] GameObject slotPrefab;
     [SerializeField] int startSize = 9;
     int currentSize;
     public int freeSlots;
     public int Size {
-        get{
-            return inventory.Count;
-        }
+        get{return inventory.Count;}
     }
     public List<Slot> inventory = new List<Slot>();
-
+    public Action inventoryUpdated;
     Item playerHandItem;
     [SerializeField] SpriteRenderer handSpriteHolder;
     [SerializeField] SpriteRenderer playerSkin;
+    int money = 100;
+    public int Money{
+        get{return money;}
+        set{
+            money = value;
+            OnMoneyChanged?.Invoke(money);
+        }
+    }
+    public Action<int> OnMoneyChanged;
     private void Awake() {
         instance = this;
+        itemHolder = Resources.Load<GameObject>("Items/ItemHolder");
     }
 
     void Start()
@@ -66,7 +75,7 @@ public class Inventory : MonoBehaviour
         ClearInventory();
     }
 
-    //On click button
+    //On click "Use" button
     public void UseHandItem(){
         if(playerHandItem != null){
             playerHandItem.UseItem(transform);
@@ -88,15 +97,15 @@ public class Inventory : MonoBehaviour
         if(playerSkin.flipX)
             FlipXHandItem();
     }
-
+    //item not equiped
     public bool HandsEmpty(){
         return playerHandItem == null;
     }
-
+    
     public bool itHasFreeSpace(){
         return freeSlots > 0 ? true : false;
     }
-
+    //Add slot cell to inventory
     void AddSlot(){
         GameObject _slotPrefab = Instantiate(slotPrefab);
         _slotPrefab.transform.SetParent(PlayerUI.instance.inventorySlotHolder, false);
@@ -108,13 +117,12 @@ public class Inventory : MonoBehaviour
         currentSize++;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.N))
             AddSlot();
     }
-
+    //Add item to inventory
     public void AddItem(Item item){
         if(item == null)
             return;
@@ -137,11 +145,28 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    public void RemoveItem(Item item, int count = 0){
+        foreach (var slot in inventory)
+        {
+            if(!slot.IsEmpty()){
+                Item slotItem = slot.TryGetStackItem();
+                if(item != null){
+                    if(item.name == slotItem.name){
+                        int remCount = item.Count;
+                        if(count > 0){
+                            remCount = count;
+                        }
+                        slot.Remove(remCount);
+                    }
+                }
+            }
+        }
+    }
+
     public void ClearInventory(){
         foreach (var slot in inventory)
         {
             slot.ClearSlot();
-            
         }
         Transform inventoryPanel = PlayerUI.instance.inventorySlotHolder;
         for (int i = 0; i < inventoryPanel.childCount; i++)

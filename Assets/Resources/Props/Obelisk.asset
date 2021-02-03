@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbaba92db4282db4bbcbd17681a50d23, type: 3}
   m_Name: Obelisk
   m_EditorClassIdentifier: 
-  propName: 
+  propName: Obelisk
   atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
   spriteName: TX Village Props Statue
   destroyable: 0

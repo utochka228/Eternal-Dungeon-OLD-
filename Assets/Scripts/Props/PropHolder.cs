@@ -5,6 +5,7 @@ using UnityEngine;
 interface IInteractable
 {
     void Interact();
+    string GetInteractName();
 }
 public class PropHolder : MonoBehaviour, IDamageble, IInteractable
 {
@@ -42,5 +43,10 @@ public class PropHolder : MonoBehaviour, IDamageble, IInteractable
         //Do something
 
         Destroy(gameObject);
+    }
+
+    public string GetInteractName()
+    {
+        return myProp.propName;
     }
 }

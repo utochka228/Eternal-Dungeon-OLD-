@@ -25,6 +25,7 @@ public class InteractionSlider : MonoBehaviour
     public void ShowSlider(Action<int> _action, int maxValue){
         action = _action;
         slider.maxValue = maxValue;
+        slider.minValue = 0;
         sliderPanel.SetActive(true);
     }
 
