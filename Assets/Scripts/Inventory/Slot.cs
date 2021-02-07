@@ -25,14 +25,15 @@ public class Slot : MonoBehaviour
     public Stack<Item> itemStack = new Stack<Item>();
     [SerializeField] Image image;
     public bool IsEmpty() {return itemStack.Count == 0 ? true: false;}
+    public int inventoryIndex;
         
     public Dictionary<string, UnityAction> itemActions = new Dictionary<string, UnityAction>();
-    void Start()
+    void Awake()
     {
         stackCountText.gameObject.SetActive(false);
         image.enabled = false;
     }
-
+    //Apply manipulation item actions to this slot
     void ApplyItemActions(){
         ItemActions itActions = itemStack.Peek().actions;
         if(itActions.isEquipable)
@@ -47,7 +48,7 @@ public class Slot : MonoBehaviour
     public void ClearSlot(){
         if(itemActions.Count == 0)
             return;
-
+        Debug.Log("Slot cleared");
         image.sprite = null;
         image.enabled = false;
         DropSlot dropSlot = GetComponent<DragDrop>().oldSlot;
@@ -61,21 +62,31 @@ public class Slot : MonoBehaviour
     public void AddItem(Item item){
         for (int i = 0; i < item.Count; i++)
         {
+            if(item.isStackable){
+           //not enough of space in stack
+                if(itemStack.Count == item.maxStack){
+                    int AddedCount = i;
+                    item.Count -= AddedCount;
+                    Inventory.instance.AddItem(item);
+                    item.Count += AddedCount;
+                    break;
+                }
+            }
             itemStack.Push(item);
+            //First adding
             if(itemStack.Count == 1){
+                Debug.Log(item.itemName +" name");
                 image.sprite = item.sprite;
+                image.enabled = true;
                 ApplyItemActions();
             }
         }
         stackCountText.text = itemStack.Count.ToString();
-        if(image.IsActive() == false)
-        {
-            image.enabled = true;
+        if(itemStack.Count > 1){
+            stackCountText.gameObject.SetActive(true);
         }
         DropSlot dropSlot = GetComponent<DragDrop>().oldSlot;
         dropSlot.MySlot = this;
-        if(itemStack.Count > 1)
-            stackCountText.gameObject.SetActive(true);
 
         slotDataSave = new SlotDataSave(item, itemStack.Count);
         Inventory.instance.inventoryUpdated?.Invoke();
@@ -86,9 +97,10 @@ public class Slot : MonoBehaviour
             return;
         for (int i = 0; i < count; i++)
         {
-            itemStack.Pop();
+            Item item = itemStack.Pop();
             if(itemStack.Count == 0){
                 ClearSlot();
+                Inventory.instance.CheckHandsByItem(item);
                 break;
             }
         }
@@ -99,11 +111,19 @@ public class Slot : MonoBehaviour
     }
     //Drop button
     public void DropItem(){
-        InteractionSlider.instance.ShowSlider(Drop, itemStack.Count);
+        if(TryGetStackItem().isStackable){
+            string dropHeader = "Drop count";
+            InteractionSlider.instance.ShowSlider(Drop, itemStack.Count, dropHeader);
+        }else
+            Drop(1);
     }
     //Remove button
     public void RemoveItem(){
-        InteractionSlider.instance.ShowSlider(Remove, itemStack.Count);
+        if(TryGetStackItem().isStackable){
+            string removeHeader = "Remove count";
+            InteractionSlider.instance.ShowSlider(Remove, itemStack.Count, removeHeader);
+        }else
+            Remove(1);
     }
 
     //Main drop item method
@@ -117,7 +137,6 @@ public class Slot : MonoBehaviour
         holder.SetItem(item, true);
         Transform player = GameSession.instance.Player.transform;
         itemHolder.transform.position = player.transform.position;
-
         Remove(count);
     }
 
@@ -155,7 +174,6 @@ public class Slot : MonoBehaviour
             return item;
         }
         catch(Exception ex){
-            Debug.Log("InventorySlot has exception: " + ex.Message);
             return null;
         }
     }

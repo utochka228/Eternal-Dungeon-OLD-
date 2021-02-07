@@ -22,6 +22,7 @@ MonoBehaviour:
   spawnOffset: {x: -0.233, y: -0.008, z: 0}
   spawnRotation: 22.661
   isStackable: 0
+  maxStack: 0
   actions:
     isUsable: 0
     isEquipable: 1

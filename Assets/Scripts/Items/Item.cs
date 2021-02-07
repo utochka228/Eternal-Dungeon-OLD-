@@ -26,6 +26,7 @@ public abstract class Item : ScriptableObject, IItem
     public Vector3 spawnOffset;
     public float spawnRotation = 0f;
     public bool isStackable;
+    public int maxStack;
 
     int stackCount = 1;
     public int Count { 

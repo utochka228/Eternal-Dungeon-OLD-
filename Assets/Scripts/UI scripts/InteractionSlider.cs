@@ -10,6 +10,7 @@ public class InteractionSlider : MonoBehaviour
 
     [SerializeField]Slider slider;
     [SerializeField] TextMeshProUGUI sliderNumberText;
+    [SerializeField] TextMeshProUGUI header;
     [SerializeField] GameObject sliderPanel;
     private void Awake() {
         instance = this;
@@ -22,10 +23,12 @@ public class InteractionSlider : MonoBehaviour
 
 
     Action<int> action;
-    public void ShowSlider(Action<int> _action, int maxValue){
+    public void ShowSlider(Action<int> _action, int maxValue, string _header){
+        slider.value = 0;
         action = _action;
         slider.maxValue = maxValue;
         slider.minValue = 0;
+        header.text = _header;
         sliderPanel.SetActive(true);
     }
 
@@ -40,6 +43,5 @@ public class InteractionSlider : MonoBehaviour
     void HideSlider(){
         sliderPanel.SetActive(false);
         action = null;
-
     }
 }

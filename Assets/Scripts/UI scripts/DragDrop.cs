@@ -41,5 +41,13 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         Debug.Log("End drag!");
         canvasGroup.blocksRaycasts = true;
         canvasGroup.alpha = 1f;
+        if(eventData.pointerCurrentRaycast.gameObject == null){
+            slot.DropItem();
+            ReturnToPrevPosition();
+        }
+    }
+    public void ReturnToPrevPosition(){
+        transform.SetParent(oldSlot.transform);
+        rectTransform.anchoredPosition = oldSlot.slotRect.rect.center;
     }
 }

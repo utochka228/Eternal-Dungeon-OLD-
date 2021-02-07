@@ -97,9 +97,22 @@ public class Inventory : MonoBehaviour
         if(playerSkin.flipX)
             FlipXHandItem();
     }
+    void UnEquipItem(){
+        handSpriteHolder.sprite = null;
+        playerHandItem = null;
+    }
     //item not equiped
     public bool HandsEmpty(){
         return playerHandItem == null;
+    }
+    public void CheckHandsByItem(Item item){
+        if(HandsEmpty())
+            return;
+        else{
+            if(playerHandItem.name == item.name){
+                UnEquipItem();
+            }
+        }
     }
     
     public bool itHasFreeSpace(){
@@ -113,6 +126,7 @@ public class Inventory : MonoBehaviour
         Slot slot = _slotPrefab.transform.GetChild(0).GetComponent<Slot>();
         dSlot.MySlot = slot;
         inventory.Add(slot);
+        slot.inventoryIndex = currentSize;
         freeSlots++;
         currentSize++;
     }
@@ -129,19 +143,27 @@ public class Inventory : MonoBehaviour
 
         foreach (var slot in inventory)
         {
-            if(slot.IsEmpty()){
-                slot.AddItem(item);
-                freeSlots--;
-                break;
-            } else if(item.isStackable){
+            if(item.isStackable){
                 Item stackItem = slot.TryGetStackItem();
-                if(item != null){
+                if(stackItem != null){
                     if(item.name == stackItem.name){
-                        slot.AddItem(item);
-                        break;
+                        if(slot.itemStack.Count == stackItem.maxStack)
+                            continue;
+                        if(slot.itemStack.Count < stackItem.maxStack)
+                            slot.AddItem(item);
+                        return;
                     }
                 }
             }
+        }
+        foreach (var slot in inventory)
+        {
+            if(slot.IsEmpty()){
+                Debug.Log("Add when empty");
+                slot.AddItem(item);
+                freeSlots--;
+                break;
+            } 
         }
     }
 

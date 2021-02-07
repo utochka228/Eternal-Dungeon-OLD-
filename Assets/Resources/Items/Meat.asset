@@ -18,10 +18,11 @@ MonoBehaviour:
   spawnChance: 0
   itemMinPrice: 2
   itemWorldScale: 1
-  spriteName: 
+  spriteName: GrassBlock
   spawnOffset: {x: 0, y: 0, z: 0}
   spawnRotation: 0
   isStackable: 1
+  maxStack: 3
   actions:
     isUsable: 1
     isEquipable: 0

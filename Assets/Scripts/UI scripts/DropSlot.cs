@@ -48,11 +48,30 @@ public class DropSlot : MonoBehaviour, IDropHandler
     {
          if(eventData.pointerEnter != null){
             RectTransform icon = eventData.pointerDrag.GetComponent<RectTransform>();
+            Slot draggedSlot = eventData.pointerDrag.GetComponent<Slot>();
+            DragDrop dragDrop = draggedSlot.GetComponent<DragDrop>();
+            //Check if can union into One stack
+                Item thisItem = MySlot.TryGetStackItem();
+                Item draggedItem = draggedSlot.TryGetStackItem();
+                if(thisItem != null && draggedItem != null){
+                    if(thisItem.name == draggedItem.name){
+                        int countInStack = MySlot.itemStack.Count;
+                        int freeSpace = thisItem.maxStack - countInStack;
+                        if(freeSpace > 0){
+                            draggedItem.Count = freeSpace;
+                            MySlot.AddItem(draggedItem);
+                            draggedSlot.Remove(freeSpace);
+                            dragDrop.ReturnToPrevPosition();
+                            return;
+                        }
+                    }
+                }
             icon.transform.SetParent(transform);
             icon.anchoredPosition = slotRect.rect.center;
-            Slot draggedSlot = eventData.pointerDrag.GetComponent<Slot>();
+            int firstIndex = draggedSlot.inventoryIndex;
+            int secondIndex = MySlot.inventoryIndex;
             //This old to dragged
-            DropSlot draggedOldDrop = draggedSlot.GetComponent<DragDrop>().oldSlot;
+            DropSlot draggedOldDrop = dragDrop.oldSlot;
             draggedOldDrop.MySlot = slot;
             slot.GetComponent<DragDrop>().oldSlot = draggedOldDrop;
             RectTransform thisRect = slot.GetComponent<RectTransform>();
@@ -61,6 +80,16 @@ public class DropSlot : MonoBehaviour, IDropHandler
             //Dragged to this
             MySlot = draggedSlot;
             draggedSlot.GetComponent<DragDrop>().oldSlot = this;
+            SwapTwoInvElements(firstIndex, secondIndex);
          }
+    }
+    void SwapTwoInvElements(int first, int second){
+        var inventory = Inventory.instance.inventory;
+        Slot firstSlot = inventory[first];
+        firstSlot.inventoryIndex = second;
+        Slot secondSlot = inventory[second];
+        secondSlot.inventoryIndex = first;
+        inventory[first] = secondSlot;
+        inventory[second] = firstSlot;
     }
 }

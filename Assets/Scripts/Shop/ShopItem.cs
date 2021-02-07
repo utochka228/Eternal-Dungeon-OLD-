@@ -72,7 +72,8 @@ public class ShopItem : MonoBehaviour
     }
     public void OnClicked(){
         if(myItem.isStackable){
-            InteractionSlider.instance.ShowSlider(SelectStack, countInStack);
+            string selectionHeader = "Selection count";
+            InteractionSlider.instance.ShowSlider(SelectStack, countInStack, selectionHeader);
         }else{
             if(CountSelectedItems == 1)
                 CountSelectedItems = 0;
