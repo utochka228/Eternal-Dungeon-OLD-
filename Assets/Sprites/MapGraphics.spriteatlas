@@ -51,26 +51,35 @@ SpriteAtlas:
     - {fileID: 21300000, guid: 6651179b93758a346b351f6d706f3c93, type: 3}
     - {fileID: 21300090, guid: 7810966f0f690954c87305933cabf2b0, type: 3}
     - {fileID: 21300150, guid: 7810966f0f690954c87305933cabf2b0, type: 3}
-    totalSpriteSurfaceArea: 11078
+    - {fileID: 21300000, guid: a8478c72c869e5c41a965da88f2de93b, type: 3}
+    - {fileID: 21300000, guid: 3b0affec3f38d044298fb3b4201ec567, type: 3}
+    - {fileID: 21300000, guid: b08b8fb90dd87984d8f4ea524f1876ec, type: 3}
+    totalSpriteSurfaceArea: 14928
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: e6dd4450c9480264ca8c28d0a07e630b, type: 3}
   - {fileID: 21300000, guid: 44eade32d694acd439c519b327527996, type: 3}
+  - {fileID: 21300000, guid: a8478c72c869e5c41a965da88f2de93b, type: 3}
   - {fileID: 21300000, guid: 716ed427b233e6445ac44339bfb56b75, type: 3}
   - {fileID: 21300000, guid: 8eb9e1b73fee8d644bb7c342c7f1081f, type: 3}
+  - {fileID: 21300000, guid: b08b8fb90dd87984d8f4ea524f1876ec, type: 3}
   - {fileID: 21300000, guid: 6651179b93758a346b351f6d706f3c93, type: 3}
   - {fileID: 21300000, guid: 9bc5536cd4c6d924b94a1d63187430e1, type: 3}
+  - {fileID: 21300000, guid: 3b0affec3f38d044298fb3b4201ec567, type: 3}
   - {fileID: 21300000, guid: eba67f3d4932b704f869d18ec47d30e3, type: 3}
   - {fileID: 21300150, guid: 7810966f0f690954c87305933cabf2b0, type: 3}
   - {fileID: 21300090, guid: 7810966f0f690954c87305933cabf2b0, type: 3}
   m_PackedSpriteNamesToIndex:
   - Ground
   - StoneWall
+  - evo_bundle16
   - Coal
   - Coal_Icon
+  - evo_bundle20
   - Wormhole
   - GrassBlock
+  - evo_bundle7
   - Ore
   - TX Village Props Statue
   - TX Village Props Gravestone C

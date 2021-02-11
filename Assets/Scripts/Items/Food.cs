@@ -6,6 +6,12 @@ using UnityEngine;
 public class Food : Item
 {
     public float healthRestoration;
+
+    public override string GetItemType()
+    {
+        return this.GetType().Name;
+    }
+
     public override void UseItem(Transform user)
     {
         PlayerStats stats = user.GetComponent<PlayerStats>();

@@ -18,18 +18,20 @@ MonoBehaviour:
   spawnChance: 0
   itemMinPrice: 15
   itemWorldScale: 1
-  spriteName: 
-  spawnOffset: {x: -0.233, y: -0.008, z: 0}
-  spawnRotation: 22.661
+  spriteName: evo_bundle16
+  spawnOffset: {x: -0.013, y: -0.003, z: 0}
+  spawnRotation: 0
   isStackable: 0
   maxStack: 0
   actions:
     isUsable: 0
     isEquipable: 1
   damage: 2
-  swordLength: 2
   speed: 0.1
+  colliderRadius: 0.2
+  attackPointOffset: {x: 0, y: 0.35, z: 0}
+  animatorTriggerName: 0
+  weaponHands: 1
+  swordLength: 2
   isJabWeapon: 0
-  JabAnimation: {fileID: 0}
   isSwingWeapon: 0
-  SwingAnimation: {fileID: 0}

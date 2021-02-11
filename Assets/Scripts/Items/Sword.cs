@@ -3,25 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewSwordType", menuName = "CreateItem/Sword")]
-public class Sword : Item
+public class Sword : Weapon
 {
-    [SerializeField] float damage = 2f;
     [SerializeField] float swordLength = 1f;
-    [SerializeField] float speed = 0.1f;
-
     [HideInInspector] public bool isJabWeapon;
-    [HideInInspector] public AnimationClip JabAnimation;
     [HideInInspector] public bool isSwingWeapon;
-    [HideInInspector] public AnimationClip SwingAnimation;
     public override void UseItem(Transform user)
     {
-        //Activate sword animation
-
-        //Activate player animation
-
-        //Attack (AttackSystem)
         PlayerAttackSystem attackSystem = user.GetComponent<PlayerAttackSystem>();
-        attackSystem?.Attack(damage, swordLength, "Sword");
+        attackSystem?.Attack(damage, swordLength, this);
     }
-    
+
+    public override string GetItemType()
+    {
+        return "Weapon";
+    }
 }

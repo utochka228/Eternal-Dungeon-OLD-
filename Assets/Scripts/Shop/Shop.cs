@@ -104,7 +104,7 @@ public class Shop : MonoBehaviour
             ShopItem shopIt = itemPref.GetComponent<ShopItem>();
             shopIt.shop = this;
             shopIt.thisMerchantItem = false;
-            shopIt.SetItem(slot.TryGetStackItem(), slot.itemStack.Count);
+            shopIt.SetItem(slot.TryGetStackItem(), slot.itemStack.Count, slot);
         }
     }
     void ClearPlayerShopInventory(){
@@ -164,9 +164,8 @@ public class Shop : MonoBehaviour
     public void Sell(){
         foreach (var item in selectedInventoryProducts)
         {
-            Item it = item.myItem;
             int count = item.CountSelectedItems;
-            Inventory.instance.RemoveItem(it, count);
+            item.myInvSlot.Remove(count);
         }
         sellButton.SetActive(false);
         selectedInventoryProducts.Clear();

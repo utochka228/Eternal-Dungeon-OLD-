@@ -73,6 +73,7 @@ public class Slot : MonoBehaviour
                 }
             }
             itemStack.Push(item);
+            Debug.Log("ITEM ADDED");
             //First adding
             if(itemStack.Count == 1){
                 Debug.Log(item.itemName +" name");

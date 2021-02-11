@@ -61,9 +61,9 @@ public class PlayerStats : Stats
         GameSession.instance.PlayerDied?.Invoke();
     }
 
-    protected override void TakingDamage(GameObject hitter)
+    protected override void TakingDamage(GameObject hitter, float damage)
     {
-        health--;
+        health -= damage;
             if (health == 0)
                 Die(hitter);
     }

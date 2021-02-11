@@ -30,3 +30,4 @@ MonoBehaviour:
   propHolder: {fileID: 1309787251855481487, guid: 684bff29a088bce4280594a44478ee3c,
     type: 3}
   props: []
+  levelPostProccess: {fileID: 11400000, guid: 77c9bfe521360d141a3ab3a539f857c5, type: 2}

@@ -52,6 +52,7 @@ public abstract class Item : ScriptableObject, IItem
     }
 
     public virtual void UseItem(Transform user){}
+    public virtual string GetItemType(){return this.GetType().Name;}
 
 }
 [System.Serializable]

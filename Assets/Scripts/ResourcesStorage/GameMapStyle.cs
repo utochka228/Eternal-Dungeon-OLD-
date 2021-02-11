@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D;
+using UnityEngine.Rendering;
 
 [CreateAssetMenu(fileName = "NewMapStyle", menuName = "CreateMapStyle/NewMapStyle")]
 public class GameMapStyle : ScriptableObject
@@ -15,6 +16,8 @@ public class GameMapStyle : ScriptableObject
     public BlockBase[] blocks;
     public GameObject propHolder;
     [SerializeField] Prop[] props;
+
+    public VolumeProfile levelPostProccess;
 
     public Sprite GetGroundSprite(int index){
         return atlas.GetSprite(ground[index]);

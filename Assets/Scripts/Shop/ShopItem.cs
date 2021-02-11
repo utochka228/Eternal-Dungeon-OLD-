@@ -13,6 +13,7 @@ public class ShopItem : MonoBehaviour
     [SerializeField] GameObject selectionBackground;
     [SerializeField] GameObject border;
     [HideInInspector] public Shop shop;
+    public Slot myInvSlot;
     public bool thisMerchantItem = true;
     int countInStack;
     public int CountInStack{
@@ -61,7 +62,10 @@ public class ShopItem : MonoBehaviour
         }
     }
     public Item myItem;
-    public void SetItem(Item it, int count){
+    public void SetItem(Item it, int count, Slot slot = null){
+        if(slot != null)
+            myInvSlot = slot;
+            
         myItem = it;
         icon.sprite = it.sprite;
         CountInStack = count;

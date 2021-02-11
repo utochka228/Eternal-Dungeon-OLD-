@@ -24,32 +24,23 @@ public class PlayerController : MonoBehaviour
 
     #region PrivateVariables
     [Header("My Player Stats(source)")]
-    [SerializeField]
-    PlayerStats myPlayerStats;
+    [SerializeField] PlayerStats myPlayerStats;
     [Header("My Player AttackSystem")]
-    [SerializeField]
-    PlayerAttackSystem attackSystem;
+    [SerializeField] PlayerAttackSystem attackSystem;
     [SerializeField] SpriteRenderer playerSpriteRend;
     [Header("Player Skins")]
-    [SerializeField]
-    private GameObject[] skins;
+    [SerializeField] private GameObject[] skins;
     FixedJoystick joystick;
+    Animator playerAnimator;
     #endregion
-
-    void UpdatePlayerSkin()
-    {
-        GameObject skin = skins[SkinChanger.skinChanger.currentActiveSkinIndex];
-        skin.SetActive(true);
-    }
-
+    
     void Start()
     {
+        playerAnimator = GetComponent<Animator>();
         oldPosition = currentPosition;
         interactText = PlayerUI.instance.interactName;
         joystick = PlayerUI.instance.joystick;
         PlayerUI.instance.interactButton.onClick.AddListener(OnInteractButton);
-
-        UpdatePlayerSkin();
     }
 
     void Update()
@@ -78,36 +69,19 @@ public class PlayerController : MonoBehaviour
         Vector2 movement = new Vector2(speed * joystick.Direction.x, speed * joystick.Direction.y);
         movement *= Time.deltaTime;
         rb.MovePosition(rb.position + movement);
-        FlipCharacter();
-        FlipHandItem();
+        //FlipCharacter();
+        //FlipHandItem();
+        float X = Mathf.Abs(joystick.Direction.normalized.x);
+        float Y = Mathf.Abs(joystick.Direction.normalized.y);
+        playerAnimator.SetFloat("X", X);
+        playerAnimator.SetFloat("Y", Y);
+        if(Input.GetKeyDown(KeyCode.Space))
+            playerAnimator.SetTrigger("Attack_Swing");
     }
 
     void FlipCharacter(){
-        if(joystick.Direction.normalized.x == 0)
-            return;
-        bool oldFlip = playerSpriteRend.flipX;
-        bool flipCharacterX = joystick.Direction.normalized.x > 0;
-
-        playerSpriteRend.flipX = flipCharacterX;
-        if(oldFlip != flipCharacterX && !Inventory.instance.HandsEmpty())
-            Inventory.instance.FlipXHandItem();
+        
     }
-    public Vector2 attackPointPos;
-    void FlipHandItem(){
-        if(Inventory.instance.HandsEmpty())
-            return;
-        float xDir = joystick.Direction.normalized.x;
-        float yDir = joystick.Direction.normalized.y;
-
-        if(xDir == 0 && yDir == 0)
-            return;
-
-        if(Mathf.Abs(xDir) > Mathf.Abs(yDir))
-            attackPointPos = new Vector2(xDir, 0f);
-        else
-            attackPointPos = new Vector2(0f, yDir);
-    }
-
     Queue<IInteractable> interactItems = new Queue<IInteractable>();
     private IInteractable InteractItem {
         get{

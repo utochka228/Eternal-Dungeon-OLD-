@@ -25,9 +25,9 @@ public abstract class Stats : MonoBehaviour, IDamageble
 
     public void TakeDamage(GameObject hitter, float damage)
     {
-        TakingDamage(hitter);
+        TakingDamage(hitter, damage);
     }
     protected abstract void Dying(GameObject murderer);
-    protected abstract void TakingDamage(GameObject hitter);
+    protected abstract void TakingDamage(GameObject hitter, float damage);
 
 }

@@ -33,9 +33,9 @@ public class EnemyStats : Stats
         Debug.Log("Loot was dropped!");
     }
 
-    protected override void TakingDamage(GameObject hitter)
+    protected override void TakingDamage(GameObject hitter, float damage)
     {
-        health--;
+        health -= damage;
         if (health == 0)
             Die(hitter);
     }

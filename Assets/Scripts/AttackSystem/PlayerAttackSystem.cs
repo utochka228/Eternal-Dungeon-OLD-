@@ -4,27 +4,25 @@ using UnityEngine;
 
 public class PlayerAttackSystem : AttackSystem
 {
-    public Transform attackPoint;
-
-    public override void Attack(float damage, float weaponLength, string weaponType)
+    [SerializeField] Transform attackPoint;
+    [SerializeField] PlayerAttackCollider attackCollider;
+    Animator playerAnimator;
+    public override void Attack(float damage, float weaponLength, Weapon weapon)
     {
-        Vector2 attackPos = GameSession.instance.Player.attackPointPos;
-        attackPos *= weaponLength;
-        attackPos /= 2f;
-        attackPoint.localPosition = new Vector3(attackPos.x, attackPos.y, attackPoint.localPosition.z);
-        int maskPlayer = ~LayerMask.GetMask("Player");
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(attackPoint.position, weaponLength/2, maskPlayer);
-        foreach (var collider in colliders)
-        {
-            Block block = collider.GetComponent<Block>();
-            if(weaponType != "PickAxe" && block != null)
-                continue;
-                
-            IDamageble hit = collider.GetComponent<IDamageble>();
-            if(hit != null){
-                hit.TakeDamage(gameObject, damage);
-            }
+        WeaponHands weaponHands = weapon.weaponHands;
+        if(weaponHands == WeaponHands.OneHand){
+            playerAnimator.SetTrigger(weapon.animatorTriggerName.ToString());
         }
+        if(weaponHands == WeaponHands.TwoHand){
+            playerAnimator.SetTrigger(weapon.animatorTriggerName.ToString());
+        }
+        attackCollider.SetAttackData(damage, weapon.GetItemType(), weapon.colliderRadius);
+    }
+    public void EnableAttackCollider(){
+        attackCollider.EnableCollider();
+    }
+    public void DisableAttackCollider(){
+        attackCollider.DisableCollider();
     }
 
     public override void Block()
@@ -32,16 +30,9 @@ public class PlayerAttackSystem : AttackSystem
         
     }
 
-    // Start is called before the first frame update
     void Start()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        playerAnimator = GetComponent<Animator>();
     }
 
 }

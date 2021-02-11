@@ -6,6 +6,7 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using UnityEngine.Rendering;
 
 [System.Serializable]
 public struct Style{
@@ -65,8 +66,8 @@ public class GameMap : MonoBehaviour
 	
 	public MapSize mapSize;
 	[SerializeField] MapStyle mapStyles;
-
 	GameMapStyle myMapStyle;
+	[SerializeField] Volume postProccesing;
 
     void Awake()
     {
@@ -163,7 +164,8 @@ public class GameMap : MonoBehaviour
     public string GenerateGameField(bool isCheckpointLevel, string seed = " ")
     {
 		myMapStyle = Resources.Load<GameMapStyle>(Path.Combine("MapStyles", mapStyles.GetCurrentMapStyle(relocation.CurrentDungeonLevel)));
-        #region Create_Field_Parents
+        postProccesing.profile = myMapStyle.levelPostProccess;
+		#region Create_Field_Parents
         GameFieldParent = new GameObject("GameField");
         Corridors = new GameObject("Corridors");
         Corridors.transform.SetParent(GameFieldParent.transform);

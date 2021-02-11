@@ -18,13 +18,19 @@ MonoBehaviour:
   spawnChance: 0
   itemMinPrice: 12
   itemWorldScale: 1
-  spriteName: Ore
-  spawnOffset: {x: 0.352, y: -0.099, z: 0}
-  spawnRotation: 82.366
+  spriteName: evo_bundle20
+  spawnOffset: {x: 0, y: 0, z: 0}
+  spawnRotation: 0
   isStackable: 0
+  maxStack: 0
   actions:
     isUsable: 0
     isEquipable: 1
-  power: 10
+  damage: 2
   speed: 1
+  colliderRadius: 0.25
+  attackPointOffset: {x: 0, y: 0.324, z: 0}
+  animatorTriggerName: 0
+  weaponHands: 1
+  power: 10
   distance: 1

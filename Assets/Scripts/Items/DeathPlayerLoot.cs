@@ -6,4 +6,9 @@ using UnityEngine;
 public class DeathPlayerLoot : Item
 {
     public List<Item> loot;
+
+    public override string GetItemType()
+    {
+        return this.GetType().Name;
+    }
 }

@@ -11,6 +11,7 @@ public class Inventory : MonoBehaviour
     [HideInInspector] public GameObject itemHolder;
     [SerializeField] GameObject slotPrefab;
     [SerializeField] int startSize = 9;
+    Animator playerAnimator;
     int currentSize;
     public int freeSlots;
     public int Size {
@@ -20,7 +21,6 @@ public class Inventory : MonoBehaviour
     public Action inventoryUpdated;
     Item playerHandItem;
     [SerializeField] SpriteRenderer handSpriteHolder;
-    [SerializeField] SpriteRenderer playerSkin;
     int money = 100;
     public int Money{
         get{return money;}
@@ -37,6 +37,7 @@ public class Inventory : MonoBehaviour
 
     void Start()
     {
+        playerAnimator = GetComponent<Animator>();
         if(PlayerPrefs.HasKey("Save")){
             LoadInventoryData();
         }
@@ -82,24 +83,40 @@ public class Inventory : MonoBehaviour
             Debug.Log("Invenotory -> UseHandItem()");
         }
     }
-
-    public void FlipXHandItem(){
-        Transform handItem = handSpriteHolder.transform;
-        handItem.localPosition = new Vector3(-handItem.localPosition.x, handItem.localPosition.y, handItem.localPosition.z);
-        handItem.localEulerAngles = new Vector3(handItem.localEulerAngles.x, handItem.localEulerAngles.y, -handItem.localEulerAngles.z);
+    public void NullItemRotation(){
+        handSpriteHolder.transform.localRotation = Quaternion.Euler(0, 0, 0);
     }
-
+    public void SetItemTransform(){
+        handSpriteHolder.transform.localPosition = playerHandItem.spawnOffset;
+        handSpriteHolder.transform.localRotation = Quaternion.Euler(0, 0, playerHandItem.spawnRotation);
+    }
+    [SerializeField] Transform attackPoint;
     public void EquipItem(Item it){
         playerHandItem = it;
         handSpriteHolder.sprite = it.sprite;
-        handSpriteHolder.transform.localPosition = it.spawnOffset;
-        handSpriteHolder.transform.localRotation = Quaternion.Euler(0, 0, it.spawnRotation);
-        if(playerSkin.flipX)
-            FlipXHandItem();
+        SetItemTransform();
+
+        string itemType = it.GetItemType();
+        Debug.Log(itemType);
+        if(itemType == "Weapon" || itemType == "PickAxe"){
+            Weapon weapon = (Weapon)it;
+            WeaponHands weaponHands = weapon.weaponHands;
+            attackPoint.localPosition = weapon.attackPointOffset;
+            if(weaponHands == WeaponHands.OneHand){
+                playerAnimator.SetLayerWeight(1, 1f);
+                playerAnimator.SetLayerWeight(2, 0f);
+            }
+            if(weaponHands == WeaponHands.TwoHand){
+                playerAnimator.SetLayerWeight(1, 0f);
+                playerAnimator.SetLayerWeight(2, 1f);
+            }
+        }
     }
     void UnEquipItem(){
         handSpriteHolder.sprite = null;
         playerHandItem = null;
+        playerAnimator.SetLayerWeight(1, 0f);
+        playerAnimator.SetLayerWeight(2, 0f);
     }
     //item not equiped
     public bool HandsEmpty(){
@@ -154,7 +171,7 @@ public class Inventory : MonoBehaviour
                         return;
                     }
                 }
-            }
+            } else break;
         }
         foreach (var slot in inventory)
         {
@@ -168,20 +185,39 @@ public class Inventory : MonoBehaviour
     }
 
     public void RemoveItem(Item item, int count = 0){
+        if(item == null)
+            return;
+        foreach (var slot in inventory)
+        {
+            if(item.isStackable){
+                Item stackItem = slot.TryGetStackItem();
+                if(stackItem != null){
+                    if(item.name == stackItem.name){
+                        int countInStack = slot.itemStack.Count;
+                        int result = count - countInStack;
+                        if(result <= 0){
+                            slot.Remove(count);
+                            return;
+                        }
+                        else{
+                            count -= countInStack;
+                            continue;
+                        }
+                    }
+                }
+            } else break;
+        }
         foreach (var slot in inventory)
         {
             if(!slot.IsEmpty()){
-                Item slotItem = slot.TryGetStackItem();
-                if(item != null){
-                    if(item.name == slotItem.name){
-                        int remCount = item.Count;
-                        if(count > 0){
-                            remCount = count;
-                        }
-                        slot.Remove(remCount);
+                Item stackItem = slot.TryGetStackItem();
+                if(stackItem != null){
+                    if(item.name == stackItem.name){
+                        slot.Remove(1);
+                        return;
                     }
                 }
-            }
+            } 
         }
     }
 
