@@ -117,6 +117,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 10000
+  maxHealth: 0
   myEnemy: {fileID: 2324968750612713846}
 --- !u!61 &614065946649892350
 BoxCollider2D:

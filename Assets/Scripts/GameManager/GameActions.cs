@@ -19,7 +19,6 @@ public class GameActions : MonoBehaviour
     void Start(){
          //For start of match
         MatchStarted += MenuPresenter.instance.HideOtherUI;
-        //GameLoader
         MatchStarted += GameSession.instance.StartSession;
 
         //For end of match

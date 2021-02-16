@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Food", menuName = "CreateItem/Food")]
 public class Food : Item
 {
-    public float healthRestoration;
+    public int healthRestoration;
 
     public override string GetItemType()
     {

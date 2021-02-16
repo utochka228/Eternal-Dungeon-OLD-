@@ -26,7 +26,7 @@ MonoBehaviour:
   actions:
     isUsable: 0
     isEquipable: 1
-  damage: 2
+  damage: 25
   speed: 0.1
   colliderRadius: 0.2
   attackPointOffset: {x: 0, y: 0.35, z: 0}

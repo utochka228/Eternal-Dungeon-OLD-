@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 public class Shop : MonoBehaviour
 {
-    Dictionary<string, ShopProduct> shopItems = new Dictionary<string, ShopProduct>();
+    Dictionary<string, List<ShopProduct>> shopItems = new Dictionary<string, List<ShopProduct>>();
     [SerializeField] GameObject shopItemPref;
     [SerializeField] Transform shopHolder;
     [SerializeField] Transform playerInventoryHolder;
@@ -15,7 +15,7 @@ public class Shop : MonoBehaviour
     [SerializeField] GameObject sellButton;
     [SerializeField] TextMeshProUGUI sellPrice;
     [SerializeField] TextMeshProUGUI money;
-
+    [SerializeField] string[] itemTypes;
     List<ShopItem> selectedShopProducts = new List<ShopItem>();
     int totalBuySum;
     public int TotalBuySum{
@@ -75,17 +75,22 @@ public class Shop : MonoBehaviour
     }
     //Called once for merchant`s items
     void ProcessShop(){
-        Item[] items = Resources.LoadAll<Item>("Items/");
-        foreach (var item in items)
+        Item[] allItems = Resources.LoadAll<Item>("Items/");
+        foreach (var itemType in itemTypes)
         {
-            string typeName = item.GetType().ToString();
-            int count = 1;
-            if(item.isStackable){
-                count = Random.Range(1, 10);
-            }else {
-                count = 1;
+            List<ShopProduct> products = new List<ShopProduct>();
+            var items = allItems.Where(x => x.GetItemType() == itemType);
+            foreach (var item in items)
+            {
+                int count = 1;
+                if(item.isStackable){
+                    count = Random.Range(1, 10);
+                }else {
+                    count = 1;
+                }
+                products.Add(new ShopProduct(item, count));
             }
-            shopItems.Add(typeName, new ShopProduct(item, count));
+                shopItems.Add(itemType, products);
         }
         FillShop();
     }
@@ -121,10 +126,13 @@ public class Shop : MonoBehaviour
             var items = shopItems.Where(x => x.Key == categoryName).Select(x => x.Value);
             foreach (var itemProduct in items)
             {
-                GameObject itemPref = Instantiate(shopItemPref, category);
-                ShopItem shopIt = itemPref.GetComponent<ShopItem>();
-                shopIt.shop = this;
-                shopIt.SetItem(itemProduct.item, itemProduct.count);
+                foreach (var product in itemProduct)
+                {
+                    GameObject itemPref = Instantiate(shopItemPref, category);
+                    ShopItem shopIt = itemPref.GetComponent<ShopItem>();
+                    shopIt.shop = this;
+                    shopIt.SetItem(product.item, product.count);
+                }
             }
         }
     }

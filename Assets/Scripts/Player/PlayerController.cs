@@ -9,17 +9,12 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     #region PublicVariables
-
-    public new string name;
+    public string playerName;
     public float speed = 10f; //Скорость передвижения игрока
-    public int bombCount = 0;
-    public Text deathTimerText;
-    public PlayerController enemy;
     public event Action OnChangedPlayerPosition;
     public event Action OnStartOfMoving;
     public Vector2 currentPosition;
     public Vector2 oldPosition;
-    public Block targetBlock;
     #endregion
 
     #region PrivateVariables
@@ -27,9 +22,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] PlayerStats myPlayerStats;
     [Header("My Player AttackSystem")]
     [SerializeField] PlayerAttackSystem attackSystem;
-    [SerializeField] SpriteRenderer playerSpriteRend;
-    [Header("Player Skins")]
-    [SerializeField] private GameObject[] skins;
     FixedJoystick joystick;
     Animator playerAnimator;
     #endregion
@@ -56,10 +48,10 @@ public class PlayerController : MonoBehaviour
             oldPosition = currentPosition;
         }
     }
-    [SerializeField] float viewOfDistance = 2f;
     void FixedUpdate()
     {
         MovePlayer();
+        UpdateAnimatorValues();
     }
     
     [SerializeField] Rigidbody2D rb;
@@ -69,18 +61,43 @@ public class PlayerController : MonoBehaviour
         Vector2 movement = new Vector2(speed * joystick.Direction.x, speed * joystick.Direction.y);
         movement *= Time.deltaTime;
         rb.MovePosition(rb.position + movement);
-        //FlipCharacter();
-        //FlipHandItem();
-        float X = Mathf.Abs(joystick.Direction.normalized.x);
-        float Y = Mathf.Abs(joystick.Direction.normalized.y);
-        playerAnimator.SetFloat("X", X);
-        playerAnimator.SetFloat("Y", Y);
-        if(Input.GetKeyDown(KeyCode.Space))
-            playerAnimator.SetTrigger("Attack_Swing");
+    }
+    float absX, absY, X, Y;
+    bool isRight, isLeft; //rotation
+    void UpdateAnimatorValues(){
+        X = joystick.Direction.normalized.x;
+        Y = joystick.Direction.normalized.y;
+        absX = Mathf.Abs(X);
+        absY = Mathf.Abs(Y);
+        playerAnimator.SetFloat("X", absX);
+        playerAnimator.SetFloat("Y", absY);
+
+        if(X > 0){
+            isRight = true;
+            isLeft = false;
+        }else if(X < 0)
+        {
+            isLeft = true;
+            isRight = false;
+        }
+
+        if(X != 0)
+            FlipCharacter();
     }
 
     void FlipCharacter(){
-        
+        //Flip to right
+        if(isRight == true && isLeft == false){
+            if(transform.eulerAngles.y != 180f){
+                transform.rotation = Quaternion.Euler(transform.rotation.x, 180f, transform.rotation.z);
+            }
+        }
+        //Flip to left
+        if(isLeft == true && isRight == false){
+            if(transform.eulerAngles.y != 0f){
+                transform.rotation = Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z);
+            }
+        }
     }
     Queue<IInteractable> interactItems = new Queue<IInteractable>();
     private IInteractable InteractItem {

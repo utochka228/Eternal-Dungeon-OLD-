@@ -11,9 +11,7 @@ public class PlayerUI : MonoBehaviour
     public GameObject gameCanvas;
     public GameObject pauseMenu;
     public GameObject congratulations;
-
-    [SerializeField]
-    public TextMeshProUGUI playerHealth;
+    public HealthHearts playerHearts;
 
     public FixedJoystick joystick;
     public Button interactButton;
@@ -40,5 +38,9 @@ public class PlayerUI : MonoBehaviour
     void Start(){
         storeMoneyText.text = PlayerInfo.PI.Money.ToString();
         menuMoneyText.text = PlayerInfo.PI.Money.ToString();
+    }
+    public void EnableDisableInventory(){
+        bool activate = !inventoryPanel.gameObject.activeSelf;
+        inventoryPanel.gameObject.SetActive(activate);
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class Weapon : Item
 {
-    [SerializeField] protected float damage = 2f;
+    [SerializeField] protected int damage = 2;
     [SerializeField] protected float speed = 0.1f;
     public float colliderRadius;
     public Vector3 attackPointOffset;

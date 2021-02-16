@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewPickAxeType", menuName = "CreateItem/PickAxe")]
 public class PickAxe : Weapon
 {
-    [SerializeField] float power = 10;
+    [SerializeField] int power = 10;
     [SerializeField] float distance = 1f;
 
     public override string GetItemType()

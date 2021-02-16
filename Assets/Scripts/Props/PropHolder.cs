@@ -28,7 +28,7 @@ public class PropHolder : MonoBehaviour, IDamageble, IInteractable
         myProp.UseProp();
     }
 
-    public void TakeDamage(GameObject hitter, float damage)
+    public void TakeDamage(GameObject hitter, int damage)
     {
         if(myProp.destroyable == false)
             return;

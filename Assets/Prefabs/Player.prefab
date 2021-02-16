@@ -996,7 +996,6 @@ GameObject:
   - component: {fileID: 4144941501956043213}
   - component: {fileID: 4144941501956043218}
   - component: {fileID: 8058673296216534641}
-  - component: {fileID: -5765922186401361901}
   - component: {fileID: 6422849187838793670}
   - component: {fileID: 2879701262277601978}
   - component: {fileID: -7529586408959462048}
@@ -1038,22 +1037,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 453ff71fd3665084f808a5c84a8543f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: UtkaPlayer
+  playerName: 
   speed: 2
-  bombCount: 3
-  deathTimerText: {fileID: 0}
-  enemy: {fileID: 0}
   currentPosition: {x: 0, y: 0}
   oldPosition: {x: 0, y: 0}
-  targetBlock: {fileID: 0}
   myPlayerStats: {fileID: 8058673296216534641}
   attackSystem: {fileID: 2049115816070286129}
-  playerSpriteRend: {fileID: 0}
-  skins:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  viewOfDistance: 2
   rb: {fileID: 2879701262277601978}
 --- !u!114 &8058673296216534641
 MonoBehaviour:
@@ -1067,23 +1056,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff49d5c34b4b99145b2e9a50747da53e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 3
+  health: 240
+  maxHealth: 240
   myController: {fileID: 4144941501956043218}
   myEnergy: 0
   relocationEnergy: 0
---- !u!114 &-5765922186401361901
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4144941501956043217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74581da47b840d243bdcc13aad570daf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthText: {fileID: 0}
 --- !u!61 &6422849187838793670
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1097,7 +1074,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.15}
+  m_Offset: {x: 0, y: 0.12464142}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -1108,7 +1085,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.43, y: 0.73}
+  m_Size: {x: 0.43, y: 0.5826969}
   m_EdgeRadius: 0
 --- !u!50 &2879701262277601978
 Rigidbody2D:
@@ -1146,7 +1123,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 1.64
+  m_Radius: 0.6
 --- !u!114 &-8147555710415156658
 MonoBehaviour:
   m_ObjectHideFlags: 0

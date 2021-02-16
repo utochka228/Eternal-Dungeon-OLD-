@@ -17,7 +17,7 @@ public class Block : MonoBehaviour, IDamageble
         Destroy(gameObject);
     }
 
-    public void TakeDamage(GameObject hitter, float damage)
+    public void TakeDamage(GameObject hitter, int damage)
     {
         if(damage < myBlock.minPickaxePower)
             return;

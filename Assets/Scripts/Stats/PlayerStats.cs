@@ -6,8 +6,8 @@ using UnityEngine;
 public class PlayerStats : Stats
 {
     public PlayerController myController;
-    UIPlayerUpdater playerUpdater;
-    public override float Health
+    HealthHearts myHearts;
+    public override int Health
     {
         get
         {
@@ -17,8 +17,28 @@ public class PlayerStats : Stats
         {
             if (value >= 0)
             {
+                if(value > maxHealth)
+                    value = maxHealth;
+
                 health = value;
-                playerUpdater.healthText.text = health.ToString();
+                myHearts.UpdateHearts(this);
+            }
+        }
+    }
+    public override int MaxHealth{
+        get {return maxHealth;}
+        set{
+            if(value >= 0){
+                int oldMaxHp = maxHealth;
+                bool changeHealth = false;
+                if(Health == oldMaxHp)
+                    changeHealth = true;
+                maxHealth = value;
+                if(maxHealth > oldMaxHp && changeHealth == true)
+                    health = maxHealth;
+                if(Health > maxHealth)
+                    health = maxHealth;
+                myHearts.UpdateHearts(this);
             }
         }
     }
@@ -43,15 +63,13 @@ public class PlayerStats : Stats
                 relocationEnergy = value;
         } 
     }
-    void Start()
+    public void Start()
     {
-        //Variables init
-        health = PlayerInfo.PI.Health;
-
-
         //Other init
         myController = GetComponent<PlayerController>();
-        playerUpdater = GetComponent<UIPlayerUpdater>();
+        myHearts = PlayerUI.instance.playerHearts;
+
+        Health = MaxHealth;
     }
     protected override void Dying(GameObject murderer)
     {
@@ -61,7 +79,7 @@ public class PlayerStats : Stats
         GameSession.instance.PlayerDied?.Invoke();
     }
 
-    protected override void TakingDamage(GameObject hitter, float damage)
+    protected override void TakingDamage(GameObject hitter, int damage)
     {
         health -= damage;
             if (health == 0)

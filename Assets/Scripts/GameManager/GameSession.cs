@@ -6,11 +6,12 @@ using UnityEngine;
 public class GameSession : MonoBehaviour
 {
     public static GameSession instance;
-    
     public Action PlayerDied;
 
     [SerializeField]
     private GameObject playerPrefab;
+    public GameObject damagePopupPrefab;
+    public Transition transition;
     public PlayerController Player { get; private set; }
 
     void Awake()
@@ -24,6 +25,7 @@ public class GameSession : MonoBehaviour
             return;
         }else
             GameMap.GM.relocation.ChangeLevel();
+        transition.Create(GameMap.GM.relocation.CurrentDungeonLevel, "sfsfssf");
     }
 
     public void SpawnPlayer(Vector3 position)

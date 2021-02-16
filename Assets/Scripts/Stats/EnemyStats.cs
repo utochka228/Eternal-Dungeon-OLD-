@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyStats : Stats
 {
     public Enemy myEnemy;
-    public override float Health
+    public override int Health
     {
         get{return health;}
             
@@ -33,9 +33,10 @@ public class EnemyStats : Stats
         Debug.Log("Loot was dropped!");
     }
 
-    protected override void TakingDamage(GameObject hitter, float damage)
+    protected override void TakingDamage(GameObject hitter, int damage)
     {
         health -= damage;
+        DamagePopup.Create(transform.position, damage);
         if (health == 0)
             Die(hitter);
     }

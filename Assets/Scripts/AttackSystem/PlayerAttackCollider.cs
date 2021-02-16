@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerAttackCollider : MonoBehaviour
 {
-    float damage;
+    int damage;
     string weaponType;
     [SerializeField] CircleCollider2D attackCollider;
     void OnTriggerEnter2D(Collider2D other) {
@@ -16,7 +16,7 @@ public class PlayerAttackCollider : MonoBehaviour
             hit.TakeDamage(GameSession.instance.Player.gameObject, damage);
         }
     }
-    public void SetAttackData(float damage, string weaponType, float colliderRadius){
+    public void SetAttackData(int damage, string weaponType, float colliderRadius){
         this.damage = damage;
         this.weaponType = weaponType;
         attackCollider.radius = colliderRadius;

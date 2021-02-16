@@ -7,7 +7,7 @@ public class PlayerAttackSystem : AttackSystem
     [SerializeField] Transform attackPoint;
     [SerializeField] PlayerAttackCollider attackCollider;
     Animator playerAnimator;
-    public override void Attack(float damage, float weaponLength, Weapon weapon)
+    public override void Attack(int damage, float weaponLength, Weapon weapon)
     {
         WeaponHands weaponHands = weapon.weaponHands;
         if(weaponHands == WeaponHands.OneHand){
