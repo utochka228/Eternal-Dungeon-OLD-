@@ -16,7 +16,14 @@ public class PlayerAttackSystem : AttackSystem
         if(weaponHands == WeaponHands.TwoHand){
             playerAnimator.SetTrigger(weapon.animatorTriggerName.ToString());
         }
-        attackCollider.SetAttackData(damage, weapon.GetItemType(), weapon.colliderRadius);
+        bool isCritical = IsCriticalHit(weapon.criticalChance);
+        attackCollider.SetAttackData(damage, isCritical, weapon.GetItemType(), weapon.colliderRadius);
+    }
+    bool IsCriticalHit(float weaponCritChance){
+        if(Random.value < weaponCritChance)
+            return true;
+        else
+            return false;
     }
     public void EnableAttackCollider(){
         attackCollider.EnableCollider();

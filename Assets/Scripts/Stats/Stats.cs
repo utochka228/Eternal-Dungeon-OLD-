@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 interface IDamageble
 {
-    void TakeDamage(GameObject hitter, int damage);
+    void TakeDamage(GameObject hitter, int damage, bool isCritical);
     void Die(GameObject murderer);
 }
 public abstract class Stats : MonoBehaviour, IDamageble
@@ -24,11 +24,11 @@ public abstract class Stats : MonoBehaviour, IDamageble
 
     }
 
-    public void TakeDamage(GameObject hitter, int damage)
+    public void TakeDamage(GameObject hitter, int damage, bool isCritical)
     {
-        TakingDamage(hitter, damage);
+        TakingDamage(hitter, damage, isCritical);
     }
     protected abstract void Dying(GameObject murderer);
-    protected abstract void TakingDamage(GameObject hitter, int damage);
+    protected abstract void TakingDamage(GameObject hitter, int damage, bool isCritical);
 
 }

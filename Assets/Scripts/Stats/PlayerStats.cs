@@ -79,7 +79,7 @@ public class PlayerStats : Stats
         GameSession.instance.PlayerDied?.Invoke();
     }
 
-    protected override void TakingDamage(GameObject hitter, int damage)
+    protected override void TakingDamage(GameObject hitter, int damage, bool isCritical)
     {
         health -= damage;
             if (health == 0)

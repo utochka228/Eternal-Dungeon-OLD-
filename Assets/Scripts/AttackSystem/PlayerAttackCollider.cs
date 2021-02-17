@@ -6,18 +6,25 @@ public class PlayerAttackCollider : MonoBehaviour
 {
     int damage;
     string weaponType;
+    bool isCritical;
     [SerializeField] CircleCollider2D attackCollider;
     void OnTriggerEnter2D(Collider2D other) {
         Block block = other.GetComponent<Block>();
         if(weaponType != "PickAxe" && block != null)
             return;
         IDamageble hit = other.GetComponent<IDamageble>();
+        Debug.Log("IS CRIT:" + isCritical);
         if(hit != null){
-            hit.TakeDamage(GameSession.instance.Player.gameObject, damage);
+            hit.TakeDamage(GameSession.instance.Player.gameObject, damage, isCritical);
         }
     }
-    public void SetAttackData(int damage, string weaponType, float colliderRadius){
-        this.damage = damage;
+    public void SetAttackData(int damage, bool isCritical, string weaponType, float colliderRadius){
+        this.isCritical = isCritical;
+        Debug.Log("IS CRIT:" + isCritical);
+        if(this.isCritical)
+            this.damage = damage*2;
+        else
+            this.damage = damage;            
         this.weaponType = weaponType;
         attackCollider.radius = colliderRadius;
     }

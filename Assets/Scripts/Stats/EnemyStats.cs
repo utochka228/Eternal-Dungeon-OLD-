@@ -33,10 +33,11 @@ public class EnemyStats : Stats
         Debug.Log("Loot was dropped!");
     }
 
-    protected override void TakingDamage(GameObject hitter, int damage)
+    protected override void TakingDamage(GameObject hitter, int damage, bool isCritical)
     {
         health -= damage;
-        DamagePopup.Create(transform.position, damage);
+        Vector3 center = GetComponent<Collider2D>().bounds.center;
+        DamagePopup.Create(center, damage, isCritical);
         if (health == 0)
             Die(hitter);
     }
