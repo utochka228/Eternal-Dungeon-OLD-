@@ -36,8 +36,8 @@ public class PlayerUI : MonoBehaviour
     }
 
     void Start(){
-        storeMoneyText.text = PlayerInfo.PI.Money.ToString();
-        menuMoneyText.text = PlayerInfo.PI.Money.ToString();
+        storeMoneyText.text = MenuPresenter.playerInfo.Money.ToString();
+        menuMoneyText.text = MenuPresenter.playerInfo.Money.ToString();
     }
     public void EnableDisableInventory(){
         bool activate = !inventoryPanel.gameObject.activeSelf;

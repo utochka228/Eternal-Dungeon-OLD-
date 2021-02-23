@@ -18,16 +18,7 @@ public class Escape : State
     }
     public override void Run()
     {
-        if(enemy.currentPosition == escapePoint)
-        {
-            if (enemy.TargetIsLost(2f))
-            {
-                //enemy.movementScript.OnPathNotSuccessful -= Escaping;
-                isFinished = true;
-            }
-            else
-                Escaping();
-        }
+        
     }
 
     void Escaping()
@@ -64,6 +55,5 @@ public class Escape : State
         //}
         escapePoint = Vector2.zero;
 
-        enemy.MoveToTarget(enemy.currentPosition, escapePoint);
     }
 }

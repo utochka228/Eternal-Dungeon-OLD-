@@ -2,45 +2,44 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Pathfinding;
 using UnityEngine;
 
+[RequireComponent(typeof(EnemyStats))]
+[RequireComponent(typeof(AIPath))]
 public class Enemy : MonoBehaviour
 {
-    #region PublicVariables
-
     public Vector2 currentPosition { get; private set; }
     public Vector2 oldPosition { get; private set; }
-
-    public Unit movementScript;
-
-    public GameObject dodgeTrail { get; private set; }
-
-    public Transform target;
-
-    private bool canAttackPlayer = true;
-
+    [SerializeField] AIDestinationSetter targetSetter;
     public event Action OnChangedPosition;
-
-    
-
-    [Header("Actual state")]
-    public State currentState;
-
-    [HideInInspector]
-    public float distanceToPlayer;
+    [Header("Start Enemy State")] public State StartState;
+    [Header("Actual state")] public State currentState;
+    [HideInInspector] public float distanceToPlayer;
     public float distanceToDetecting = 4f;
-    #endregion
-
-    #region PrivateVariables
+    public List<GameObject> TargetsInMyViewZone{ get; private set;}
+    public GameObject GetClosestVisibleTarget(){
+        if(TargetsInMyViewZone.Count == 0)
+            return null;
+        GameObject closestTarget = TargetsInMyViewZone[0];
+        Vector2 myPos = new Vector2(transform.position.x, transform.position.y);
+        foreach (var target in TargetsInMyViewZone)
+        {
+            Vector2 targetPos = new Vector2(target.transform.position.x, target.transform.position.y);
+            float dist = Vector2.Distance(targetPos, myPos);
+            Vector2 prevTargetPos = new Vector2(closestTarget.transform.position.x, closestTarget.transform.position.y);
+            float prevTargetDist = Vector2.Distance(myPos, prevTargetPos);
+            if(dist > prevTargetDist)
+                closestTarget = target;            
+        }
+        return closestTarget;
+    }
 
     [Header("Enemy Stats(source)")]
-    [SerializeField]
     protected EnemyStats myEnemyStats;
-
     [SerializeField]
     int lowHpValue = 1;
-
-    #endregion
+    Transform player;
 
     void PositionHasChanged()
     {
@@ -50,8 +49,10 @@ public class Enemy : MonoBehaviour
 
     protected void Start()
     {
+        TargetsInMyViewZone = new List<GameObject>();
+        myEnemyStats = GetComponent<EnemyStats>();
         oldPosition = currentPosition;
-        target = GameSession.instance.Player.transform;
+        player = GameSession.instance.Player.transform;
     }
 
     void DestroyGameObject()
@@ -64,18 +65,13 @@ public class Enemy : MonoBehaviour
         GameActions.instance.MatchEnded -= DestroyGameObject;
     }
 
-
-    // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
-            myEnemyStats.Die(target.gameObject);
-
         #region TempRegionForPosition
-
         currentPosition = new Vector2(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-        distanceToPlayer = Vector3.Distance(target.position, transform.position);
-
+        Vector2 plPos = new Vector2(player.transform.position.x, player.transform.position.y);
+        Vector2 thisPos = new Vector2(transform.position.x, transform.position.y);
+        distanceToPlayer = Vector2.Distance(plPos, thisPos);
 
         if (currentPosition != oldPosition)
         {
@@ -93,46 +89,39 @@ public class Enemy : MonoBehaviour
         #endregion
     }
 
-    void OnTriggerEnter(Collider other)
+    void OnTriggerEnter2D(Collider2D other)
     {
+        //Adding entered collider to visible targets
         PlayerController player = other.GetComponent<PlayerController>();
-
+        Enemy enemy = other.GetComponent<Enemy>();
         if(player != null)
-            OnTouchedByPlayer(player);
+            if(!TargetsInMyViewZone.Contains(player.gameObject))
+                TargetsInMyViewZone.Add(other.gameObject);
+        // if(enemy != null)
+        //     if(!TargetsInMyViewZone.Contains(enemy.gameObject))
+        //         TargetsInMyViewZone.Add(other.gameObject);
     }
-
-    public virtual void OnTouchedByPlayer(PlayerController player)
-    {
-        Debug.Log($"{transform.name} was touched by {player.transform.name}");
+    void OnTriggerExit2D(Collider2D other) {
+        //Remove from visible targets
+        if(TargetsInMyViewZone.Contains(other.gameObject)){
+            TargetsInMyViewZone.Remove(other.gameObject);
+        }
     }
-
-    public virtual void DoStatementWork()
-    {
-        
-    }
-
-    public bool TargetIsLost() { return distanceToPlayer > distanceToDetecting ? true : false; }
-    public bool TargetIsLost(float multiplier) { return distanceToPlayer > distanceToDetecting * multiplier ? true : false; }
-    protected bool ThisStateWasPrevious(State.EnemyStatement state) { return currentState.statement == state ? true : false; }
+    public virtual void DoStatementWork(){}
     
     public void SetState(State state)
     {
         currentState?.Exit();
 
         StopAllCoroutines();
-        //Do copy (Instantiate(state) because it is ScriptableObject. 
-        //When parameters will be changed it change parameters in asset menu!
         currentState = Instantiate(state);
         currentState.enemy = this;
         currentState.Init();
     }
 
-
-    public void MoveToTarget(Vector2 myPos, Vector2 target)
-    {
-        movementScript.MoveToTarget(myPos, target);
+    public void SetTarget(Transform target){
+        targetSetter.target = target;
     }
-
     public bool isLowHp()
     {
         return myEnemyStats.Health <= lowHpValue ? true : false;

@@ -5,7 +5,6 @@ using UnityEngine;
 public class PatrolEnemy : Enemy
 {
     [Header("Enemy Statements")]
-    public State StartState;
     public State Patrol;
 
 
@@ -23,11 +22,7 @@ public class PatrolEnemy : Enemy
         }
         else
         {
-            if (ThisStateWasPrevious(StartState.statement)) //Idle
-            {
-                SetState(Patrol);
-                return;
-            }
+           
         }
     }
 }

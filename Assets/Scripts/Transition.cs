@@ -23,6 +23,9 @@ public class Transition : MonoBehaviour
         animator.SetTrigger("End");
         yield break;
     }
+    public void SetAstar(){
+        GameMap.GM.SetAstarGrid();
+    }
     
     void Update()
     {

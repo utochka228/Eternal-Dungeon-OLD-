@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d992264d3f6b241841675e07c04592, type: 3}
+  m_Name: PlayerLook
+  m_EditorClassIdentifier: 
+  headType: {fileID: 21300000, guid: 405a6983211ceff4aa9aa66cdc8b2b31, type: 3}
+  beardType: {fileID: 21300000, guid: 4c89c5cb8d4753046b3d8a4c8b07d650, type: 3}
+  beardColor: {r: 0, g: 0, b: 0, a: 0}
+  hairType: {fileID: 21300000, guid: f2ad075b2afaed64ea663ebdb3a999fe, type: 3}
+  hairColor: {r: 0, g: 0, b: 0, a: 0}
+  armsColor: {r: 0, g: 0, b: 0, a: 0}
+  chestType: {fileID: 21300000, guid: f645113480e3a1f4f90004bd0430d743, type: 3}
+  chestColor: {r: 0, g: 0, b: 0, a: 0}
+  skinColor: {r: 0, g: 0, b: 0, a: 0}
+  legsColor: {r: 0, g: 0, b: 0, a: 0}

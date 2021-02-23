@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Cinemachine;
 public class GameSession : MonoBehaviour
 {
     public static GameSession instance;
@@ -13,7 +13,7 @@ public class GameSession : MonoBehaviour
     public GameObject damagePopupPrefab;
     public Transition transition;
     public PlayerController Player { get; private set; }
-
+    [SerializeField] CinemachineVirtualCamera virtualCamera;
     void Awake()
     {
         instance = this;
@@ -25,7 +25,6 @@ public class GameSession : MonoBehaviour
             return;
         }else
             GameMap.GM.relocation.ChangeLevel();
-        transition.Create(GameMap.GM.relocation.CurrentDungeonLevel, "sfsfssf");
     }
 
     public void SpawnPlayer(Vector3 position)
@@ -34,14 +33,15 @@ public class GameSession : MonoBehaviour
             Player.transform.position = position;
             return;
         }
-
         GameObject player = Instantiate(playerPrefab);
+        virtualCamera.Follow = player.transform;
         player.transform.position = position;
         Player = player.GetComponent<PlayerController>();
-
+        //Upload player skin look data
+        var playerLook = Resources.Load<SkinPreset>("Skin/PlayerLook");
+        Player.skinPartsHolder.UpdateSkinLook(playerLook);
         GameObject[] playerTarget = new GameObject[1];
         playerTarget[0] = player;
-        CameraMultiTarget.instance.SetTargets(playerTarget);
     }
     public void DestroyPlayer(){
         Destroy(Player.gameObject);

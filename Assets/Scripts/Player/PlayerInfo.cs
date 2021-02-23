@@ -2,18 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Main player information for all Game
-/// </summary>
-public class PlayerInfo : MonoBehaviour
+[CreateAssetMenu(fileName = "PlayerInfo", menuName = "PlayerInfo/Create")]
+public class PlayerInfo : ScriptableObject
 {
-    public static PlayerInfo PI;
-
     [SerializeField]
     private float maxExpValueChanger;
 
     #region PlayerData
-
+    public bool newCharacter = true;
     private int lvl;
 
     public int Level
@@ -98,10 +94,5 @@ public class PlayerInfo : MonoBehaviour
     }
 
     #endregion
-    // Start is called before the first frame update
-    void Awake()
-    {
-        PI = this;
-    }
 
 }

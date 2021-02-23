@@ -7,16 +7,26 @@ using UnityEngine.Rendering;
 [CreateAssetMenu(fileName = "NewMapStyle", menuName = "CreateMapStyle/NewMapStyle")]
 public class GameMapStyle : ScriptableObject
 {
+    [Header("Sprite atlas for this level style")]
     [SerializeField] SpriteAtlas atlas;
-    public GameObject groundPrefab;
+    [Header("Level sprite name of ground in atlas")]
     [SerializeField] string[] ground;
-    public GameObject wallPrefab;
+    public GameObject groundPrefab;
+    [Header("Level sprite name of walls in atlas")]
     [SerializeField] string[] walls;
-    public GameObject blockHolder;
+    public GameObject wallPrefab;
+    [Header("Possible blocks on this level")]
     public BlockBase[] blocks;
-    public GameObject propHolder;
+    public GameObject blockHolder;
+    [Header("Possible props on this level")]
     [SerializeField] Prop[] props;
+    //Musics..
 
+    [Header("Game-Ready prefabs (Buldings..)")]
+    public GameObject[] gmReadyPrefabs;
+    [Header("Possible bosses on this level")]
+    public GameObject[] bossGates;
+    [Header("Possible level mobs")] public GameObject[] mobs;
     public VolumeProfile levelPostProccess;
 
     public Sprite GetGroundSprite(int index){

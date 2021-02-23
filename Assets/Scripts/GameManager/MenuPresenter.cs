@@ -13,10 +13,11 @@ public class MenuPresenter : MonoBehaviour
     [SerializeField] GameObject[] gamePanels;
     [SerializeField] GameObject activePanel;
 
-
+    public static PlayerInfo playerInfo;
     void Awake()
     {
         instance = this;
+        playerInfo = Resources.Load<PlayerInfo>("PlayerInfo");
     }
 
     public void ActivatePanel(int index)
@@ -34,7 +35,12 @@ public class MenuPresenter : MonoBehaviour
             //Deactivate
         }
     }
-
+    public void MenuStartGameButton(){
+        if(MenuPresenter.playerInfo.newCharacter)
+            ActivatePanel(1);
+        else
+            GameActions.instance.StartMatch();
+    }
 
     public void ActiveMenuPanel()
     {

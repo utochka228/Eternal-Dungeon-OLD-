@@ -6,6 +6,6 @@ public class HealthStat : Stat
 {
     public override void UpgradeStat()
     {
-        PlayerInfo.PI.Health++;
+        MenuPresenter.playerInfo.Health++;
     }
 }

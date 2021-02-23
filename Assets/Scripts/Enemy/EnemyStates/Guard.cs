@@ -5,14 +5,18 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GuardState", menuName = "EnemyStatements/Guard")]
 public class Guard : State
 {
-    Vector2 guardPoint;
-
+    GuardianEnemy myGuardEnemy;   
+    Transform myGuardTarget;
     public override void Init()
     {
-        
+        myGuardEnemy = enemy.GetComponent<GuardianEnemy>();
+        myGuardTarget = myGuardEnemy.guardPoint;
+        enemy.SetTarget(myGuardTarget); 
     }
     public override void Run()
     {
-        //enemy.transform.position = Vector3.MoveTowards(enemy.transform.position, new Vector3(currentTarget.x, currentTarget.y, enemy.transform.position.z), 4f * Time.deltaTime);
+        if(enemy.TargetsInMyViewZone.Count > 0){
+            isFinished = true;
+        }
     }
 }

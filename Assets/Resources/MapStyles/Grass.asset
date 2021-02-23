@@ -13,21 +13,23 @@ MonoBehaviour:
   m_Name: Grass
   m_EditorClassIdentifier: 
   atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
-  groundPrefab: {fileID: 2799625170418257773, guid: d1cb0bf03e57efe41a0a2cdd3b6dec08,
-    type: 3}
   ground:
   - Ground
-  wallPrefab: {fileID: 9098360042060389322, guid: f5f03171664b292458aab5d58baa3b68,
+  groundPrefab: {fileID: 2799625170418257773, guid: d1cb0bf03e57efe41a0a2cdd3b6dec08,
     type: 3}
   walls:
   - StoneWall
-  blockHolder: {fileID: 966673773862146014, guid: 0659ddbfcd2f47b4192e23f323668a20,
+  wallPrefab: {fileID: 9098360042060389322, guid: f5f03171664b292458aab5d58baa3b68,
     type: 3}
   blocks:
   - {fileID: 11400000, guid: 45bfed62f0a107549bd3b5cec629c285, type: 2}
   - {fileID: 11400000, guid: eacad7dced1c7624383d8fcfbd117c08, type: 2}
   - {fileID: 11400000, guid: 6a4234069b2046c4a9b97b10115204f2, type: 2}
-  propHolder: {fileID: 1309787251855481487, guid: 684bff29a088bce4280594a44478ee3c,
+  blockHolder: {fileID: 966673773862146014, guid: 0659ddbfcd2f47b4192e23f323668a20,
     type: 3}
   props: []
+  gmReadyPrefabs: []
+  bossGates: []
+  mobs:
+  - {fileID: 6387018173200218859, guid: 64c5a20a74c7e95419b9d39da2c4fb0f, type: 3}
   levelPostProccess: {fileID: 11400000, guid: 77c9bfe521360d141a3ab3a539f857c5, type: 2}

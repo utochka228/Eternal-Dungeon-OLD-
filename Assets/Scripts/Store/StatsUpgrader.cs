@@ -37,14 +37,14 @@ public class StatsUpgrader : MonoBehaviour
 
     public void BuyUpgrade()
     {
-        int currentPlayerMoney = PlayerInfo.PI.Money;
+        int currentPlayerMoney = MenuPresenter.playerInfo.Money;
 
         if (currentPlayerMoney >= costToBuy && progressSlider.value < progressSlider.maxValue)
         {
             //Upgrade stat
             myStatToUpgrade.UpgradeStat();
             progressSlider.value++;
-            PlayerInfo.PI.Money -= costToBuy;
+            MenuPresenter.playerInfo.Money -= costToBuy;
             statProgress.text = progressSlider.value + "/" + progressSlider.maxValue;
             CalculateCost();
             Debug.Log("UPGRADING!");

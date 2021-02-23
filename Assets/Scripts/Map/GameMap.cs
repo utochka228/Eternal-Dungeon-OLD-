@@ -7,49 +7,6 @@ using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using UnityEngine.Rendering;
-
-[System.Serializable]
-public struct Style{
-	public Vector2Int range;
-	public string styleName;
-	
-}
-[System.Serializable]
-public struct MapStyle{
-	[SerializeField] Style[] styles;
-	public string GetCurrentMapStyle(int level){
-		if(level > styles[styles.Length-1].range.y){
-			for (int i = 0; i < styles.Length; i++)
-			{
-				styles[i].range =  new Vector2Int(styles[i].range.x + styles[styles.Length-1].range.y, styles[i].range.y + styles[styles.Length-1].range.y);
-			}
-		}
-		for (int i = 0; i < styles.Length; i++)
-		{
-			int a = styles[i].range.x;
-			int b = styles[i].range.y;
-
-			if(level >= a && level <= b){
-				Debug.Log(styles[i].styleName);
-				return styles[i].styleName;
-			}
-		}
-		return "ERROR";
-	}
-}
-[System.Serializable]
-public struct MapSize{
-
-    public Vector2 Size;
-    public int xMapSize
-    {
-        get{return Mathf.RoundToInt(Size.x);}
-    }
-    public int yMapSize
-    {
-        get{return Mathf.RoundToInt(Size.y);}
-    }
-}
 public class GameMap : MonoBehaviour
 {
     public static GameMap GM;
@@ -68,16 +25,18 @@ public class GameMap : MonoBehaviour
 	[SerializeField] MapStyle mapStyles;
 	GameMapStyle myMapStyle;
 	[SerializeField] Volume postProccesing;
-
+	[SerializeField] AstarPath astar;
     void Awake()
     {
         GM = this;
+		
     }
 	void Start() {
 		propHolder = Resources.Load<GameObject>(Path.Combine("Props/", "PropHolder"));
 		itemHolder = Resources.Load<GameObject>(Path.Combine("Items/", "ItemHolder"));
 		obelisk = Resources.Load<Obelisk>(Path.Combine("Props/", "Obelisk"));
 		wormhole = Resources.Load<Wormhole>(Path.Combine("Props/", "Wormhole"));
+		
 	}
     public bool CellisAvialble(Vector2 cellPos)
     {
@@ -156,17 +115,17 @@ public class GameMap : MonoBehaviour
             return new Vector2(-999, -999);
         }
     }
+	public void SetAstarGrid(){
+		astar.data.gridGraph.SetDimensions(mapSize.xMapSize, mapSize.yMapSize, 1);
+		astar.data.gridGraph.center = new Vector3(mapSize.xMapSize/2 + 0.5f, mapSize.yMapSize/2 + 0.5f, 1f);
+		AstarPath.active.Scan();
+	}
     Prop wormhole;
     Prop obelisk;
     GameObject propHolder;
 	GameObject itemHolder;
-    //Генерация игрового поля 
-    public string GenerateGameField(bool isCheckpointLevel, string seed = " ")
-    {
-		myMapStyle = Resources.Load<GameMapStyle>(Path.Combine("MapStyles", mapStyles.GetCurrentMapStyle(relocation.CurrentDungeonLevel)));
-        postProccesing.profile = myMapStyle.levelPostProccess;
-		#region Create_Field_Parents
-        GameFieldParent = new GameObject("GameField");
+	void CreateMapHolders(){
+		GameFieldParent = new GameObject("GameField");
         Corridors = new GameObject("Corridors");
         Corridors.transform.SetParent(GameFieldParent.transform);
         Floor = new GameObject("Floor");
@@ -177,13 +136,20 @@ public class GameMap : MonoBehaviour
         Props.transform.SetParent(GameFieldParent.transform);
         Blocks = new GameObject("Blocks");
         Blocks.transform.SetParent(GameFieldParent.transform);
-        #endregion
+	}
+    //Генерация игрового поля 
+	List<Vector2> groundMask;
+    public string GenerateGameField(bool isCheckpointLevel, string seed = " ")
+    {
+		myMapStyle = Resources.Load<GameMapStyle>(Path.Combine("MapStyles", mapStyles.GetCurrentMapStyle(relocation.CurrentDungeonLevel)));
+        postProccesing.profile = myMapStyle.levelPostProccess;
+        CreateMapHolders();
 		Vector2 playerSpawn = Vector2.zero;
         bool useRandomSeed = seed.Equals(" ") ? true : false;
 		if(!isCheckpointLevel){
 			GenerateMap(useRandomSeed, seed);
 
-			List<Vector2> groundMask = new List<Vector2>();
+			groundMask = new List<Vector2>();
 			for (int x = 0; x < mapSize.xMapSize; x++)
 			{
 				for (int y = 0; y  <mapSize.yMapSize; y++)
@@ -198,6 +164,7 @@ public class GameMap : MonoBehaviour
 			SpawnWalls();
 			SpawnBlocks();
 			SpawnPlayerDeathPoint();
+			SpawnLevelMobs();
 
 			int random = Random.Range(0, groundMask.Count);
 			playerSpawn = groundMask[random];
@@ -206,12 +173,20 @@ public class GameMap : MonoBehaviour
 			playerSpawn = Vector2.zero;
 		}
 		GameSession.instance.SpawnPlayer(new Vector3(playerSpawn.x, playerSpawn.y, 0f));
-
-        //grid.CreateGrid(map, MapSize);
-
         return this.seed;
     }
-
+	void SpawnLevelMobs(){
+		for (int i = 0; i < 10; i++)
+		{
+			int random = Random.Range(0, groundMask.Count);
+			Vector2 position = groundMask[random];
+			GameObject mob = Instantiate(myMapStyle.mobs[0], new Vector3(position.x, position.y, 1f), Quaternion.identity);
+			GuardianEnemy guard = mob.GetComponent<GuardianEnemy>();
+			Transform guardPoint = new GameObject().transform;
+			guardPoint.position = mob.transform.position;
+			guard.guardPoint = guardPoint;
+		}
+	}
 	void SpawnPlayerDeathPoint(){
 		DeathPointData deathPoint = SaveSystem.instance.saves.playerSaves.deathPointData;
 		if(!deathPoint.createDeathPoint)
@@ -363,8 +338,8 @@ public class GameMap : MonoBehaviour
     }
 
     #region MapGenerator
-	public int width;
-	public int height;
+	int width;
+	int height;
 
 	public string seed;
 	public bool useRandomSeed;
@@ -376,7 +351,9 @@ public class GameMap : MonoBehaviour
 
 
 	void GenerateMap(bool randomSeed, string _seed = "") {
-        useRandomSeed = randomSeed;
+        width = mapSize.xMapSize;
+		height = mapSize.yMapSize;
+		useRandomSeed = randomSeed;
         if(!useRandomSeed) seed = _seed;
 		mapMask = new int[width,height];
 		RandomFillMap();
@@ -788,5 +765,48 @@ public class Cell
     {
         cellObject = cell;
         myPosition = myPos;
+    }
+}
+
+[System.Serializable]
+public struct Style{
+	public Vector2Int range;
+	public string styleName;
+	
+}
+[System.Serializable]
+public struct MapStyle{
+	[SerializeField] Style[] styles;
+	public string GetCurrentMapStyle(int level){
+		if(level > styles[styles.Length-1].range.y){
+			for (int i = 0; i < styles.Length; i++)
+			{
+				styles[i].range =  new Vector2Int(styles[i].range.x + styles[styles.Length-1].range.y, styles[i].range.y + styles[styles.Length-1].range.y);
+			}
+		}
+		for (int i = 0; i < styles.Length; i++)
+		{
+			int a = styles[i].range.x;
+			int b = styles[i].range.y;
+
+			if(level >= a && level <= b){
+				Debug.Log(styles[i].styleName);
+				return styles[i].styleName;
+			}
+		}
+		return "ERROR";
+	}
+}
+[System.Serializable]
+public struct MapSize{
+
+    public Vector2 Size;
+    public int xMapSize
+    {
+        get{return Mathf.RoundToInt(Size.x);}
+    }
+    public int yMapSize
+    {
+        get{return Mathf.RoundToInt(Size.y);}
     }
 }

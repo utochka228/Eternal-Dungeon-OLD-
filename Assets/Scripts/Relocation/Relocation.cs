@@ -137,12 +137,12 @@ public class Relocation : MonoBehaviour, IRelocation
         else{
             RelocateToNext();
         }
-        
+        GameSession.instance.transition.Create(CurrentDungeonLevel, "Default decription");
     }
     public void CreateSavedLevel(){
         string seed = levelSeeds.Single(x => x.level == CurrentDungeonLevel).seed;
         GameMap.GM.GenerateGameField(IsCheckPointLevel(), seed);
-        Debug.Log("CreatedSavedLevel!");
+        GameSession.instance.transition.Create(CurrentDungeonLevel, "Default decription");
     }
     void CreateLevel(){
         CurrentDungeonLevel++;

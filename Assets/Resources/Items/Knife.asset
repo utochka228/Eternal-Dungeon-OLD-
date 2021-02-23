@@ -28,7 +28,7 @@ MonoBehaviour:
     isEquipable: 1
   damage: 13
   speed: 0.1
-  criticalChance: 0.21
+  criticalChance: 0.04
   colliderRadius: 0.18
   attackPointOffset: {x: 0, y: 0.239, z: 0}
   animatorTriggerName: 1

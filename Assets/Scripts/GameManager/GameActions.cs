@@ -23,8 +23,6 @@ public class GameActions : MonoBehaviour
 
         //For end of match
         MatchEnded += GameMap.GM.DestroyGameField;
-        MatchEnded += CameraMultiTarget.instance.NullTargets;
-        MatchEnded += CameraMultiTarget.instance.SetOldDataToCamera;
         MatchEnded += GameSession.instance.DestroyPlayer;
         MatchEnded += MenuPresenter.instance.ActiveMenuPanel;
         MatchEnded += MenuPresenter.instance.HideOtherUI;
@@ -32,6 +30,8 @@ public class GameActions : MonoBehaviour
 
     public void StartMatch()
     {
+        if(MenuPresenter.playerInfo.newCharacter)
+            MenuPresenter.playerInfo.newCharacter = false;
         MatchStarted?.Invoke();
     }
     public void EndMatch()

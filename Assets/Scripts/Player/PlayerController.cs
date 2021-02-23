@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     public event Action OnStartOfMoving;
     public Vector2 currentPosition;
     public Vector2 oldPosition;
+    public SkinPartsHolder skinPartsHolder;
     #endregion
 
     #region PrivateVariables
