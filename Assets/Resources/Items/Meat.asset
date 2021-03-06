@@ -18,7 +18,7 @@ MonoBehaviour:
   spawnChance: 0
   itemMinPrice: 2
   itemWorldScale: 1
-  spriteName: GrassBlock
+  spriteName: Food_21
   spawnOffset: {x: 0, y: 0, z: 0}
   spawnRotation: 0
   isStackable: 1

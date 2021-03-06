@@ -9,6 +9,8 @@ public class PlayerAttackCollider : MonoBehaviour
     bool isCritical;
     [SerializeField] CircleCollider2D attackCollider;
     void OnTriggerEnter2D(Collider2D other) {
+        if(other.isTrigger == true)
+            return;
         Block block = other.GetComponent<Block>();
         if(weaponType != "PickAxe" && block != null)
             return;

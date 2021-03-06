@@ -8,7 +8,7 @@ public class Prop : ScriptableObject {
     float health;
     [SerializeField] SpriteAtlas atlas;
     [SerializeField] string spriteName;
-
+    [Range(0f, 1f)] public float spawnChance;
     public bool destroyable;
     public Sprite sprite {
         get {return atlas.GetSprite(spriteName);}

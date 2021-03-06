@@ -8,6 +8,7 @@ public class Attack : State
     public override void Init()
     {
         Debug.Log("Attack!");
+        enemy.animator.SetTrigger("Attack");
         isFinished = true;
     }
     public override void Run()

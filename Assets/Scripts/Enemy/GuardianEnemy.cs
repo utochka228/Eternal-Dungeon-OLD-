@@ -15,7 +15,6 @@ public class GuardianEnemy : Enemy
     new void Start()
     {
         base.Start();
-        SetState(StartState);
     }
 
     public override void DoStatementWork()

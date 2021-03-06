@@ -7,7 +7,7 @@ using UnityEngine.U2D;
 public class BlockBase : ScriptableObject
 {
     [SerializeField] SpriteAtlas atlas;
-    public float spawnChance;
+    [Range(0f, 1f)] public float spawnChance;
     public Drop drop;
     [SerializeField] string blockSprite;
     [HideInInspector] public float health;

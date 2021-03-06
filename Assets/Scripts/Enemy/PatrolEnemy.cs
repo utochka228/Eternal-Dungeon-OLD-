@@ -11,7 +11,6 @@ public class PatrolEnemy : Enemy
     new void Start()
     {
         base.Start();
-        SetState(StartState);
     }
 
     public override void DoStatementWork()

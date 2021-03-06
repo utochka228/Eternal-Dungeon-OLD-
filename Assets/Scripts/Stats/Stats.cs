@@ -14,14 +14,13 @@ public abstract class Stats : MonoBehaviour, IDamageble
     protected int maxHealth;
     public abstract int Health { get; set; }
     public virtual int MaxHealth{ get; set;}
-
+    Vector3 centerOfBody;
     public void Die(GameObject murderer)
     {
         Dying(murderer);
     }
 
-    private void Update() {
-
+    protected void Start() {
     }
 
     public void TakeDamage(GameObject hitter, int damage, bool isCritical)
@@ -29,6 +28,9 @@ public abstract class Stats : MonoBehaviour, IDamageble
         TakingDamage(hitter, damage, isCritical);
     }
     protected abstract void Dying(GameObject murderer);
-    protected abstract void TakingDamage(GameObject hitter, int damage, bool isCritical);
+    protected virtual void TakingDamage(GameObject hitter, int damage, bool isCritical){
+        centerOfBody = GetComponent<Collider2D>().bounds.center;
+        DamagePopup.Create(centerOfBody, damage, isCritical);
+    }
 
 }

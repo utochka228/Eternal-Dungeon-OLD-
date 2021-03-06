@@ -13,7 +13,7 @@ public class Patrol : State
 
     public override void Init()
     {
-        FindTarget();
+       // FindTarget();
     }
 
     public override void Run()
@@ -31,37 +31,37 @@ public class Patrol : State
     }
     Vector2 patrolPosition = -Vector2.one;
 
-    void FindTarget()
-    {
-        Vector2 currentPosition = enemy.currentPosition;
-        targetA = currentPosition;
-        Vector2[] directions = {
-            new Vector2(0, 1),
-            new Vector2(1, 0),
-            new Vector2(0, -1),
-            new Vector2(-1, 0)
-        };
+    // void FindTarget()
+    // {
+    //     Vector2 currentPosition = enemy.currentPosition;
+    //     targetA = currentPosition;
+    //     Vector2[] directions = {
+    //         new Vector2(0, 1),
+    //         new Vector2(1, 0),
+    //         new Vector2(0, -1),
+    //         new Vector2(-1, 0)
+    //     };
 
-        for (int i = 0; i < directions.Length; i++)
-        {
-            Vector2 tempPos = GameMap.GM.GetLastPointInSelectedDirection(currentPosition, directions[i]);
-            Debug.Log($"tempPos: {tempPos} with direction {directions[i]}");
-            if (i == 0)
-            {
-                patrolPosition = tempPos;
-                continue;
-            }
+    //     for (int i = 0; i < directions.Length; i++)
+    //     {
+    //         Vector2 tempPos = GameMap.GM.GetLastPointInSelectedDirection(currentPosition, directions[i]);
+    //         Debug.Log($"tempPos: {tempPos} with direction {directions[i]}");
+    //         if (i == 0)
+    //         {
+    //             patrolPosition = tempPos;
+    //             continue;
+    //         }
 
-            if (Vector2.Distance(currentPosition, tempPos) > Vector2.Distance(currentPosition, patrolPosition))
-                patrolPosition = tempPos;
-        }
+    //         if (Vector2.Distance(currentPosition, tempPos) > Vector2.Distance(currentPosition, patrolPosition))
+    //             patrolPosition = tempPos;
+    //     }
 
-        Debug.Log($"PatrolState -> targetB: {patrolPosition.x} | {patrolPosition.y}");
-        targetB = patrolPosition;
-        currentTarget = targetB;
+    //     Debug.Log($"PatrolState -> targetB: {patrolPosition.x} | {patrolPosition.y}");
+    //     targetB = patrolPosition;
+    //     currentTarget = targetB;
 
-        targetWasFound = true;
-    }
+    //     targetWasFound = true;
+    // }
     void FollowTarget()
     {
         enemy.transform.position = Vector3.MoveTowards(enemy.transform.position, new Vector3(currentTarget.x, currentTarget.y, enemy.transform.position.z), 4f * Time.deltaTime);

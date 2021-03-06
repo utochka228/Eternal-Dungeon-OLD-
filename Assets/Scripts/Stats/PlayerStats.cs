@@ -63,12 +63,12 @@ public class PlayerStats : Stats
                 relocationEnergy = value;
         } 
     }
-    public void Start()
+    new void Start()
     {
+        base.Start();
         //Other init
         myController = GetComponent<PlayerController>();
         myHearts = PlayerUI.instance.playerHearts;
-
         Health = MaxHealth;
     }
     protected override void Dying(GameObject murderer)
@@ -81,8 +81,9 @@ public class PlayerStats : Stats
 
     protected override void TakingDamage(GameObject hitter, int damage, bool isCritical)
     {
-        health -= damage;
-            if (health == 0)
+        base.TakingDamage(hitter, damage, isCritical);
+        Health -= damage;
+            if (Health == 0)
                 Die(hitter);
     }
 

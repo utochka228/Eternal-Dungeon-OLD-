@@ -27,19 +27,20 @@ public class GameSession : MonoBehaviour
             GameMap.GM.relocation.ChangeLevel();
     }
 
-    public void SpawnPlayer(Vector3 position)
+    public static void SpawnPlayer(Vector3 position)
     {
-        if(Player != null){
-            Player.transform.position = position;
+        GameSession session = instance;
+        if(session.Player != null){
+            session.Player.transform.position = position;
             return;
         }
-        GameObject player = Instantiate(playerPrefab);
-        virtualCamera.Follow = player.transform;
+        GameObject player = Instantiate(session.playerPrefab);
+        session.virtualCamera.Follow = player.transform;
         player.transform.position = position;
-        Player = player.GetComponent<PlayerController>();
+        session.Player = player.GetComponent<PlayerController>();
         //Upload player skin look data
         var playerLook = Resources.Load<SkinPreset>("Skin/PlayerLook");
-        Player.skinPartsHolder.UpdateSkinLook(playerLook);
+        session.Player.skinPartsHolder.UpdateSkinLook(playerLook);
         GameObject[] playerTarget = new GameObject[1];
         playerTarget[0] = player;
     }

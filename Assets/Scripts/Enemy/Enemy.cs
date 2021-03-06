@@ -6,17 +6,17 @@ using Pathfinding;
 using UnityEngine;
 
 [RequireComponent(typeof(EnemyStats))]
-[RequireComponent(typeof(AIPath))]
 public class Enemy : MonoBehaviour
 {
+    [Range(0f, 1f)] public float spawnChance;
     public Vector2 currentPosition { get; private set; }
     public Vector2 oldPosition { get; private set; }
     [SerializeField] AIDestinationSetter targetSetter;
     public event Action OnChangedPosition;
-    [Header("Start Enemy State")] public State StartState;
+    [Header("Start Enemy State")] public State startState;
     [Header("Actual state")] public State currentState;
+    public Animator animator;
     [HideInInspector] public float distanceToPlayer;
-    public float distanceToDetecting = 4f;
     public List<GameObject> TargetsInMyViewZone{ get; private set;}
     public GameObject GetClosestVisibleTarget(){
         if(TargetsInMyViewZone.Count == 0)
@@ -46,13 +46,16 @@ public class Enemy : MonoBehaviour
         if (OnChangedPosition != null)
             OnChangedPosition();
     }
-
+    AIPath aIPath;
+    [SerializeField] Transform gfx;
     protected void Start()
     {
         TargetsInMyViewZone = new List<GameObject>();
         myEnemyStats = GetComponent<EnemyStats>();
         oldPosition = currentPosition;
         player = GameSession.instance.Player.transform;
+        aIPath = GetComponent<AIPath>();
+        SetState(startState);
     }
 
     void DestroyGameObject()
@@ -67,6 +70,16 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
+        //Flipping enemy
+        if(aIPath != null){
+            if(aIPath.desiredVelocity.x >= 0.01f){
+                gfx.eulerAngles = new Vector3(0, 0, 0);
+            }else if(aIPath.desiredVelocity.x <= -0.01f)
+            {
+                gfx.eulerAngles = new Vector3(0, 180f, 0);
+            }
+        }
+        
         #region TempRegionForPosition
         currentPosition = new Vector2(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
         Vector2 plPos = new Vector2(player.transform.position.x, player.transform.position.y);
@@ -92,14 +105,11 @@ public class Enemy : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         //Adding entered collider to visible targets
-        PlayerController player = other.GetComponent<PlayerController>();
+        Stats creature = other.GetComponent<Stats>();
         Enemy enemy = other.GetComponent<Enemy>();
-        if(player != null)
-            if(!TargetsInMyViewZone.Contains(player.gameObject))
+        if(creature != null && enemy == null)
+            if(!TargetsInMyViewZone.Contains(other.gameObject))
                 TargetsInMyViewZone.Add(other.gameObject);
-        // if(enemy != null)
-        //     if(!TargetsInMyViewZone.Contains(enemy.gameObject))
-        //         TargetsInMyViewZone.Add(other.gameObject);
     }
     void OnTriggerExit2D(Collider2D other) {
         //Remove from visible targets

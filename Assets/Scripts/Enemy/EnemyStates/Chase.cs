@@ -8,7 +8,12 @@ public class Chase : State
     Transform target;
     public override void Init()
     {
-        target = enemy.GetClosestVisibleTarget().transform;
+        var closest = enemy.GetClosestVisibleTarget();
+        if(closest == null){
+            isFinished = true;
+            return;
+        }
+        target = closest.transform;
         enemy.SetTarget(target);
     }
 

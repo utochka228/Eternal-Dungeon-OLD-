@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
   ground:
+  - TX Tileset Ground M
+  - GrassBlock2
   - Ground
   groundPrefab: {fileID: 2799625170418257773, guid: d1cb0bf03e57efe41a0a2cdd3b6dec08,
     type: 3}
@@ -27,7 +29,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6a4234069b2046c4a9b97b10115204f2, type: 2}
   blockHolder: {fileID: 966673773862146014, guid: 0659ddbfcd2f47b4192e23f323668a20,
     type: 3}
-  props: []
+  props:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   gmReadyPrefabs: []
   bossGates: []
   mobs:

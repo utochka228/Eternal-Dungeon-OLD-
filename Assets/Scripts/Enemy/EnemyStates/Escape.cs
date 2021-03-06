@@ -13,7 +13,7 @@ public class Escape : State
     public override void Init()
     {
         //enemy.movementScript.OnPathNotSuccessful += Escaping;
-        safeDistance = Mathf.RoundToInt(enemy.distanceToDetecting * 2f);
+        //safeDistance = Mathf.RoundToInt(enemy.distanceToDetecting * 2f);
         Escaping();
     }
     public override void Run()

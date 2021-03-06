@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Coal
   m_EditorClassIdentifier: 
   atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
-  spawnChance: 10
+  spawnChance: 1
   drop:
     dropList:
     - drop: {fileID: 11400000, guid: e848e115eecd168419fd51366b8be6e3, type: 2}
