@@ -9,12 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbaba92db4282db4bbcbd17681a50d23, type: 3}
-  m_Name: Obelisk
+  m_Script: {fileID: 11500000, guid: 341d14aeafa338541a2e3b99296dd7ff, type: 3}
+  m_Name: BlueLegs
   m_EditorClassIdentifier: 
-  propName: Obelisk
   atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
-  spriteName: TX Village Props Statue
-  spawnChance: 1
-  maxPropPerRoomCount: 2
-  destroyable: 0
+  itemName: Blue Legs
+  itemEffect: {fileID: 0}
+  spawnChance: 0.742
+  itemMinPrice: 0
+  itemWorldScale: 1
+  spriteName: BlueLeg
+  spawnOffset: {x: 0, y: 0, z: 0}
+  spawnRotation: 0
+  isStackable: 0
+  maxStack: 0
+  actions:
+  - itemAcitons: 1
+  armorType: 2
+  defence: 10

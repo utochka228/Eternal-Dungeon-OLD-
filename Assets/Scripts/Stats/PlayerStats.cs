@@ -86,6 +86,10 @@ public class PlayerStats : Stats
             if (Health == 0)
                 Die(hitter);
     }
+    protected override void Healing(int value){
+        base.Healing(value);
+        Health += value;
+    }
 
     private void OnDestroy() {
         Inventory.instance.SaveInventory();
@@ -95,7 +99,7 @@ public class PlayerStats : Stats
         PlayerSaves playerSaves = SaveSystem.instance.saves.playerSaves;
         Relocation relocation = GameMap.GM.relocation;
         Vector2 deathPos = new Vector2(transform.position.x, transform.position.y);
-        playerSaves.deathPointData = new DeathPointData(relocation.CurrentDungeonLevel, deathPos);
+        playerSaves.deathPointData = new DeathPointData(Relocation.CurrentDungeonLevel, deathPos);
     }
 }
 [System.Serializable]

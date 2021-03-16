@@ -11,7 +11,7 @@ public class Inventory : MonoBehaviour
     [HideInInspector] public GameObject itemHolder;
     [SerializeField] GameObject slotPrefab;
     [SerializeField] int startSize = 9;
-    Animator playerAnimator;
+    [HideInInspector] public Animator playerAnimator;
     int currentSize;
     public int freeSlots;
     public int Size {
@@ -20,7 +20,24 @@ public class Inventory : MonoBehaviour
     public List<Slot> inventory = new List<Slot>();
     public Action inventoryUpdated;
     Item playerHandItem;
-    [SerializeField] SpriteRenderer handSpriteHolder;
+    Item headItem;
+    Item chestItem;
+    Item legsItem;
+    Item accessoryItem;
+    [SerializeField] public SpriteRenderer handSpriteHolder;
+    [SerializeField] public SpriteRenderer headSpriteHolder;
+    [SerializeField] public SpriteRenderer accessorySpriteHolder;
+    [SerializeField] public SpriteRenderer chestSpriteHolder;
+    [SerializeField] SpriteRenderer lLegSpriteHolder;
+    [SerializeField] SpriteRenderer rLegSpriteHolder;
+    public Sprite LegsSpriteHolder{
+        set{
+            if(value != null){
+                lLegSpriteHolder.sprite = value;
+                rLegSpriteHolder.sprite = value;
+            }
+        }
+    }
     int money = 100;
     public int Money{
         get{return money;}
@@ -83,6 +100,21 @@ public class Inventory : MonoBehaviour
             Debug.Log("Invenotory -> UseHandItem()");
         }
     }
+    public void SetHandItem(Item it){
+        playerHandItem = it;
+    }
+    public void SetHeadItem(Item it){
+        headItem = it;
+    }
+    public void SetChestItem(Item it){
+        chestItem = it;
+    }
+    public void SetLegsItem(Item it){
+        legsItem = it;
+    }
+    public void SetAccessoryItem(Item it){
+        accessoryItem = it;
+    }
     public void NullItemRotation(){
         handSpriteHolder.transform.localRotation = Quaternion.Euler(0, 0, 0);
     }
@@ -92,9 +124,8 @@ public class Inventory : MonoBehaviour
     }
     [SerializeField] Transform attackPoint;
     public void EquipItem(Item it){
-        playerHandItem = it;
-        handSpriteHolder.sprite = it.sprite;
-        SetItemTransform();
+        IEquipable equipable = it as IEquipable;
+        equipable.Equip();
 
         string itemType = it.GetItemType();
         Debug.Log(itemType);
@@ -112,22 +143,20 @@ public class Inventory : MonoBehaviour
             }
         }
     }
-    void UnEquipItem(){
-        handSpriteHolder.sprite = null;
-        playerHandItem = null;
-        playerAnimator.SetLayerWeight(1, 0f);
-        playerAnimator.SetLayerWeight(2, 0f);
+    void UnEquipItem(Item it){
+        IEquipable equipable = it as IEquipable;
+        equipable.Unequip();
     }
-    //item not equiped
-    public bool HandsEmpty(){
-        return playerHandItem == null;
-    }
-    public void CheckHandsByItem(Item item){
-        if(HandsEmpty())
-            return;
-        else{
-            if(playerHandItem.name == item.name){
-                UnEquipItem();
+    //Called when item was removed from inventory
+    public void CheckEquipByItem(Item item){
+        Item[] equipableBodyParts = new Item[] {headItem, playerHandItem, accessoryItem, chestItem, legsItem};
+        foreach (var bodyPartItem in equipableBodyParts)
+        {
+            if(bodyPartItem == null)
+                continue;
+            if(bodyPartItem.name == item.name){
+                UnEquipItem(item);
+                return;
             }
         }
     }

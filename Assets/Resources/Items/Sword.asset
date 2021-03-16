@@ -24,8 +24,7 @@ MonoBehaviour:
   isStackable: 0
   maxStack: 0
   actions:
-    isUsable: 0
-    isEquipable: 1
+  - itemAcitons: 1
   damage: 25
   speed: 0.1
   criticalChance: 0.08

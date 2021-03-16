@@ -22,7 +22,7 @@ public class GameActions : MonoBehaviour
         MatchStarted += GameSession.instance.StartSession;
 
         //For end of match
-        MatchEnded += GameMap.GM.DestroyGameField;
+        MatchEnded += GameMap.DestroyGameField;
         MatchEnded += GameSession.instance.DestroyPlayer;
         MatchEnded += MenuPresenter.instance.ActiveMenuPanel;
         MatchEnded += MenuPresenter.instance.HideOtherUI;

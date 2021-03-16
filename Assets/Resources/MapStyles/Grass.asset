@@ -30,10 +30,10 @@ MonoBehaviour:
   blockHolder: {fileID: 966673773862146014, guid: 0659ddbfcd2f47b4192e23f323668a20,
     type: 3}
   props:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  gmReadyPrefabs: []
+  - {fileID: 11400000, guid: 02ffd93a9c4d9884ba95bf94bd2e0654, type: 2}
+  - {fileID: 11400000, guid: a4b4e3d147789ab47bcb23d3253f0b4c, type: 2}
+  gmReadyPrefabs:
+  - {fileID: 7026724822791757074, guid: 15c9d1d32ffc5a747a2536e571f889fe, type: 3}
   bossGates: []
   mobs:
   - {fileID: 6387018173200218859, guid: 64c5a20a74c7e95419b9d39da2c4fb0f, type: 3}

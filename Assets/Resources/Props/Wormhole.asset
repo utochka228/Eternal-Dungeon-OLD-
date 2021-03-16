@@ -15,4 +15,6 @@ MonoBehaviour:
   propName: Wormhole
   atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
   spriteName: Wormhole
+  spawnChance: 0.717
+  maxPropPerRoomCount: 8
   destroyable: 0

@@ -13,7 +13,6 @@ public class Sword : Weapon
         PlayerAttackSystem attackSystem = user.GetComponent<PlayerAttackSystem>();
         attackSystem?.Attack(damage, swordLength, this);
     }
-
     public override string GetItemType()
     {
         return "Weapon";

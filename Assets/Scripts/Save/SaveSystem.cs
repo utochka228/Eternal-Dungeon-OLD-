@@ -16,10 +16,6 @@ public class SaveSystem : MonoBehaviour
 
     }
 
-    void Start()
-    {
-    }
-
     [ContextMenu("DeletePrefs")]
     void DeletePrefs(){
         PlayerPrefs.DeleteKey("Save");
@@ -28,13 +24,6 @@ public class SaveSystem : MonoBehaviour
     public void Save(){
         OnSave?.Invoke();
         PlayerPrefs.SetString("Save", JsonUtility.ToJson(saves));
-    }
-    [ContextMenu("CheckNull")]
-    void CheckNull(){
-        bool b = saves.mapSaves.checkPoints == null;
-        bool a = saves.mapSaves.seeds == null;
-        Debug.Log("Null " + b);
-        Debug.Log("Null seed" + a);
     }
     public void LoadSave(){
         if(!PlayerPrefs.HasKey("Save")){
@@ -57,13 +46,11 @@ public class Saves{
 [System.Serializable]
 public class MapSaves{
     //levels body
-    public List<CheckPoint> checkPoints;
     public List<LevelSeed> seeds;
+    public int FirstDungeonLevel;
     public int LastDungeonLevel;
-    public int lastCheckPoint;
+    public int LastOpenedLevel;
     public int CurrentDungeonLevel;
-
-    
 }
 [System.Serializable]
 public class PlayerSaves{

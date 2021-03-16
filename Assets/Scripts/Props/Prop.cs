@@ -9,6 +9,7 @@ public class Prop : ScriptableObject {
     [SerializeField] SpriteAtlas atlas;
     [SerializeField] string spriteName;
     [Range(0f, 1f)] public float spawnChance;
+    public int maxPropPerRoomCount;
     public bool destroyable;
     public Sprite sprite {
         get {return atlas.GetSprite(spriteName);}

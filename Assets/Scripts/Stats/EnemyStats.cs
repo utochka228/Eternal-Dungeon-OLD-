@@ -50,7 +50,10 @@ public class EnemyStats : Stats
             }
         }
     }
-
+    protected override void Healing(int value){
+        base.Healing(value);
+        Health += value;
+    }
     protected override void TakingDamage(GameObject hitter, int damage, bool isCritical)
     {
         base.TakingDamage(hitter, damage, isCritical);

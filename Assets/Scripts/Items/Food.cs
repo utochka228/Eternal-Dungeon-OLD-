@@ -14,7 +14,8 @@ public class Food : Item
 
     public override void UseItem(Transform user)
     {
-        PlayerStats stats = user.GetComponent<PlayerStats>();
-        stats.Health += healthRestoration;
+        IHealable userHealable = user.GetComponent<IHealable>();
+        if(userHealable != null)
+            userHealable.Heal(healthRestoration);
     }
 }

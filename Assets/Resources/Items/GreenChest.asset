@@ -9,29 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3ff03653f0bf934e9bd94055a43a5c5, type: 3}
-  m_Name: Axe
+  m_Script: {fileID: 11500000, guid: 341d14aeafa338541a2e3b99296dd7ff, type: 3}
+  m_Name: GreenChest
   m_EditorClassIdentifier: 
   atlas: {fileID: 4343727234628468602, guid: 44809262a227e1e4ab7fc40e17a39b00, type: 2}
-  itemName: Iron Axe
+  itemName: Green Chest
   itemEffect: {fileID: 0}
-  spawnChance: 0
+  spawnChance: 0.742
   itemMinPrice: 0
   itemWorldScale: 1
-  spriteName: AXES_0
+  spriteName: GreenChest
   spawnOffset: {x: 0, y: 0, z: 0}
   spawnRotation: 0
   isStackable: 0
   maxStack: 0
   actions:
-  - itemAcitons: 1
-  damage: 2
-  speed: 0.1
-  criticalChance: 0.011
-  colliderRadius: 0
-  attackPointOffset: {x: 0, y: 0, z: 0}
-  animatorTriggerName: 0
-  weaponHands: 1
-  swordLength: 1
-  isJabWeapon: 0
-  isSwingWeapon: 1
+    isUsable: 0
+    isEquipable: 0
+  armorType: 1
+  defence: 10

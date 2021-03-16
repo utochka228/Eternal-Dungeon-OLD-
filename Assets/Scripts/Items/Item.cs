@@ -5,12 +5,15 @@ using UnityEngine;
 using UnityEngine.U2D;
 using UnityEditor;
 
-interface IItem
+interface IUsable
 {
     void Use(Transform user);
 }
-
-public abstract class Item : ScriptableObject, IItem
+interface IEquipable{
+    void Equip();
+    void Unequip();
+}
+public abstract class Item : ScriptableObject, IUsable
 {
     [SerializeField] SpriteAtlas atlas;
     public string itemName;
@@ -42,7 +45,7 @@ public abstract class Item : ScriptableObject, IItem
             }
         }
     }
-    public ItemActions actions;
+    public ItemActions[] actions;
     private void OnEnable() {
         //spritePath = AssetDatabase.GetAssetPath(sprite);
     }
@@ -57,7 +60,7 @@ public abstract class Item : ScriptableObject, IItem
 }
 [System.Serializable]
 public class ItemActions {
-    public bool isUsable;
-    public bool isEquipable;
+    public ItemActionsEnum itemAcitons;
     
 }
+public enum ItemActionsEnum {Usable, Equipable}

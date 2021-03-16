@@ -5,24 +5,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-interface IRelocation{
-    void SetRelocationPanel();
-    void RelocateToCheckPoint(int indexPoint, int energyForReloc);
-    void ChangeLevel();
-}
-[System.Serializable]
-public struct CheckPoint{
-        public int level {get; private set;}
-
-        public CheckPoint(int currentLevel, ref int lastCheckPoint, in List<CheckPoint> checkPoints)
-        {
-            level = currentLevel;
-            lastCheckPoint = currentLevel;
-            checkPoints.Add(this);
-        }
-
-        public int GetCheckPointLevel() {return level;}
-}
 [System.Serializable]
 public struct LevelSeed{
     public int level;
@@ -33,13 +15,16 @@ public struct LevelSeed{
         seed = _seed;
     }
 }
-public class Relocation : MonoBehaviour, IRelocation
+public class Relocation : MonoBehaviour
 {
-    public int LastDungeonLevel = -1;
-    public int lastCheckPoint = -1;
-    public int CurrentDungeonLevel = -1;
-    [SerializeField] int checkPointDistance = 5; //Distance from one c.p to second
-    List<CheckPoint> checkPoints = new List<CheckPoint>();
+    //Start level of dungeon
+    public static int FirstDungeonLevel = -1;
+    //End level of dungeon
+    public static int LastDungeonLevel = -1;
+    public static int LastOpenedLevel = -1;
+    public static int CurrentDungeonLevel = -1;
+    public static int checkPointDistance = 5; //Distance from one c.p to second
+    public static int dungeonSize = 30;
     List<LevelSeed> levelSeeds = new List<LevelSeed>();
 
     private void Start() {
@@ -47,145 +32,141 @@ public class Relocation : MonoBehaviour, IRelocation
         GameActions.instance.MatchStarted += LoadRelocationData;
     }
 
+    public static void InitFirstPlayData(){
+        FirstDungeonLevel = 1;
+        CurrentDungeonLevel = 0;
+        LastOpenedLevel = 0;
+        LastDungeonLevel = dungeonSize;
+    }
+
     void SaveData(){
         MapSaves mapSaves = SaveSystem.instance.saves.mapSaves;
-        mapSaves.lastCheckPoint = lastCheckPoint;
+        mapSaves.LastOpenedLevel = LastOpenedLevel;
         mapSaves.LastDungeonLevel = LastDungeonLevel;
-        mapSaves.checkPoints = new List<CheckPoint>(checkPoints);
+        mapSaves.FirstDungeonLevel = FirstDungeonLevel;
         mapSaves.seeds = new List<LevelSeed>(levelSeeds);
-        for (int i = CurrentDungeonLevel; i >= 0; i--)
+        mapSaves.CurrentDungeonLevel = GetClosestCheckPoint();
+        Debug.Log("CURR IS" + mapSaves.CurrentDungeonLevel);
+    }
+    int GetClosestCheckPoint(){
+    int distUp = 0;
+    int distDown = 0;
+        for (int i = CurrentDungeonLevel; i >= 1; i--)
         {
-            bool success = checkPoints.Any(x => x.level == i);
-            if(success){
-                mapSaves.CurrentDungeonLevel =  i;
-                Debug.Log("ClosesSaveZone ==" + i);
+            if((i % checkPointDistance) == 0 || i == FirstDungeonLevel)
                 break;
-            }
+            distUp++;
         }
-    }
-
-    bool IsCheckPointLevel(){
-        bool success = checkPoints.Any(x => x.level == CurrentDungeonLevel);
-        if(success){
-            return true;
+        for (int i = CurrentDungeonLevel; i < dungeonSize; i++)
+        {
+            if((i % checkPointDistance) == 0)
+                break;
+            distDown++;
         }
-        return false;
+        if(distUp > distDown){
+            int closest = CurrentDungeonLevel + distDown;
+            if(closest > LastOpenedLevel)
+                return CurrentDungeonLevel - distUp;
+            else
+                return CurrentDungeonLevel + distDown;
+        }
+        else 
+            return CurrentDungeonLevel - distUp;
     }
-
-    [ContextMenu("LoadRelocationData")]
     void LoadRelocationData(){
         if(!PlayerPrefs.HasKey("Save"))
             return;
 
         MapSaves mapSaves = SaveSystem.instance.saves.mapSaves;
         CurrentDungeonLevel = mapSaves.CurrentDungeonLevel;
-        lastCheckPoint = mapSaves.lastCheckPoint;
+        LastOpenedLevel = mapSaves.LastOpenedLevel;
+        FirstDungeonLevel = mapSaves.FirstDungeonLevel;
         LastDungeonLevel = mapSaves.LastDungeonLevel;
-        checkPoints = new List<CheckPoint>(mapSaves.checkPoints);
         levelSeeds = new List<LevelSeed>(mapSaves.seeds);
     }
-
+    RelocPanel lastRelocPanel;
     public void SetRelocationPanel(){
-        Transform relocationHolder = PlayerUI.instance.relocationHolder.transform;
         Transform relocationPanel = PlayerUI.instance.relocationPanel.transform;
+        Transform relocationHolder = PlayerUI.instance.relocationHolder.transform;
+        Transform child = relocationHolder.GetChild(CurrentDungeonLevel-1);
+        RelocPanel panel = child.GetComponent<RelocPanel>();
+        lastRelocPanel?.UnMarkPlayer();
+        panel.MarkPlayer();
+        lastRelocPanel = panel;
         //Activate panel
         relocationPanel.gameObject.SetActive(true);
-
-        //Spawn buttons for checkpoints
-        for(int i = 0; i < checkPoints.Count; i ++)
-        {
-            CheckPoint point = checkPoints[i];
-            int pointLevel = point.GetCheckPointLevel();
-            GameObject buttonPrefab = PlayerUI.instance.relocationButton;
-            GameObject _button = Instantiate(buttonPrefab, buttonPrefab.transform.position, 
-                                                    Quaternion.identity, relocationHolder);
-            Button button = _button.GetComponent<Button>();
-            int energyForRelocation = 0;
-            if(CurrentDungeonLevel > pointLevel)
-                energyForRelocation = 0;
-            else 
-                energyForRelocation = (point.GetCheckPointLevel() - CurrentDungeonLevel) * checkPointDistance;
-            Debug.Log("Adding argument " + i + "to method");    
-
-            RelocationButton rbutton = _button.GetComponent<RelocationButton>();
-            rbutton.indexPoint = i;
-            rbutton.relocationEnergy = energyForRelocation;
-
-            TextMeshProUGUI neccessertEnergyText = button.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-            if(pointLevel == CurrentDungeonLevel){
-                neccessertEnergyText.text = "You here";
-                button.interactable = false;
-                continue;
-            }
-            neccessertEnergyText.text = energyForRelocation.ToString();
-            
-            PlayerStats stats = GameSession.instance.Player.GetComponent<PlayerStats>();
-            if(stats.RelocationEnergy < energyForRelocation){
-                button.interactable = false;
-            }
-        }
     }
-
-    
+    void SpawnRelocButton(int level){
+        Transform relocationHolder = PlayerUI.instance.relocationHolder.transform;
+        GameObject prefab = PlayerUI.instance.relocationButton;
+        GameObject relocButton = Instantiate(prefab, relocationHolder);
+        RelocPanel panel = relocButton.GetComponent<RelocPanel>();
+        panel.SetData(level);
+    }
     //Called after creating new level
     public void ChangeLevel(){
-        
-        //if is new level then create else relocate
-        if(CurrentDungeonLevel >= LastDungeonLevel){
-            CreateLevel();
-        }
-        else{
-            RelocateToNext();
-        }
-        GameSession.instance.transition.Create(CurrentDungeonLevel, "Default decription");
+    //if is new level then create else relocate
+    if(CurrentDungeonLevel >= LastOpenedLevel){
+        CreateLevel(); //Creating new level
     }
-    public void CreateSavedLevel(){
-        string seed = levelSeeds.Single(x => x.level == CurrentDungeonLevel).seed;
-        GameMap.GM.GenerateGameField(IsCheckPointLevel(), seed);
+    else{
+        RelocateToNext(); //Relocation to next opened level
+    }
+    GameSession.instance.transition.Create(CurrentDungeonLevel, "Default decription");
+    }
+    public void LoadClosestSavedCheckPoint(){
+        GameMap.GM.GenerateGameField(GameLevelType.CheckPoint);
         GameSession.instance.transition.Create(CurrentDungeonLevel, "Default decription");
     }
     void CreateLevel(){
         CurrentDungeonLevel++;
-        LastDungeonLevel++;
-        GameMap.GM.DestroyGameField();
-        if(CurrentDungeonLevel == 0 || CurrentDungeonLevel == lastCheckPoint + checkPointDistance){
-            CheckPoint checkPoint = new CheckPoint(CurrentDungeonLevel, ref lastCheckPoint, checkPoints);
-        }
-        string seed = GameMap.GM.GenerateGameField(IsCheckPointLevel());
+        LastOpenedLevel++;
+        GameMap.DestroyGameField();
+        string seed = "";
+        if(IsBossLevel() == false){
+            if((CurrentDungeonLevel % checkPointDistance) == 0 || CurrentDungeonLevel == 1)
+                GameMap.GM.GenerateGameField(GameLevelType.CheckPoint);
+            else
+                seed = GameMap.GM.GenerateGameField(GameLevelType.SimpleLevel);
+        } else
+            GameMap.GM.GenerateGameField(GameLevelType.BossLevel);
+        //Save this level seed (even "")
         levelSeeds.Add(new LevelSeed(CurrentDungeonLevel, seed));
-        Debug.Log("Level Created!");
+        SpawnRelocButton(CurrentDungeonLevel);
     }
     void RelocateToNext(){
         CurrentDungeonLevel++;
-        GameMap.GM.DestroyGameField();
+        GameMap.DestroyGameField();
         LevelSeed lSeed = levelSeeds.Single(x => x.level == CurrentDungeonLevel);
         string seed = lSeed.seed;
-        GameMap.GM.GenerateGameField(IsCheckPointLevel(), seed);
+        if(IsBossLevel() == false){
+            if((CurrentDungeonLevel % checkPointDistance) == 0)
+                GameMap.GM.GenerateGameField(GameLevelType.CheckPoint);
+            else
+                GameMap.GM.GenerateGameField(GameLevelType.SimpleLevel, seed);
+        } else
+            GameMap.GM.GenerateGameField(GameLevelType.BossLevel);
     }
-    
-    public void RelocateToCheckPoint(int indexPoint, int energyForReloc){
-        int neccesseryLevel = checkPoints[indexPoint].GetCheckPointLevel();
-        
-        GameMap.GM.DestroyGameField();
-        LevelSeed lSeed = levelSeeds.Single(x => x.level == neccesseryLevel);
+    public void RelocateTo(int level){
+        GameMap.DestroyGameField();
+        LevelSeed lSeed = levelSeeds.Single(x => x.level == level);
         string seed = lSeed.seed;
-        GameMap.GM.GenerateGameField(IsCheckPointLevel(), seed);
-        GameSession.instance.Player.GetComponent<PlayerStats>().RelocationEnergy -= energyForReloc;
-        CurrentDungeonLevel = neccesseryLevel;
-
-        ClearRelocPanel();
-        Transform relocationPanel = PlayerUI.instance.relocationPanel.transform;
-        relocationPanel.gameObject.SetActive(false);
-
-    } 
-
-    public void ClearRelocPanel(){
-        Transform relocationHolder = PlayerUI.instance.relocationHolder.transform;
-        int childCount = relocationHolder.childCount;
-        //Clear panel
-        for (int i = 0; i < childCount; i++)
-        {
-            Destroy(relocationHolder.GetChild(i).gameObject);
-        }
+        CurrentDungeonLevel = level;
+        if((CurrentDungeonLevel % checkPointDistance) == 0)
+            GameMap.GM.GenerateGameField(GameLevelType.CheckPoint);
+        else
+            GameMap.GM.GenerateGameField(GameLevelType.SimpleLevel, seed);
+    }
+    bool IsBossLevel(){
+        if(CurrentDungeonLevel == LastDungeonLevel)
+            return true;
+        return false;
+    }
+    public void BossDefeated(){
+        //Set firstdungeonlevel
+        CurrentDungeonLevel++;
+        FirstDungeonLevel = CurrentDungeonLevel;
+        //Clear prev game saves
     }
 }
+public enum GameLevelType { CheckPoint, SimpleLevel, BossLevel}

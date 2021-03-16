@@ -19,18 +19,33 @@ public class DamagePopup : MonoBehaviour
         damagePopup.Setup(damage, isCritical);
         return damagePopup;
     }
+    public static DamagePopup Create(Vector3 position, int value, Color color){
+        GameObject damagePopupObj = Instantiate(GameSession.instance.damagePopupPrefab, position, Quaternion.identity);
+        float angle = Random.Range(-5f, 5f);
+        damagePopupObj.transform.eulerAngles = new Vector3(0, 0, angle);
+        DamagePopup damagePopup = damagePopupObj.GetComponent<DamagePopup>();
+        damagePopup.moveVector = Vector3.up;
+        damagePopup.Setup(value, color);
+        return damagePopup;
+    }
     public void Setup(int damageCount, bool isCrititicalHit){
         textMesh.text = damageCount.ToString();
         textColor = textMesh.color; 
         if(isCrititicalHit){
             textMesh.fontSize = 8;
             textColor = Color.red;
-            Debug.Log("CRIT");
         }else{
             textMesh.fontSize = 5;
             textColor = Color.yellow;
-            Debug.Log("Not CRIT");
         }
+        textMesh.color = textColor;
+        disapearTimer = DISAPEAR_TIMER_MAX;
+    }
+    public void Setup(int value, Color color){
+        textMesh.text = value.ToString();
+        textColor = textMesh.color; 
+        textMesh.fontSize = 5;
+        textColor = color;
         textMesh.color = textColor;
         disapearTimer = DISAPEAR_TIMER_MAX;
     }

@@ -59,7 +59,10 @@ SpriteAtlas:
     - {fileID: 4820688438788214557, guid: 15696ac390f4ad5419b0c8ab1e013730, type: 3}
     - {fileID: 21300012, guid: bb35af95735851440927571ef230221b, type: 3}
     - {fileID: 21300000, guid: af05a392cb992d04e964e0d1553bf68f, type: 3}
-    totalSpriteSurfaceArea: 19280
+    - {fileID: 21300000, guid: 87084467f3646be488497ff252611d41, type: 3}
+    - {fileID: 21300000, guid: 1c66e357b0102954a9ad3eaf9ed12ad8, type: 3}
+    - {fileID: 21300000, guid: 70e755f79c9950b449d7a7a3f738becf, type: 3}
+    totalSpriteSurfaceArea: 22352
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -70,7 +73,10 @@ SpriteAtlas:
   - {fileID: 4820688438788214557, guid: 15696ac390f4ad5419b0c8ab1e013730, type: 3}
   - {fileID: 21300012, guid: bb35af95735851440927571ef230221b, type: 3}
   - {fileID: 21300000, guid: 716ed427b233e6445ac44339bfb56b75, type: 3}
+  - {fileID: 21300000, guid: 1c66e357b0102954a9ad3eaf9ed12ad8, type: 3}
+  - {fileID: 21300000, guid: 87084467f3646be488497ff252611d41, type: 3}
   - {fileID: 21300000, guid: 8eb9e1b73fee8d644bb7c342c7f1081f, type: 3}
+  - {fileID: 21300000, guid: 70e755f79c9950b449d7a7a3f738becf, type: 3}
   - {fileID: 21300000, guid: b08b8fb90dd87984d8f4ea524f1876ec, type: 3}
   - {fileID: 21300000, guid: 6651179b93758a346b351f6d706f3c93, type: 3}
   - {fileID: 21300000, guid: 9bc5536cd4c6d924b94a1d63187430e1, type: 3}
@@ -88,7 +94,10 @@ SpriteAtlas:
   - Food_21
   - TX Tileset Ground M
   - Coal
+  - GreenChest
+  - RedHelmet
   - Coal_Icon
+  - BlueLeg
   - evo_bundle20
   - Wormhole
   - GrassBlock

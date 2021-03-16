@@ -21,10 +21,12 @@ public class GameSession : MonoBehaviour
 
     public void StartSession(){
         if(PlayerPrefs.HasKey("Save")){
-            GameMap.GM.relocation.CreateSavedLevel();
+            GameMap.GM.relocation.LoadClosestSavedCheckPoint();
             return;
-        }else
+        }else{
+            Relocation.InitFirstPlayData();
             GameMap.GM.relocation.ChangeLevel();
+        }
     }
 
     public static void SpawnPlayer(Vector3 position)

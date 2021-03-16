@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
+
 public class RelocationButton : MonoBehaviour
 {
     public int indexPoint;
-    public int relocationEnergy;
-    
+    public Button myButton;
     public void Relocate(){
         Relocation relocation = GameMap.GM.relocation;
-        relocation.RelocateToCheckPoint(indexPoint, relocationEnergy);
+        relocation.RelocateTo(indexPoint);
     }
 }

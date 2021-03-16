@@ -27,36 +27,21 @@ public class Slot : MonoBehaviour
     public bool IsEmpty() {return itemStack.Count == 0 ? true: false;}
     public int inventoryIndex;
         
-    public Dictionary<string, UnityAction> itemActions = new Dictionary<string, UnityAction>();
     void Awake()
     {
         stackCountText.gameObject.SetActive(false);
         image.enabled = false;
     }
-    //Apply manipulation item actions to this slot
-    void ApplyItemActions(){
-        ItemActions itActions = itemStack.Peek().actions;
-        if(itActions.isEquipable)
-            itemActions.Add("Equip", new UnityAction(EquipItem));
-        if(itActions.isUsable)
-            itemActions.Add("Use", new UnityAction(UseItem));
-
-        itemActions.Add("Drop", new UnityAction(DropItem));
-        itemActions.Add("Remove", new UnityAction(RemoveItem));
-    }
 
     public void ClearSlot(){
-        if(itemActions.Count == 0)
-            return;
-        Debug.Log("Slot cleared");
         image.sprite = null;
         image.enabled = false;
         DropSlot dropSlot = GetComponent<DragDrop>().oldSlot;
         dropSlot.MySlot = null;
-        itemActions.Clear();
         Inventory.instance.freeSlots++;
         slotDataSave.itemName = "";
         slotDataSave.count = 0;
+        Debug.Log("Slot cleared");
     }
 
     public void AddItem(Item item){
@@ -79,7 +64,6 @@ public class Slot : MonoBehaviour
                 Debug.Log(item.itemName +" name");
                 image.sprite = item.sprite;
                 image.enabled = true;
-                ApplyItemActions();
             }
         }
         stackCountText.text = itemStack.Count.ToString();
@@ -101,7 +85,7 @@ public class Slot : MonoBehaviour
             Item item = itemStack.Pop();
             if(itemStack.Count == 0){
                 ClearSlot();
-                Inventory.instance.CheckHandsByItem(item);
+                Inventory.instance.CheckEquipByItem(item);
                 break;
             }
         }
@@ -111,6 +95,7 @@ public class Slot : MonoBehaviour
         Inventory.instance.inventoryUpdated?.Invoke();
     }
     //Drop button
+    [ItemAction(true, "Drop Item")]
     public void DropItem(){
         if(TryGetStackItem().isStackable){
             string dropHeader = "Drop count";
@@ -119,6 +104,7 @@ public class Slot : MonoBehaviour
             Drop(1);
     }
     //Remove button
+    [ItemAction(true, "Remove Item")]
     public void RemoveItem(){
         if(TryGetStackItem().isStackable){
             string removeHeader = "Remove count";
@@ -147,10 +133,12 @@ public class Slot : MonoBehaviour
             return;
 
         //Activate tooltip
-        InteractionWindow.instance.ShowWindow(this);
+        ToolTipSystem.Show(itemStack.Peek(), transform);
+        ToolTipSystem.SetItemActions(this, itemStack.Peek());
     }
 
     //For use button
+    [ItemAction(ItemActionsEnum.Usable, "Use Item")]
     public void UseItem(){
         Debug.Log("Item used!");
         Item item = itemStack.Peek();
@@ -161,6 +149,7 @@ public class Slot : MonoBehaviour
     }
 
     //For equip button
+    [ItemAction(ItemActionsEnum.Equipable, "Equip Item")]
     public void EquipItem(){
         Debug.Log("Item equiped!");
         //Spawn item near of player
