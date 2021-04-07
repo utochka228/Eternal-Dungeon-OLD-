@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: PlayerInfo
   m_EditorClassIdentifier: 
   maxExpValueChanger: 100
-  newCharacter: 0
+  newCharacter: 1

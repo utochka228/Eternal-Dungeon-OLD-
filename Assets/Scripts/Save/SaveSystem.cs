@@ -13,7 +13,6 @@ public class SaveSystem : MonoBehaviour
     private void Awake() {
         instance = this;
         LoadSave();
-
     }
 
     [ContextMenu("DeletePrefs")]

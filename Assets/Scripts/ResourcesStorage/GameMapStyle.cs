@@ -10,7 +10,8 @@ public class GameMapStyle : ScriptableObject
     [Header("Sprite atlas for this level style")]
     [SerializeField] SpriteAtlas atlas;
     [Header("Level sprite name of ground in atlas")]
-    [SerializeField] string[] ground;
+    [Header("Sprite must be named like: \"BlockName0\" or \"BlockName_0\"")]
+    [SerializeField] GroundLayer[] ground;
     public GameObject groundPrefab;
     [Header("Level sprite name of walls in atlas")]
     [SerializeField] string[] walls;
@@ -30,10 +31,23 @@ public class GameMapStyle : ScriptableObject
     public int GetGroundSize(){
         return ground.Length;
     }
-    public Sprite GetGroundSprite(int index){
-        return atlas.GetSprite(ground[index]);
+    public Sprite GetGroundSprite(int groundLayer, int index){
+        Sprite sprite;
+        string layerName = ground[groundLayer].layerName;
+        layerName += index;
+        sprite = atlas.GetSprite(layerName);
+        if(sprite == null)
+            layerName = ground[groundLayer].layerName + "_" + index;
+        else
+            return sprite;
+        sprite = atlas.GetSprite(layerName);
+        return sprite;
     }
     public Sprite GetWallSprite(int index){
         return atlas.GetSprite(walls[index]);
     }
+}
+[System.Serializable]
+struct GroundLayer{
+    public string layerName;
 }

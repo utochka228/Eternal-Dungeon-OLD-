@@ -46,7 +46,6 @@ public class Relocation : MonoBehaviour
         mapSaves.FirstDungeonLevel = FirstDungeonLevel;
         mapSaves.seeds = new List<LevelSeed>(levelSeeds);
         mapSaves.CurrentDungeonLevel = GetClosestCheckPoint();
-        Debug.Log("CURR IS" + mapSaves.CurrentDungeonLevel);
     }
     int GetClosestCheckPoint(){
     int distUp = 0;
@@ -112,11 +111,11 @@ public class Relocation : MonoBehaviour
     else{
         RelocateToNext(); //Relocation to next opened level
     }
-    GameSession.instance.transition.Create(CurrentDungeonLevel, "Default decription");
+    GameSession.instance.transition.Create(CurrentDungeonLevel, GameTips.GetTip());
     }
     public void LoadClosestSavedCheckPoint(){
         GameMap.GM.GenerateGameField(GameLevelType.CheckPoint);
-        GameSession.instance.transition.Create(CurrentDungeonLevel, "Default decription");
+        GameSession.instance.transition.Create(CurrentDungeonLevel, GameTips.GetTip());
     }
     void CreateLevel(){
         CurrentDungeonLevel++;

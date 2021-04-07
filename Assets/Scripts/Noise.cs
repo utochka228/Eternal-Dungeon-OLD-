@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public static class Noise {
 
@@ -60,5 +61,32 @@ public static class Noise {
 
 		return noiseMap;
 	}
-
+	public static GroundRegion[] GetClearNoiseRegions(float[,] noise, int divisions, int[,] mapMask){
+		float divisionPrice = 1f/divisions;
+		float current = 0f;
+		GroundRegion[] regions = new GroundRegion[divisions];
+		for (int i = 0; i < divisions; i++)
+		{
+			regions[i].tiles = new List<Vector2Int>();
+			for (int x = 0; x < noise.GetLength(0); x++)
+			{
+				for (int y = 0; y < noise.GetLength(1); y++)
+				{
+					if(noise[x,y] >= current && noise[x, y] <= current+divisionPrice)
+					{
+						if(mapMask[x, y] == 0){
+							regions[i].tiles.Add(new Vector2Int(x, y));
+							regions[i].groundLayerIndex = i;
+						}
+					}
+				}
+			}
+			current += divisionPrice;
+		}
+		return regions;
+	}
+}
+public struct GroundRegion{
+	public List<Vector2Int> tiles;
+	public int groundLayerIndex;
 }

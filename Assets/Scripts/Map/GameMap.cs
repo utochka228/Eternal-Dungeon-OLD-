@@ -8,7 +8,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using UnityEngine.Rendering;
 
-public class GameMap : MonoBehaviour
+public partial class GameMap : MonoBehaviour
 {
     public static GameMap GM;
 	//Levels moving, teleportation
@@ -74,26 +74,42 @@ public class GameMap : MonoBehaviour
     //Main map gen method
     public string GenerateGameField(GameLevelType type, string seed = " ")
     {
-		Vector2 playerSpawn;
+		Vector2 playerSpawn = Vector2.zero;
 		myMapStyle = Resources.Load<GameMapStyle>(Path.Combine("MapStyles", mapStyles.GetCurrentMapStyle(Relocation.CurrentDungeonLevel)));
         postProccesing.profile = myMapStyle.levelPostProccess;
         CreateMapHolders();
         bool useRandomSeed = seed.Equals(" ") ? true : false;
-		if(type != GameLevelType.CheckPoint){
+		if(type == GameLevelType.SimpleLevel){
 			//Map base gen
 			GenerateMap(useRandomSeed, seed);
 			//Noise generation
 			int noiseSeed = Random.Range(0, 999999);
 			Vector2 noiseOffset = new Vector2(Random.Range(-9999, 9999), Random.Range(-9999, 9999));
 			float[,] noise = Noise.GenerateNoiseMap(mapSize.xMapSize, mapSize.yMapSize, noiseSeed, scale, octaves, persistance, lacunarity, noiseOffset);
+			var groundRegions = Noise.GetClearNoiseRegions(noise, myMapStyle.GetGroundSize(), mapMask);
+			for (int i = 0; i < groundRegions.Length; i++)
+			{
+				var region = groundRegions[i];
+				for (int k = 0; k < region.tiles.Count; k++)
+				{
+					Vector2Int pos = region.tiles[k];
+					int sum = 0;
+					if(region.tiles.Contains(new Vector2Int(pos.x, pos.y+1)))
+						sum += 1;
+					if(region.tiles.Contains(new Vector2Int(pos.x+1, pos.y)))
+						sum += 2;
+					if(region.tiles.Contains(new Vector2Int(pos.x, pos.y-1)))
+						sum += 4;
+					if(region.tiles.Contains(new Vector2Int(pos.x-1, pos.y)))
+						sum += 8;
+					SpawnGround(pos.x, pos.y, region.groundLayerIndex, sum);
+				}
+			}
 			for (int x = 0; x < mapSize.xMapSize; x++)
 			{
 				for (int y = 0; y  <mapSize.yMapSize; y++)
 				{
-					if(mapMask[x, y] == 0) //if is ground
-					{
-						SpawnGround(x, y, noise[x,y]);
-					}else{ //if walls
+					if(mapMask[x,y] == 1){ //if walls
 						bool canSpawnWall = false;
 						for (int k = x-1; k <= x+1; k++)
 						{
@@ -111,7 +127,7 @@ public class GameMap : MonoBehaviour
 							if(canSpawnWall) break;
 						}
 							if(canSpawnWall)
-								SpawnWalls(x, y);
+								SpawnWall(x, y);
 					}
 				}
 			}
@@ -121,9 +137,12 @@ public class GameMap : MonoBehaviour
 			SpawnProps(playerSpawn);
 			SpawnBlocks();
 			SpawnPlayerDeathPoint();
-		}else{
+		}else if(type == GameLevelType.CheckPoint){
 			SpawnCheckPointRoom();
 			playerSpawn = Vector2.zero;
+		}else if(type == GameLevelType.BossLevel)
+		{
+			SpawnBossLevel();
 		}
 		GameSession.SpawnPlayer(new Vector3(playerSpawn.x, playerSpawn.y, 0f));
         return this.seed;
@@ -146,224 +165,7 @@ public class GameMap : MonoBehaviour
 		}
 		return new Vector2(tile.tileX, tile.tileY);
 	}
-	void SpawnLevelMobs(Vector2 playerPos){
-		int playerX = Mathf.RoundToInt(playerPos.x);
-		int playerY = Mathf.RoundToInt(playerPos.y);
-		for (int i = 0; i < myMapStyle.mobs.Length; i++)
-		{
-			GameObject mobPrefab = myMapStyle.mobs[i];
-			int count = Random.Range(1, 10); //count of enemy
-			for (int k = 0; k < count; k++)
-			{
-				//Get enemy spawn chance
-				Enemy myEnemy = myMapStyle.mobs[i].GetComponent<Enemy>();
-				float chance = Random.Range(0f, 100f) / 100f;
-				if(chance > myEnemy.spawnChance)
-					continue;
-				//Select random room for enemy
-				int randomRoom = Random.Range(0, mapRooms.Count);
-				Room room = mapRooms[randomRoom];
-				//Future enemy position var
-				int randTile = Random.Range(0, room.tiles.Count);
-				Coord enemyPos = room.tiles[randTile];
-				room.tiles.Remove(enemyPos);
-				//Spawn enemy
-				GameObject mob = Instantiate(mobPrefab);
-				mob.transform.SetParent(GetGameMapParent("Enemies"));
-				mob.transform.position = new Vector3(enemyPos.tileX, enemyPos.tileY, 1f);
-			}
-		}
-	}
-	void SpawnBuildings(Vector2 playerPos){
-		int playerX = Mathf.RoundToInt(playerPos.x);
-		int playerY = Mathf.RoundToInt(playerPos.y);
-		for (int i = 0; i < myMapStyle.gmReadyPrefabs.Length; i++)
-		{
-			GameObject buildPrefab = myMapStyle.gmReadyPrefabs[i];
-			//Get enemy spawn chance
-			Building source = myMapStyle.gmReadyPrefabs[i].GetComponent<Building>();
-			float chance = Random.Range(0f, 100f) / 100f;
-			if(chance > source.spawnChance)
-				continue;
-			//Select random room for enemy
-			int randomRoom = Random.Range(0, mapRooms.Count);
-			Room room = mapRooms[randomRoom];
-			//Future enemy position var
-			GameObject build = Instantiate(myMapStyle.gmReadyPrefabs[0]);
-			Building myBuild = build.GetComponent<Building>();
-			int randTile = Random.Range(0, room.tiles.Count);
-			Coord sourcePos = room.tiles[randTile];
-			for (int x = sourcePos.tileX-myBuild.Size.x; x <= sourcePos.tileX+myBuild.Size.x; x++)
-			{
-				for (int y = sourcePos.tileY-myBuild.Size.y; y <= sourcePos.tileY+myBuild.Size.y; y++)
-				{
-					Coord tile = new Coord(x, y);
-					if(room.tiles.Contains(tile))
-						room.tiles.Remove(tile);
-				}
-			}
-			build.transform.SetParent(GetGameMapParent("Props"));
-			build.transform.position = new Vector3(myBuild.Center.x+sourcePos.tileX, myBuild.Center.y+sourcePos.tileY, 1f);
-		}
-	}
-    void SpawnProps(Vector2 playerPos){
-		int playerX = Mathf.RoundToInt(playerPos.x);
-		int playerY = Mathf.RoundToInt(playerPos.y);
-		for (int i = 0; i < myMapStyle.props.Length; i++)
-		{
-			Prop prop = myMapStyle.props[i];
-			int count = Random.Range(1, prop.maxPropPerRoomCount+1); //count of props
-			for (int k = 0; k < count; k++)
-			{
-				//Get enemy spawn chance
-				float chance = Random.Range(0f, 100f) / 100f;
-				if(chance > prop.spawnChance)
-					continue;
-				//Select random room for enemy
-				int randomRoom = Random.Range(0, mapRooms.Count);
-				Room room = mapRooms[randomRoom];
-				//Future enemy position var
-				int randTile = Random.Range(0, room.tiles.Count);
-				//SOMETIMES room.tiles.Count has 0 count!!!!!!!!!!!!!!!!!!!!!!!!!
-				Debug.Log("RandIndex:" + randTile + "Room count tiles:" + room.tiles.Count);
-				Coord propPos = room.tiles[randTile];
-				//Spawn enemy
-				GameObject propPrefab = Instantiate(propHolder);
-				propPrefab.transform.SetParent(GetGameMapParent("Props"));
-				propPrefab.transform.position = new Vector3(propPos.tileX, propPos.tileY, 1f);
-				PropHolder holder  = propPrefab.GetComponent<PropHolder>();
-				holder.SetMyProp(prop);
-			}
-		}
-    }
-	void SpawnPlayerDeathPoint(){
-		DeathPointData deathPoint = SaveSystem.instance.saves.playerSaves.deathPointData;
-		if(!deathPoint.createDeathPoint)
-			return;
-
-		int currentLevel = Relocation.CurrentDungeonLevel;
-		if(currentLevel != deathPoint.levelOfDeath)
-			return;
-
-		Item playerLoot = Resources.Load<Item>(Path.Combine("Items/", "DeathPlayerLoot"));
-		DeathPlayerLoot pl = (DeathPlayerLoot)playerLoot;
-		foreach (var slot in deathPoint.loot)
-		{
-			Item slotItem = Resources.Load<Item>(Path.Combine("Items/", slot.itemName));
-			if(slotItem == null)
-				continue;
-			pl.loot.Add(Instantiate(slotItem));
-		}
-		Vector3 lootPosition = new Vector3(deathPoint.position.x, deathPoint.position.y, 1f);
-		GameObject _itemHolder = Instantiate(itemHolder, lootPosition, Quaternion.identity);
-		ItemHolder holder = _itemHolder.GetComponent<ItemHolder>();
-		holder.SetItem(playerLoot, false);
-	}
-    public void SpawnWormhole(int x, int y){
-		Vector3 position = new Vector3(x, y, 1f);
-        PropHolder pHolder = Instantiate(propHolder, position, Quaternion.identity, GetGameMapParent("GameField").transform).GetComponent<PropHolder>();
-        pHolder.SetMyProp(wormhole);
-    }
-    [SerializeField] float maxPercentageRoomBlocks = 0.6f;
-    [SerializeField] float minPercentageRoomBlocks = 0.1f;
-    void SpawnBlocks(){
-        List<Coord> region = GetRegions(0)[0];
-        float percentage = Random.Range(minPercentageRoomBlocks, maxPercentageRoomBlocks);
-        int blockCount = Mathf.RoundToInt(region.Count * percentage);
-        Utils.Shuffle(region);
-
-        int exitIndex = Random.Range(0, blockCount);
-
-        //Get random tile and procces it
-        for(int i = 0; i < blockCount; i++)
-        {
-            Coord tile = region[i];
-            bool canSpawn = Random.Range(0, 2) == 1? true: false;
-            if(canSpawn){
-                GameObject block = Instantiate(myMapStyle.blockHolder, new Vector3(tile.tileX, tile.tileY, 0f), Quaternion.identity, GetGameMapParent("Blocks"));
-				block.transform.SetParent(GetGameMapParent("Blocks"));
-			    Block _block = block.GetComponent<Block>();
-                if(i == exitIndex){
-                    _block.spawnExit = true;
-                }
-                int index = Random.Range(0, myMapStyle.blocks.Length);
-                _block.SetBlock(myMapStyle.blocks[index]);
-            }
-        }
-    }
-	void SpawnGround(int x, int y, float groundLevel){
-		//Select ground sprite based on perlin noise
-		int size = myMapStyle.GetGroundSize();
-		float divisionPrice = 1f/size;
-		int index = Mathf.RoundToInt(groundLevel/divisionPrice);
-		index = Mathf.Clamp(index, 0, size-1);
-		//Use selected index
-        Vector2 position = new Vector2(x, y);
-        GameObject instance = Instantiate(myMapStyle.groundPrefab, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
-        SpriteRenderer ground = instance.GetComponent<SpriteRenderer>();
-		ground.sprite = myMapStyle.GetGroundSprite(index);
-        instance.transform.SetParent(GetGameMapParent("Floor"));
-    }
-    void SpawnWalls(int x, int y){
-		Transform _wall = Instantiate(myMapStyle.wallPrefab).transform;
-		SpriteRenderer wall = _wall.GetComponent<SpriteRenderer>();
-		wall.sprite = myMapStyle.GetWallSprite(0);
-		_wall.position = new Vector3(x, y, 0f);
-		_wall.SetParent(GetGameMapParent("Walls"));
-    }
-	#region CheckPointSpawning
-	[SerializeField] int radius = 1;
-	void SpawnCheckPointRoom(){
-		int rSquared = radius * radius;
-		int x = Vector2Int.zero.x;
-		int y = Vector2Int.zero.y;
-
-		List<Vector2Int> ground = new List<Vector2Int>();
-		for (int u = x - radius; u < x + radius + 1; u++)
-			for (int v = y - radius; v < y + radius + 1; v++)
-				if ((x - u) * (x - u) + (y - v) * (y - v) < rSquared)
-				{
-					ground.Add(new Vector2Int(u, v));
-					SpawnGround(u, v, 0f);
-					if(u == x && v == y+1)
-						SpawnObelisk(u, v);
-					if(u == x-radius+1 && v == y)
-						SpawnWormhole(u, v);
-					if(u == x && v == y+radius-3)
-						SpawnMerchantShop(u, v);
-				}
-
-		radius += 1;
-		rSquared = radius * radius;
-		for (int u = x - radius; u < x + radius + 1; u++)
-			for (int v = y - radius; v < y + radius + 1; v++){
-				if ((x - u) * (x - u) + (y - v) * (y - v) < rSquared){
-					Vector2Int pos = new Vector2Int(u,v);
-					if (!ground.Contains(pos))
-					{
-						Transform _wall = Instantiate(myMapStyle.wallPrefab).transform;
-						SpriteRenderer wall = _wall.GetComponent<SpriteRenderer>();
-						wall.sprite = myMapStyle.GetWallSprite(0);
-						_wall.position = new Vector3(pos.x, pos.y, 0f);
-						_wall.SetParent(GetGameMapParent("Walls"));
-					}
-				}
-			}
-	}
-	void SpawnObelisk(int x, int y){
-		Vector3 pos = new Vector3(x, y, 1f);
-		GameObject prefab = Instantiate(propHolder, pos, Quaternion.identity);
-		prefab.transform.position = pos;
-		PropHolder holder = prefab.GetComponent<PropHolder>();
-		holder.SetMyProp(obelisk);
-	}
-	void SpawnMerchantShop(int x, int y){
-		Vector3 position = new Vector3(x, y, 1f);
-		GameObject prefab = Resources.Load<GameObject>(Path.Combine("Props/", "merchant's shop"));
-        GameObject shop = Instantiate(prefab, position, Quaternion.identity, GetGameMapParent("GameField"));
-	}
-	#endregion
-    
+	
 	#region MapGenerator
 	int width;
 	int height;
@@ -771,6 +573,222 @@ public class GameMap : MonoBehaviour
 			return;
         Destroy(gameField.gameObject);
     }
+}
+//All spawns
+public partial class GameMap{
+	void SpawnLevelMobs(Vector2 playerPos){
+		int playerX = Mathf.RoundToInt(playerPos.x);
+		int playerY = Mathf.RoundToInt(playerPos.y);
+		for (int i = 0; i < myMapStyle.mobs.Length; i++)
+		{
+			GameObject mobPrefab = myMapStyle.mobs[i];
+			int count = Random.Range(1, 10); //count of enemy
+			for (int k = 0; k < count; k++)
+			{
+				//Get enemy spawn chance
+				Enemy myEnemy = myMapStyle.mobs[i].GetComponent<Enemy>();
+				float chance = Random.Range(0f, 100f) / 100f;
+				if(chance > myEnemy.spawnChance)
+					continue;
+				//Select random room for enemy
+				int randomRoom = Random.Range(0, mapRooms.Count);
+				Room room = mapRooms[randomRoom];
+				//Future enemy position var
+				int randTile = Random.Range(0, room.tiles.Count);
+				Coord enemyPos = room.tiles[randTile];
+				room.tiles.Remove(enemyPos);
+				//Spawn enemy
+				GameObject mob = Instantiate(mobPrefab);
+				mob.transform.SetParent(GetGameMapParent("Enemies"));
+				mob.transform.position = new Vector3(enemyPos.tileX, enemyPos.tileY, 1f);
+			}
+		}
+	}
+	void SpawnBossLevel(){
+		
+	}
+	void SpawnBuildings(Vector2 playerPos){
+		int playerX = Mathf.RoundToInt(playerPos.x);
+		int playerY = Mathf.RoundToInt(playerPos.y);
+		for (int i = 0; i < myMapStyle.gmReadyPrefabs.Length; i++)
+		{
+			GameObject buildPrefab = myMapStyle.gmReadyPrefabs[i];
+			//Get enemy spawn chance
+			Building source = myMapStyle.gmReadyPrefabs[i].GetComponent<Building>();
+			float chance = Random.Range(0f, 100f) / 100f;
+			if(chance > source.spawnChance)
+				continue;
+			//Select random room for enemy
+			int randomRoom = Random.Range(0, mapRooms.Count);
+			Room room = mapRooms[randomRoom];
+			//Future enemy position var
+			GameObject build = Instantiate(myMapStyle.gmReadyPrefabs[0]);
+			Building myBuild = build.GetComponent<Building>();
+			int randTile = Random.Range(0, room.tiles.Count);
+			Coord sourcePos = room.tiles[randTile];
+			for (int x = sourcePos.tileX-myBuild.Size.x; x <= sourcePos.tileX+myBuild.Size.x; x++)
+			{
+				for (int y = sourcePos.tileY-myBuild.Size.y; y <= sourcePos.tileY+myBuild.Size.y; y++)
+				{
+					Coord tile = new Coord(x, y);
+					if(room.tiles.Contains(tile))
+						room.tiles.Remove(tile);
+				}
+			}
+			build.transform.SetParent(GetGameMapParent("Props"));
+			build.transform.position = new Vector3(myBuild.Center.x+sourcePos.tileX, myBuild.Center.y+sourcePos.tileY, 1f);
+		}
+	}
+    void SpawnProps(Vector2 playerPos){
+		int playerX = Mathf.RoundToInt(playerPos.x);
+		int playerY = Mathf.RoundToInt(playerPos.y);
+		for (int i = 0; i < myMapStyle.props.Length; i++)
+		{
+			Prop prop = myMapStyle.props[i];
+			int count = Random.Range(1, prop.maxPropPerRoomCount+1); //count of props
+			for (int k = 0; k < count; k++)
+			{
+				//Get enemy spawn chance
+				float chance = Random.Range(0f, 100f) / 100f;
+				if(chance > prop.spawnChance)
+					continue;
+				//Select random room for enemy
+				int randomRoom = Random.Range(0, mapRooms.Count);
+				Room room = mapRooms[randomRoom];
+				//Future enemy position var
+				int randTile = Random.Range(0, room.tiles.Count);
+				//SOMETIMES room.tiles.Count has 0 count!!!!!!!!!!!!!!!!!!!!!!!!!
+				Debug.Log("RandIndex:" + randTile + "Room count tiles:" + room.tiles.Count);
+				Coord propPos = room.tiles[randTile];
+				//Spawn enemy
+				GameObject propPrefab = Instantiate(propHolder);
+				propPrefab.transform.SetParent(GetGameMapParent("Props"));
+				propPrefab.transform.position = new Vector3(propPos.tileX, propPos.tileY, 1f);
+				PropHolder holder  = propPrefab.GetComponent<PropHolder>();
+				holder.SetMyProp(prop);
+			}
+		}
+    }
+	void SpawnPlayerDeathPoint(){
+		DeathPointData deathPoint = SaveSystem.instance.saves.playerSaves.deathPointData;
+		if(!deathPoint.createDeathPoint)
+			return;
+
+		int currentLevel = Relocation.CurrentDungeonLevel;
+		if(currentLevel != deathPoint.levelOfDeath)
+			return;
+
+		Item playerLoot = Resources.Load<Item>(Path.Combine("Items/", "DeathPlayerLoot"));
+		DeathPlayerLoot pl = (DeathPlayerLoot)playerLoot;
+		foreach (var slot in deathPoint.loot)
+		{
+			Item slotItem = Resources.Load<Item>(Path.Combine("Items/", slot.itemName));
+			if(slotItem == null)
+				continue;
+			pl.loot.Add(Instantiate(slotItem));
+		}
+		Vector3 lootPosition = new Vector3(deathPoint.position.x, deathPoint.position.y, 1f);
+		GameObject _itemHolder = Instantiate(itemHolder, lootPosition, Quaternion.identity);
+		ItemHolder holder = _itemHolder.GetComponent<ItemHolder>();
+		holder.SetItem(playerLoot, false);
+	}
+    public void SpawnWormhole(int x, int y){
+		Vector3 position = new Vector3(x, y, 1f);
+        PropHolder pHolder = Instantiate(propHolder, position, Quaternion.identity, GetGameMapParent("GameField").transform).GetComponent<PropHolder>();
+        pHolder.SetMyProp(wormhole);
+    }
+    [SerializeField] float maxPercentageRoomBlocks = 0.6f;
+    [SerializeField] float minPercentageRoomBlocks = 0.1f;
+    void SpawnBlocks(){
+        List<Coord> region = GetRegions(0)[0];
+        float percentage = Random.Range(minPercentageRoomBlocks, maxPercentageRoomBlocks);
+        int blockCount = Mathf.RoundToInt(region.Count * percentage);
+        Utils.Shuffle(region);
+
+        int exitIndex = Random.Range(0, blockCount);
+
+        //Get random tile and procces it
+        for(int i = 0; i < blockCount; i++)
+        {
+            Coord tile = region[i];
+            bool canSpawn = Random.Range(0, 2) == 1? true: false;
+            if(canSpawn){
+                GameObject block = Instantiate(myMapStyle.blockHolder, new Vector3(tile.tileX, tile.tileY, 0f), Quaternion.identity, GetGameMapParent("Blocks"));
+				block.transform.SetParent(GetGameMapParent("Blocks"));
+			    Block _block = block.GetComponent<Block>();
+                if(i == exitIndex){
+                    _block.spawnExit = true;
+                }
+                int index = Random.Range(0, myMapStyle.blocks.Length);
+                _block.SetBlock(myMapStyle.blocks[index]);
+            }
+        }
+    }
+	void SpawnGround(int x, int y, int layerIndex, int groundIndex){
+        Vector2 position = new Vector2(x, y);
+        GameObject instance = Instantiate(myMapStyle.groundPrefab, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
+        SpriteRenderer ground = instance.GetComponent<SpriteRenderer>();
+		ground.sprite = myMapStyle.GetGroundSprite(layerIndex, groundIndex);
+        instance.transform.SetParent(GetGameMapParent("Floor"));
+    }
+
+    void SpawnWall(int x, int y){
+		Transform _wall = Instantiate(myMapStyle.wallPrefab).transform;
+		SpriteRenderer wall = _wall.GetComponent<SpriteRenderer>();
+		wall.sprite = myMapStyle.GetWallSprite(0);
+		_wall.position = new Vector3(x, y, 0f);
+		_wall.SetParent(GetGameMapParent("Walls"));
+    }
+	[SerializeField] int radius = 1;
+	void SpawnCheckPointRoom(){
+		int rSquared = radius * radius;
+		int x = Vector2Int.zero.x;
+		int y = Vector2Int.zero.y;
+
+		List<Vector2Int> ground = new List<Vector2Int>();
+		for (int u = x - radius; u < x + radius + 1; u++)
+			for (int v = y - radius; v < y + radius + 1; v++)
+				if ((x - u) * (x - u) + (y - v) * (y - v) < rSquared)
+				{
+					ground.Add(new Vector2Int(u, v));
+					SpawnGround(u, v, 0, 0);
+					if(u == x && v == y+1)
+						SpawnObelisk(u, v);
+					if(u == x-radius+1 && v == y)
+						SpawnWormhole(u, v);
+					if(u == x && v == y+radius-3)
+						SpawnMerchantShop(u, v);
+				}
+
+		radius += 1;
+		rSquared = radius * radius;
+		for (int u = x - radius; u < x + radius + 1; u++)
+			for (int v = y - radius; v < y + radius + 1; v++){
+				if ((x - u) * (x - u) + (y - v) * (y - v) < rSquared){
+					Vector2Int pos = new Vector2Int(u,v);
+					if (!ground.Contains(pos))
+					{
+						Transform _wall = Instantiate(myMapStyle.wallPrefab).transform;
+						SpriteRenderer wall = _wall.GetComponent<SpriteRenderer>();
+						wall.sprite = myMapStyle.GetWallSprite(0);
+						_wall.position = new Vector3(pos.x, pos.y, 0f);
+						_wall.SetParent(GetGameMapParent("Walls"));
+					}
+				}
+			}
+	}
+	void SpawnObelisk(int x, int y){
+		Vector3 pos = new Vector3(x, y, 1f);
+		GameObject prefab = Instantiate(propHolder, pos, Quaternion.identity);
+		prefab.transform.position = pos;
+		PropHolder holder = prefab.GetComponent<PropHolder>();
+		holder.SetMyProp(obelisk);
+	}
+	void SpawnMerchantShop(int x, int y){
+		Vector3 position = new Vector3(x, y, 1f);
+		GameObject prefab = Resources.Load<GameObject>(Path.Combine("Props/", "merchant's shop"));
+        GameObject shop = Instantiate(prefab, position, Quaternion.identity, GetGameMapParent("GameField"));
+	}
 }
 
 [System.Serializable]

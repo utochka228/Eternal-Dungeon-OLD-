@@ -7703,7 +7703,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -24.325195, y: 33.42798}
+  m_AnchoredPosition: {x: -24.325256, y: 33.42798}
   m_SizeDelta: {x: -70.75, y: 62.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &366306484
@@ -11890,12 +11890,12 @@ MonoBehaviour:
   lacunarity: 2.61
   octaves: 2
   safePlayerSpawnDist: 5
-  maxPercentageRoomBlocks: 0.4
-  minPercentageRoomBlocks: 0.1
-  radius: 8
   seed: 
   useRandomSeed: 1
   randomFillPercent: 50
+  maxPercentageRoomBlocks: 0.4
+  minPercentageRoomBlocks: 0.1
+  radius: 8
 --- !u!4 &630521367
 Transform:
   m_ObjectHideFlags: 0
@@ -14166,19 +14166,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22499384, guid: 916ee089a0d7b63419075f91e1c657ec, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22499384, guid: 916ee089a0d7b63419075f91e1c657ec, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22499384, guid: 916ee089a0d7b63419075f91e1c657ec, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22499384, guid: 916ee089a0d7b63419075f91e1c657ec, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224930228632997228, guid: 916ee089a0d7b63419075f91e1c657ec,
         type: 3}
